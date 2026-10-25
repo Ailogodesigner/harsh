@@ -83,6 +83,11 @@ export default function Footer() {
                 </NextLink>
               </li>
               <li>
+                <NextLink href="/map" className="hover:text-emerald-400 transition-colors">
+                  Live Web Map (Dynmap)
+                </NextLink>
+              </li>
+              <li>
                 <NextLink href="/leaderboards" className="hover:text-emerald-400 transition-colors">
                   Leaderboards &amp; Stats
                 </NextLink>
@@ -102,6 +107,11 @@ export default function Footer() {
               <li>
                 <NextLink href="/news" className="hover:text-emerald-400 transition-colors">
                   News &amp; Updates
+                </NextLink>
+              </li>
+              <li>
+                <NextLink href="/apply" className="hover:text-emerald-400 transition-colors font-semibold text-emerald-400">
+                  Staff Recruitment (Apply)
                 </NextLink>
               </li>
               <li>

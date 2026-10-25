@@ -1,5 +1,8 @@
 import NextLink from "next/link";
 import ServerStatusCard from "@/components/ServerStatusCard";
+import CobaltHero from "@/components/CobaltHero";
+import RecentPurchasesTicker from "@/components/RecentPurchasesTicker";
+import FeaturedAnnouncement from "@/components/FeaturedAnnouncement";
 import CopyButton from "@/components/CopyButton";
 import {
   Sparkles,
@@ -115,63 +118,66 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col gap-24 pb-20">
-      {/* Cinematic Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center pt-8 overflow-hidden mc-grid-pattern">
-        {/* Atmospheric Glow Rings */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-green-600/10 rounded-full blur-[100px] pointer-events-none" />
+    <div className="flex flex-col gap-16 pb-20">
+      {/* 1. AppleMC Cobalt Style Hero Header */}
+      <section className="relative pt-4 pb-2">
+        <CobaltHero />
+      </section>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex flex-col items-center text-center">
-          {/* Network Live Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-emerald-500/30 text-xs font-semibold text-emerald-400 mb-8 shadow-lg shadow-emerald-500/10 animate-in fade-in zoom-in duration-300">
+      {/* 2. AppleMC Live Store Purchases Ticker */}
+      <RecentPurchasesTicker />
+
+      {/* 3. AppleMC Cobalt Featured Forum / Announcement Card */}
+      <section className="py-2">
+        <FeaturedAnnouncement />
+      </section>
+
+      {/* 4. Cinematic Network Introduction & Quick Join Bar */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
+        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 relative overflow-hidden bg-gradient-to-b from-slate-900/60 to-slate-950/80">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-emerald-500/30 text-xs font-semibold text-emerald-400 mb-6 shadow-lg shadow-emerald-500/10">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>SEASON 4 LIVE &bull; JAVA &amp; BEDROCK COMPATIBLE</span>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white max-w-4xl leading-[1.1] uppercase">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight uppercase">
             YOUR NEXT ADVENTURE <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-300">
               STARTS HERE.
             </span>
           </h1>
 
-          <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-            Welcome to <span className="text-white font-semibold">Harsh Unlimited</span> — India&apos;s most competitive and lag-free Minecraft gaming network. Experience custom Lifesteal SMP, rich Survival economy, and fast BoxPvP.
+          <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Welcome to <span className="text-white font-semibold">Harsh Unlimited</span> — India&apos;s premier Minecraft gaming network. Experience custom Lifesteal SMP, player-driven economy, live web dynmaps, and instant Cashfree rank delivery.
           </p>
 
-          {/* Action CTAs */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <NextLink
               href="/play"
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-slate-950 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-slate-950 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all transform hover:-translate-y-0.5 cursor-pointer"
             >
-              <span>PLAY NOW</span>
+              <span>HOW TO JOIN</span>
               <ArrowRight className="w-4 h-4" />
             </NextLink>
 
-            <a
-              href="https://discord.gg/harshunlimited"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-emerald-500/30 transition-all transform hover:-translate-y-0.5"
-            >
-              <MessageSquare className="w-4 h-4 text-[#5865F2]" />
-              <span>JOIN DISCORD</span>
-            </a>
-
             <NextLink
               href="/store"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all transform hover:-translate-y-0.5"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>SERVER STORE</span>
             </NextLink>
+
+            <NextLink
+              href="/map"
+              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all transform hover:-translate-y-0.5"
+            >
+              <Compass className="w-4 h-4 text-emerald-400" />
+              <span>LIVE WEB MAP</span>
+            </NextLink>
           </div>
 
-          {/* Live Ping Server Status Card */}
-          <div className="mt-14 w-full">
+          <div className="mt-10 w-full max-w-4xl mx-auto">
             <ServerStatusCard />
           </div>
         </div>

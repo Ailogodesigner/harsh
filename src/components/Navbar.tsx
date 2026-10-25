@@ -19,6 +19,8 @@ import {
   Shield,
   LogOut,
   Sparkles,
+  Map as MapIcon,
+  ClipboardList,
 } from "lucide-react";
 
 interface UserSession {
@@ -60,10 +62,13 @@ export default function Navbar() {
     { href: "/", label: "Home", icon: Compass },
     { href: "/play", label: "Play", icon: Gamepad2 },
     { href: "/store", label: "Store", icon: ShoppingCart, highlight: true },
-    { href: "/leaderboards", label: "Leaderboards", icon: Trophy },
+    { href: "/map", label: "Map", icon: MapIcon },
     { href: "/vote", label: "Vote", icon: Vote },
-    { href: "/news", label: "News", icon: Newspaper },
+    { href: "/leaderboards", label: "Leaderboards", icon: Trophy },
     { href: "/rules", label: "Rules", icon: BookOpen },
+    { href: "/staff", label: "Staff", icon: Shield },
+    { href: "/apply", label: "Apply", icon: ClipboardList },
+    { href: "/news", label: "News", icon: Newspaper },
     { href: "/support", label: "Support", icon: LifeBuoy },
   ];
 

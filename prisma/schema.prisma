@@ -346,3 +346,30 @@ model ServerSetting {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model StaffApplication {
+  id             String            @id @default(cuid())
+  userId         String?
+  minecraftName  String
+  discordTag     String
+  age            Int
+  timezone       String
+  position       String // Helper, Moderator, Builder, Developer
+  experience     String
+  whyJoin        String
+  scenarioAnswer String
+  status         ApplicationStatus @default(PENDING)
+  adminNotes     String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
