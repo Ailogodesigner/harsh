@@ -1,0 +1,348 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum MinecraftVerificationStatus {
+  UNVERIFIED
+  PENDING_VERIFICATION
+  VERIFIED
+}
+
+enum ProductCategory {
+  RANK
+  KIT
+  CRATE
+  COINS
+  ITEM
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  USER_DROPPED
+  CANCELLED
+  REFUNDED
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+enum EntitlementStatus {
+  PENDING_DELIVERY
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum DeliveryStatus {
+  QUEUED
+  PROCESSING
+  DELIVERED
+  FAILED
+  MANUAL_REVIEW
+}
+
+enum TicketStatus {
+  OPEN
+  WAITING_ADMIN
+  WAITING_USER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(USER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  minecraftAccounts MinecraftAccount[]
+  orders            Order[]
+  supportTickets    SupportTicket[]
+  ticketMessages    TicketMessage[]
+  auditLogs         AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model MinecraftAccount {
+  id                 String                      @id @default(cuid())
+  userId             String
+  minecraftUuid      String?
+  username           String
+  verificationStatus MinecraftVerificationStatus @default(UNVERIFIED)
+  verificationCode   String?
+  linkedAt           DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entitlements Entitlement[]
+
+  @@unique([userId, username])
+  @@index([userId])
+  @@index([minecraftUuid])
+  @@index([username])
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  slug           String          @unique
+  description    String
+  category       ProductCategory @default(RANK)
+  price          Int // integer minor units (paise/cents, e.g. 49900 = INR 499.00)
+  currency       String          @default("INR")
+  duration       String          @default("LIFETIME")
+  perks          String          @default("[]") // JSON string array of perks
+  deliveryConfig String          @default("{}") // JSON string command template
+  active         Boolean         @default(true)
+  sortOrder      Int             @default(0)
+  featured       Boolean         @default(false)
+  badgeColor     String?         @default("emerald")
+  upgradeFromId  String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  orderItems OrderItem[]
+
+  @@index([category])
+  @@index([active])
+  @@index([sortOrder])
+}
+
+model Order {
+  id          String      @id // Human-readable unique ID, e.g. HU-ORD-20261025-XXXX
+  userId      String
+  currency    String      @default("INR")
+  totalAmount Int // integer minor currency units
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items        OrderItem[]
+  payments     Payment[]
+  entitlements Entitlement[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                      String  @id @default(cuid())
+  orderId                 String
+  productId               String
+  productName             String
+  price                   Int // snapshot in minor units
+  quantity                Int     @default(1)
+  configuration           String? // JSON snapshot of perks & meta
+  targetMinecraftUsername String
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Payment {
+  id                       String        @id @default(cuid())
+  orderId                  String
+  provider                 String        @default("CASHFREE")
+  providerOrderId          String?
+  providerPaymentReference String?
+  amount                   Int // minor units
+  currency                 String        @default("INR")
+  status                   PaymentStatus @default(PENDING)
+  verifiedAt               DateTime?
+  rawResponse              String? // JSON snapshot
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([providerOrderId])
+  @@index([providerPaymentReference])
+  @@index([status])
+}
+
+model WebhookEvent {
+  id               String           @id @default(cuid())
+  providerEventId  String           @unique // Deduplication key
+  eventType        String
+  processingStatus ProcessingStatus @default(PENDING)
+  payload          String // raw request JSON
+  signature        String?
+  errorMessage     String?
+  receivedAt       DateTime         @default(now())
+  processedAt      DateTime?
+
+  @@index([providerEventId])
+  @@index([processingStatus])
+}
+
+model Entitlement {
+  id                 String            @id @default(cuid())
+  userId             String
+  minecraftAccountId String?
+  orderId            String?
+  productId          String
+  productName        String
+  status             EntitlementStatus @default(PENDING_DELIVERY)
+  startDate          DateTime          @default(now())
+  expiryDate         DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  minecraftAccount MinecraftAccount? @relation(fields: [minecraftAccountId], references: [id], onDelete: SetNull)
+  order            Order?            @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  deliveryJobs     DeliveryJob[]
+
+  @@index([userId])
+  @@index([minecraftAccountId])
+  @@index([status])
+}
+
+model DeliveryJob {
+  id                      String         @id @default(cuid())
+  entitlementId           String
+  uniqueDeliveryKey       String         @unique // Idempotency key
+  status                  DeliveryStatus @default(QUEUED)
+  attemptCount            Int            @default(0)
+  maxAttempts             Int            @default(5)
+  lastError               String?
+  deliveryAcknowledgement String? // JSON response from delivery bridge/plugin/pterodactyl
+  deliveredAt             DateTime?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+
+  entitlement Entitlement @relation(fields: [entitlementId], references: [id], onDelete: Cascade)
+
+  @@index([entitlementId])
+  @@index([status])
+  @@index([uniqueDeliveryKey])
+}
+
+model SupportTicket {
+  id        String         @id @default(cuid())
+  userId    String
+  subject   String
+  status    TicketStatus   @default(OPEN)
+  priority  TicketPriority @default(MEDIUM)
+  category  String         @default("GENERAL")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TicketMessage {
+  id         String   @id @default(cuid())
+  ticketId   String
+  senderId   String
+  senderName String
+  senderRole Role     @default(USER)
+  content    String
+  createdAt  DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([senderId])
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String
+  actorEmail   String?
+  action       String // e.g. "RETRY_DELIVERY", "UPDATE_PRODUCT", "GRANT_ROLE", "REFUND_ORDER"
+  targetEntity String // e.g. "Order", "Product", "DeliveryJob", "User"
+  targetId     String
+  metadata     String? // JSON metadata
+  timestamp    DateTime @default(now())
+
+  user User? @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([actorId])
+  @@index([targetEntity])
+  @@index([timestamp])
+}
+
+model ServerAnnouncement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  tag       String   @default("UPDATE") // UPDATE, EVENT, SALE, MAINTENANCE
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
+}
+
+model GameMode {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  status      String   @default("ONLINE") // ONLINE, MAINTENANCE, BETA
+  version     String   @default("1.20 - 1.21.x")
+  features    String   @default("[]") // JSON string array
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active])
+  @@index([sortOrder])
+}
+
+model ServerSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
