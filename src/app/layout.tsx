@@ -11,6 +11,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://harshunlimited.fun"),
   title: "Harsh Unlimited | Premium Minecraft Gaming Network",
   description:
     "India's premier Minecraft network featuring custom Lifesteal SMP, enhanced Survival economy, BoxPvP, and automated instant rank delivery.",
@@ -24,11 +25,17 @@ export const metadata: Metadata = {
     "play.harshunlimited.fun",
   ],
   authors: [{ name: "Harsh Unlimited Network" }],
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "Harsh Unlimited — Premium Minecraft Gaming Network",
     description: "Your Next Adventure Starts Here. Join on Java and Bedrock at play.harshunlimited.fun",
     url: "https://harshunlimited.fun",
     siteName: "Harsh Unlimited",
+    images: [{ url: "/logo.png", width: 512, height: 512, alt: "Harsh Unlimited Mascot Logo" }],
     locale: "en_IN",
     type: "website",
   },

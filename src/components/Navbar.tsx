@@ -79,12 +79,12 @@ export default function Navbar() {
           {/* Logo & Server Status */}
           <div className="flex items-center gap-6">
             <NextLink href="/" className="flex items-center gap-3 group">
-              <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-all duration-300">
-                <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                  <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-green-300">
-                    HU
-                  </span>
-                </div>
+              <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-all duration-300 overflow-hidden">
+                <img
+                  src="/logo.png"
+                  alt="Harsh Unlimited"
+                  className="w-full h-full object-cover rounded-[10px]"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-extrabold text-lg tracking-wider text-white uppercase group-hover:text-emerald-400 transition-colors">

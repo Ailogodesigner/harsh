@@ -53,8 +53,8 @@ export default function RegisterPage() {
     <div className="min-h-[75vh] flex items-center justify-center px-4 py-12">
       <div className="glass-panel rounded-3xl p-8 sm:p-10 border border-slate-800 max-w-md w-full space-y-6 shadow-2xl relative">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 mx-auto flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">
-            HU
+          <div className="w-14 h-14 rounded-2xl overflow-hidden border border-emerald-500/40 mx-auto shadow-lg shadow-emerald-500/20">
+            <img src="/logo.png" alt="Harsh Unlimited" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-black text-white">Join Harsh Unlimited</h1>
           <p className="text-xs text-slate-400">Create your account to manage ranks and orders</p>

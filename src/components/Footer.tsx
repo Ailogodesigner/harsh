@@ -47,8 +47,12 @@ export default function Footer() {
           {/* Col 1: Brand Info */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center font-black text-slate-950 text-base shadow-md shadow-emerald-500/20">
-                HU
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md shadow-emerald-500/20">
+                <img
+                  src="/logo.png"
+                  alt="Harsh Unlimited"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="font-extrabold text-base tracking-wider text-white uppercase">
                 Harsh <span className="text-emerald-400">Unlimited</span>

@@ -74,16 +74,15 @@ export default function CobaltHero() {
           </div>
         </div>
 
-        {/* Center: Glowing Animated Harsh Unlimited Logo */}
+        {/* Center: Glowing Animated Harsh Unlimited Mascot Logo */}
         <div className="flex flex-col items-center text-center group">
-          <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700 p-1 shadow-2xl shadow-emerald-500/30 group-hover:shadow-emerald-500/50 group-hover:scale-105 transition-all duration-500 animate-float">
-            <div className="w-full h-full bg-[#08090d] rounded-[22px] flex flex-col items-center justify-center p-3">
-              <span className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-emerald-400 via-green-300 to-white tracking-tighter">
-                HU
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mt-1">
-                NETWORK
-              </span>
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700 p-1 shadow-2xl shadow-emerald-500/30 group-hover:shadow-emerald-500/60 group-hover:scale-105 transition-all duration-500 animate-float">
+            <div className="w-full h-full bg-[#08090d] rounded-[22px] overflow-hidden flex items-center justify-center p-1 relative">
+              <img
+                src="/logo.png"
+                alt="Harsh Unlimited Mascot Logo"
+                className="w-full h-full object-cover rounded-[18px] filter drop-shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
+              />
             </div>
           </div>
 
