@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Crown,
   Key,
+  ArrowRight,
+  MessageSquare,
 } from "lucide-react";
 
 export default function CustomerDashboard() {
@@ -378,33 +380,69 @@ export default function CustomerDashboard() {
           </p>
         ) : (
           <div className="space-y-3">
-            {tickets.map((t) => (
-              <div
-                key={t.id}
-                className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex items-center justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-sm text-white">{t.subject}</h4>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-900 px-2 py-0.5 rounded">
-                      {t.category}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {t.messages?.[0]?.content?.slice(0, 80)}...
-                  </p>
-                </div>
-                <span
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded uppercase ${
-                    t.status === "OPEN"
-                      ? "bg-emerald-500/15 text-emerald-400"
-                      : "bg-slate-800 text-slate-300"
+            {tickets.map((t) => {
+              const lastMsg = t.messages?.[t.messages.length - 1];
+              const isStaffReply = lastMsg?.senderRole === "ADMIN" || lastMsg?.senderRole === "SUPERADMIN";
+              const isAwaitingPlayer = t.status === "WAITING_USER";
+
+              return (
+                <NextLink
+                  key={t.id}
+                  href={`/tickets/${t.id}`}
+                  className={`block p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer ${
+                    isAwaitingPlayer
+                      ? "bg-slate-900/90 border-cyan-500/50 hover:border-cyan-400 shadow-lg shadow-cyan-950/30"
+                      : "bg-slate-950/80 border-slate-800 hover:border-slate-700 hover:bg-slate-900/50"
                   }`}
                 >
-                  {t.status}
-                </span>
-              </div>
-            ))}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                          {t.category}
+                        </span>
+                        <h4 className="font-bold text-sm sm:text-base text-white hover:text-cyan-400 transition-colors">
+                          {t.subject}
+                        </h4>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                        {isStaffReply ? (
+                          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                            <Shield className="w-3 h-3 text-emerald-400" />
+                            <span>Staff Replied:</span>
+                          </span>
+                        ) : (
+                          <span className="text-slate-500">You:</span>
+                        )}
+                        <span className="line-clamp-1 italic text-slate-300">
+                          &quot;{lastMsg?.content?.slice(0, 80) || "No message content"}&quot;
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider ${
+                          isAwaitingPlayer
+                            ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 animate-pulse font-black"
+                            : t.status === "OPEN"
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : "bg-slate-800 text-slate-400 border border-slate-700"
+                        }`}
+                      >
+                        {isAwaitingPlayer ? "Staff Replied • Answer Now" : t.status.replace("_", " ")}
+                      </span>
+
+                      <div className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 text-cyan-400 text-xs font-bold inline-flex items-center gap-1 transition-all">
+                        <span>Open Chat</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                </NextLink>
+              );
+            })}
           </div>
         )}
       </div>

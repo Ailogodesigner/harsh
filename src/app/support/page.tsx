@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { LifeBuoy, MessageSquare, Send, CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
+import NextLink from "next/link";
+import { LifeBuoy, MessageSquare, Send, CheckCircle2, AlertCircle, Clock, Shield, ArrowRight } from "lucide-react";
 
 export default function SupportPage() {
   const [subject, setSubject] = useState("");
@@ -10,6 +11,7 @@ export default function SupportPage() {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [createdTicketId, setCreatedTicketId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +37,9 @@ export default function SupportPage() {
         return;
       }
 
+      if (data.ticket?.id) {
+        setCreatedTicketId(data.ticket.id);
+      }
       setSuccess(true);
       setSubject("");
       setMessage("");
@@ -113,13 +118,25 @@ export default function SupportPage() {
               <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
               <h3 className="text-lg font-bold text-white">Ticket Submitted Successfully!</h3>
               <p className="text-xs text-slate-300 max-w-md mx-auto">
-                Your support request has been logged. You can review administrative replies anytime inside your Customer Dashboard.
+                Your support request has been logged. Our staff team will review and reply directly to your inquiry.
               </p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                {createdTicketId && (
+                  <NextLink
+                    href={`/tickets/${createdTicketId}`}
+                    className="px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-400 hover:bg-cyan-300 text-slate-950 inline-flex items-center gap-2 shadow-lg shadow-cyan-900/30 transition-all"
+                  >
+                    <span>Open Ticket &amp; Chat With Staff</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </NextLink>
+                )}
                 <button
                   type="button"
-                  onClick={() => setSuccess(false)}
-                  className="px-6 py-2 rounded-xl text-xs font-bold bg-slate-900 border border-slate-800 text-slate-200 hover:text-white"
+                  onClick={() => {
+                    setSuccess(false);
+                    setCreatedTicketId(null);
+                  }}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 border border-slate-800 text-slate-200 hover:text-white"
                 >
                   Submit Another Ticket
                 </button>
