@@ -2,7 +2,7 @@ import { Vote, Gift, ExternalLink, Sparkles, CheckCircle2, Trophy } from "lucide
 
 export const metadata = {
   title: "Vote for Rewards | Harsh Unlimited Minecraft Network",
-  description: "Vote daily for Harsh Unlimited to receive free in-game keys, coins, and win monthly store vouchers.",
+  description: "Vote daily for Harsh Unlimited to receive free in-game keys, coins, and exclusive cosmetic rewards.",
 };
 
 export default function VotePage() {
@@ -43,7 +43,7 @@ export default function VotePage() {
           VOTE FOR <span className="text-emerald-400">HARSH UNLIMITED</span>
         </h1>
         <p className="text-sm text-slate-300 leading-relaxed">
-          Voting takes less than 30 seconds and directly rewards you in-game with Vote Keys, Coins, and monthly voucher draw entries.
+          Voting takes less than 30 seconds and directly rewards you in-game with Vote Keys, Coins, and exclusive player titles.
         </p>
       </div>
 
@@ -74,8 +74,8 @@ export default function VotePage() {
             <Trophy className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-bold text-white text-sm">₹500 Monthly Prize</h3>
-            <p className="text-xs text-slate-400">Top 3 voters win store vouchers</p>
+            <h3 className="font-bold text-white text-sm">Mythic &amp; Ancient Keys</h3>
+            <p className="text-xs text-slate-400">Top voters receive bonus keys &amp; coins</p>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function VotePage() {
         <h3 className="font-bold text-white text-sm">How to Claim In-Game:</h3>
         <p>1. Make sure you are logged into <span className="text-emerald-400 font-mono">play.harshunlimited.fun</span>.</p>
         <p>2. Complete the CAPTCHA and submit your exact Minecraft username on any voting site above.</p>
-        <p>3. Your keys and economy cash will be automatically granted within 60 seconds!</p>
+        <p>3. Your keys and in-game coins will be automatically granted within 60 seconds!</p>
       </div>
     </div>
   );

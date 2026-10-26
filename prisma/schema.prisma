@@ -398,7 +398,7 @@ model LeaderboardEntry {
   name      String   // Minecraft IGN
   score     String   // e.g. "$40,250,949", "482 Kills"
   rawScore  Float    @default(0)
-  subtext   String?  // e.g. "Rank: OWNER", "₹500 Store Voucher"
+  subtext   String?  // e.g. "Rank: OWNER", "Reward: 5x Mythic Keys"
   rank      Int      @default(1)
   updatedAt DateTime @updatedAt
 

@@ -528,10 +528,10 @@ async function main() {
     { category: "COINS", name: "Dirty_playz", score: "350 Coins", rawScore: 350, subtext: "Tag Master", rank: 5 },
 
     // MONTHLY TOP VOTERS
-    { category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: ₹500 Store Voucher", rank: 1 },
-    { category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: ₹300 Store Voucher", rank: 2 },
-    { category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: ₹150 Store Voucher", rank: 3 },
-    { category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Mythic Keys", rank: 4 },
+    { category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: 5x Mythic Keys & 1,500 Coins", rank: 1 },
+    { category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: 3x Mythic Keys & 1,000 Coins", rank: 2 },
+    { category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: 2x Mythic Keys & 500 Coins", rank: 3 },
+    { category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Ancient Keys", rank: 4 },
     { category: "VOTES", name: "jodadnan", score: "74 Votes", rawScore: 74, subtext: "Reward: 3x Ancient Keys", rank: 5 },
   ];
 

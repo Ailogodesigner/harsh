@@ -40,7 +40,7 @@ export default function NewsPage() {
       tag: "COMMUNITY",
       date: "August 2026",
       summary:
-        "Join us this Saturday at 7:00 PM IST at /warp party for our mega seasonal drop party with Ancient keys, god kits, and rank giveaway vouchers.",
+        "Join us this Saturday at 7:00 PM IST at /warp party for our mega seasonal drop party with Ancient keys, god kits, and rare crate rewards.",
       highlights: [
         "2x Economy Coin Multiplier active across Survival and BoxPvP all weekend",
         "30 Ancient Crate Keys dropped into the community pit",

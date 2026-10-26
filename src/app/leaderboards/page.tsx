@@ -56,10 +56,10 @@ const DEFAULT_LEADERBOARDS: LeaderboardEntry[] = [
   { id: "c5", category: "COINS", name: "Dirty_playz", score: "350 Coins", rawScore: 350, subtext: "Tag Master", rank: 5 },
 
   // VOTES
-  { id: "v1", category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: ₹500 Store Voucher", rank: 1 },
-  { id: "v2", category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: ₹300 Store Voucher", rank: 2 },
-  { id: "v3", category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: ₹150 Store Voucher", rank: 3 },
-  { id: "v4", category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Mythic Keys", rank: 4 },
+  { id: "v1", category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: 5x Mythic Keys & 1,500 Coins", rank: 1 },
+  { id: "v2", category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: 3x Mythic Keys & 1,000 Coins", rank: 2 },
+  { id: "v3", category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: 2x Mythic Keys & 500 Coins", rank: 3 },
+  { id: "v4", category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Ancient Keys", rank: 4 },
   { id: "v5", category: "VOTES", name: "jodadnan", score: "74 Votes", rawScore: 74, subtext: "Reward: 3x Ancient Keys", rank: 5 },
 ];
 
@@ -150,10 +150,10 @@ export default function LeaderboardsPage() {
         </div>
 
         <div className="glass-panel p-5 rounded-2xl border border-slate-800 text-center space-y-1">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Monthly Voter Prize</div>
-          <div className="text-xl sm:text-2xl font-black text-purple-400 font-mono">₹500 Voucher</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Top Voter In-Game Reward</div>
+          <div className="text-xl sm:text-2xl font-black text-purple-400 font-mono">Mythic Keys</div>
           <NextLink href="/vote" className="text-[10px] text-purple-300 hover:text-purple-200 underline font-semibold">
-            Vote Now to Win &rarr;
+            Vote For Rewards &rarr;
           </NextLink>
         </div>
       </div>
@@ -369,7 +369,7 @@ export default function LeaderboardsPage() {
         </div>
         <h3 className="text-2xl sm:text-3xl font-black text-white">Want to top the Voting Leaderboard?</h3>
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Vote daily on all top server lists to receive free in-game crate keys, coin drops, and compete for monthly Store Vouchers (up to ₹500 every month!).
+          Vote daily on all top server lists to receive free in-game crate keys, server coin drops, and exclusive seasonal player titles!
         </p>
         <div className="pt-2">
           <NextLink
