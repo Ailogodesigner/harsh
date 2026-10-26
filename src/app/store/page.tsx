@@ -19,6 +19,7 @@ import {
   ExternalLink,
   Coins,
   Package,
+  Swords,
 } from "lucide-react";
 
 interface Product {
@@ -64,13 +65,12 @@ export default function StorePage() {
   const categories = [
     { id: "ALL", label: "All Items", icon: ShoppingBag },
     { id: "RANK", label: "Ranks", icon: Crown },
+    { id: "KIT", label: "Server Kits", icon: Swords },
     { id: "CRATE", label: "Crates & Keys", icon: Package },
     { id: "COINS", label: "Coins", icon: Coins },
   ];
 
   const filteredProducts = products.filter((p) => {
-    // Exclude kits and bundles completely
-    if (p.category === "KIT" || p.slug.startsWith("kit-")) return false;
     const matchesCategory = selectedCategory === "ALL" || p.category === selectedCategory;
     const matchesSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

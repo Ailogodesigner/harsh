@@ -52,7 +52,7 @@ async function main() {
       features: JSON.stringify([
         "Grief-prevention Land Claims",
         "Player Shops & Auction House",
-        "Over 100+ Custom Enchantments",
+        "Custom Enchantments (Coming Soon)",
         "Community Events & World Bosses",
       ]),
       sortOrder: 1,
@@ -125,9 +125,11 @@ async function main() {
       sortOrder: 1,
       perks: JSON.stringify([
         "Permanent [VIP] chat and tab tag",
-        "Access to /kit vip (Gold armor & gear)",
+        "/kit vip: Full Iron Armor & Tools (Max Enchants)",
+        "$5,000 In-Game Cash & 1,000 Claim Blocks",
+        "6 Diamonds • 16 Iron • 6 Gold • 2 Golden Apples",
+        "32 Oak Logs • 8 Obsidian • Shield & Bow + Arrows",
         "Set up to 2 player homes (/sethome)",
-        "Unlock VIP in-game rewards & perks",
       ]),
       deliveryConfig: JSON.stringify({
         commands: [
@@ -149,8 +151,11 @@ async function main() {
       sortOrder: 2,
       perks: JSON.stringify([
         "Permanent [MVP] aqua chat and tab tag",
-        "All VIP perks & benefits included",
-        "Access to /kit mvp (Diamond tier gear)",
+        "/kit mvp: Full Netherite Armor Set (Max Enchants)",
+        "$10,000 In-Game Cash & 2,500 Claim Blocks",
+        "Diamond Sword & Pickaxe (Max Enchantments)",
+        "12 Diamonds • 32 Iron • 16 Gold • 4 Golden Apples",
+        "64 Oak Logs • 8 Obsidian • Shield & Bow + Arrows",
         "Set up to 3 player homes (/sethome)",
         "Priority queue bypass slot",
       ]),
@@ -174,8 +179,10 @@ async function main() {
       sortOrder: 3,
       perks: JSON.stringify([
         "Permanent [ELITE] purple chat & tab tag",
-        "All VIP & MVP perks included",
-        "Access to /kit elite (Enchanted gear)",
+        "/kit elite: Full Diamond Armor & Tools (Max Enchants)",
+        "$15,000 In-Game Cash & 4,000 Claim Blocks",
+        "16 Diamonds • 32 Iron • 16 Gold • 64 Golden Apples",
+        "64 Oak Logs • 16 Obsidian • Shield & Bow + Arrows",
         "Set up to 3 player homes (/sethome)",
         "Special cosmetics & particle trails",
       ]),
@@ -199,8 +206,10 @@ async function main() {
       sortOrder: 4,
       perks: JSON.stringify([
         "Permanent [SUPREME] gold chat & tab tag",
-        "All lower rank perks included",
-        "Access to /kit supreme (Netherite tier gear)",
+        "/kit supreme: Full Diamond Armor & Tools (Max Enchants)",
+        "$25,000 In-Game Cash & 6,000 Claim Blocks",
+        "24 Diamonds • 48 Iron • 24 Gold • 64 Golden Apples",
+        "64 Oak Logs • 24 Obsidian • Shield & Bow + Arrows",
         "Set up to 4 player homes (/sethome)",
         "Private VIP Discord Voice Channel",
       ]),
@@ -224,8 +233,10 @@ async function main() {
       sortOrder: 5,
       perks: JSON.stringify([
         "Permanent [OVERLORD] animated yellow tag",
-        "All lower rank perks included",
-        "Access to /kit overlord (God Netherite set & G-Apples)",
+        "/kit overlord: Full Netherite Armor & God Tools (God Enchants)",
+        "$40,000 In-Game Cash & 10,000 Claim Blocks",
+        "32 Diamonds • 64 Iron • 32 Gold • 64 Golden Apples",
+        "64 Oak Logs • 32 Obsidian • Shield & Bow + Arrows",
         "Set up to 5 player homes (/sethome)",
         "Reserved server slot during full network",
         "Exclusive Discord Overlord role & lounge",
@@ -234,6 +245,139 @@ async function main() {
         commands: [
           "lp user {username} parent add overlord",
           "broadcast &6★ [Store] &a{username} &7has ascended to supreme &eOVERLORD Rank&7! ★",
+        ],
+      }),
+    },
+
+    // REAL SERVER NPC KITS (from server PlayerKits2 & DeluxeMenus)
+    {
+      name: "VIP Kit",
+      slug: "kit-vip",
+      description: "Official server NPC VIP kit. Full Iron Armor & Tools (Max Enchants), $5k Cash, 1,000 Claim Blocks, 6 Diamonds & 2 Golden Apples.",
+      category: "KIT",
+      price: 4900, // ₹49
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "gold",
+      sortOrder: 6,
+      perks: JSON.stringify([
+        "$5,000 In-Game Cash & 1,000 Claim Blocks",
+        "Full Iron Armor & Tools (Max Enchantments)",
+        "6 Diamonds • 16 Iron • 6 Gold • 2 Golden Apples",
+        "32 Oak Logs • 8 Obsidian • Shield & Bow + Arrows",
+        "2 Water Buckets • 1 Lava • 16 Cobwebs",
+        "Claimable in-game via /kit vip",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "playerkits2 kit give vip {username}",
+          "broadcast &e[Store] &a{username} &7has claimed the &6VIP Kit&7!",
+        ],
+      }),
+    },
+    {
+      name: "MVP Kit",
+      slug: "kit-mvp",
+      description: "Official server NPC MVP kit. Full Netherite Armor Set, Diamond Sword & Pickaxe (Max Enchants), $10k Cash & 2,500 Claim Blocks.",
+      category: "KIT",
+      price: 9900, // ₹99
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: true,
+      badgeColor: "cyan",
+      sortOrder: 7,
+      perks: JSON.stringify([
+        "$10,000 In-Game Cash & 2,500 Claim Blocks",
+        "Full Netherite Armor Set (Max Enchantments)",
+        "Diamond Sword & Pickaxe (Max Enchantments)",
+        "12 Diamonds • 32 Iron • 16 Gold • 4 Golden Apples",
+        "64 Oak Logs • 8 Obsidian • Shield & Bow + Arrows",
+        "2 Water Buckets • 1 Lava • 24 Cobwebs",
+        "Claimable in-game via /kit mvp",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "playerkits2 kit give mvp {username}",
+          "broadcast &e[Store] &a{username} &7has claimed the &bMVP Kit&7!",
+        ],
+      }),
+    },
+    {
+      name: "ELITE Kit",
+      slug: "kit-elite",
+      description: "Official server NPC ELITE kit. Full Diamond Armor & Tools (Max Enchants), $15k Cash, 4,000 Claim Blocks & 64 Golden Apples.",
+      category: "KIT",
+      price: 14900, // ₹149
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "purple",
+      sortOrder: 8,
+      perks: JSON.stringify([
+        "$15,000 In-Game Cash & 4,000 Claim Blocks",
+        "Full Diamond Armor & Tools (Max Enchantments)",
+        "16 Diamonds • 32 Iron • 16 Gold • 64 Golden Apples",
+        "64 Oak Logs • 16 Obsidian • Shield & Bow + Arrows",
+        "2 Water Buckets • 1 Lava • 32 Cobwebs",
+        "Claimable in-game via /kit elite",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "playerkits2 kit give elite {username}",
+          "broadcast &e[Store] &a{username} &7has claimed the &dELITE Kit&7!",
+        ],
+      }),
+    },
+    {
+      name: "SUPREME Kit",
+      slug: "kit-supreme",
+      description: "Official server NPC SUPREME kit. Full Diamond Armor & Tools (Max Enchants), $25k Cash, 6,000 Claim Blocks, 24 Diamonds & 64 Golden Apples.",
+      category: "KIT",
+      price: 19900, // ₹199
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "gold",
+      sortOrder: 9,
+      perks: JSON.stringify([
+        "$25,000 In-Game Cash & 6,000 Claim Blocks",
+        "Full Diamond Armor & Tools (Max Enchantments)",
+        "24 Diamonds • 48 Iron • 24 Gold • 64 Golden Apples",
+        "64 Oak Logs • 24 Obsidian • Shield & Bow + Arrows",
+        "2 Water Buckets • 1 Lava • 48 Cobwebs",
+        "Claimable in-game via /kit supreme",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "playerkits2 kit give supreme {username}",
+          "broadcast &e[Store] &a{username} &7has claimed the &6SUPREME Kit&7!",
+        ],
+      }),
+    },
+    {
+      name: "OVERLORD God Kit",
+      slug: "kit-overlord",
+      description: "The supreme server NPC God Kit. Full Netherite Armor & Tools (God Enchants), $40k Cash, 10,000 Claim Blocks & 64 Golden Apples.",
+      category: "KIT",
+      price: 34900, // ₹349
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: true,
+      badgeColor: "yellow",
+      sortOrder: 10,
+      perks: JSON.stringify([
+        "$40,000 In-Game Cash & 10,000 Claim Blocks",
+        "Full Netherite Armor & God Tools (God Enchantments)",
+        "32 Diamonds • 64 Iron • 32 Gold • 64 Golden Apples",
+        "64 Oak Logs • 32 Obsidian • Shield & Bow + Arrows",
+        "2 Water Buckets • 1 Lava • 64 Cobwebs",
+        "Claimable in-game via /kit overlord",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "playerkits2 kit give overlord {username}",
+          "broadcast &6★ [Store] &a{username} &7has claimed the almighty &eOVERLORD God Kit&7! ★",
         ],
       }),
     },

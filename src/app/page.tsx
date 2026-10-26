@@ -27,7 +27,7 @@ export default function HomePage() {
       tag: "Active SMP",
       icon: Compass,
       description:
-        "Land claims, player economy, chest shops, auction houses, and 100+ custom enchants.",
+        "Land claims, player economy, chest shops, auction houses, and upcoming custom enchants.",
       href: "/play",
     },
     {
@@ -86,7 +86,7 @@ export default function HomePage() {
     },
     {
       title: "Server Wiki & Guide",
-      subtitle: "Commands, land claim & enchants",
+      subtitle: "Commands, land claiming & kits",
       icon: BookMarked,
       href: "/wiki",
       color: "text-purple-400",

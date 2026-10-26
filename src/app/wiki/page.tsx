@@ -21,6 +21,11 @@ import {
   Lock,
   ChevronRight,
   Zap,
+  Clock,
+  Crown,
+  Package,
+  Heart,
+  Flame,
 } from "lucide-react";
 
 interface CommandItem {
@@ -79,7 +84,165 @@ const COMMANDS: CommandItem[] = [
   { cmd: "/rules", desc: "Review server conduct rules, griefing laws, and PvP guidelines", category: "social" },
 ];
 
-const CUSTOM_ENCHANTS = [
+// EXACT KITS DIRECTLY CONFIGURED IN SERVER DELUXEMENUS & PLAYERKITS2 NPC ROSTER
+const SERVER_KITS = [
+  {
+    name: "Starter Kit",
+    cmd: "/kit starter",
+    rank: "MEMBER",
+    cooldown: "One-time Free Claim",
+    color: "text-slate-300 border-slate-700 bg-slate-800/40",
+    badge: "Free Starter Kit",
+    money: "Starter Economy",
+    claimBlocks: "Free Claim Kit",
+    gear: [
+      "Full Chainmail Armor Set (Helmet, Chestplate, Leggings, Boots)",
+      "Iron Sword & Iron Axe",
+      "Iron Pickaxe",
+      "Starter Golden Shovel (Land Claiming)",
+    ],
+    resources: [
+      "16x Cooked Beef (Food supply)",
+      "Starter Inspection Stick",
+    ],
+    utility: [
+      "Immediate land protection access",
+      "Basic survival essentials",
+    ],
+  },
+  {
+    name: "VIP Kit",
+    cmd: "/kit vip",
+    rank: "VIP RANK",
+    cooldown: "1 Hour Cooldown",
+    color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+    badge: "Official Server NPC Kit",
+    money: "$5,000 In-Game Cash",
+    claimBlocks: "1,000 Bonus Claim Blocks",
+    gear: [
+      "Full Iron Armor Set (Max Enchantments)",
+      "Iron Sword (Sharpness V, Fire Aspect II, Unbreaking III, Mending)",
+      "Full Iron Tools (Pickaxe, Axe, Shovel)",
+    ],
+    resources: [
+      "6x Diamonds",
+      "16x Iron Ingots • 6x Gold Ingots",
+      "2x Golden Apples",
+      "32x Oak Logs • 8x Obsidian",
+    ],
+    utility: [
+      "Shield • Bow + 64 Arrows",
+      "2x Water Buckets • 1x Lava Bucket",
+      "16x Cobwebs",
+    ],
+  },
+  {
+    name: "MVP Kit",
+    cmd: "/kit mvp",
+    rank: "MVP RANK",
+    cooldown: "1 Hour Cooldown",
+    color: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10",
+    badge: "Official Server NPC Kit",
+    money: "$10,000 In-Game Cash",
+    claimBlocks: "2,500 Bonus Claim Blocks",
+    gear: [
+      "Full Netherite Armor Set (Max Enchantments)",
+      "Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
+      "Diamond Pickaxe (Max Efficiency & Fortune)",
+    ],
+    resources: [
+      "12x Diamonds",
+      "32x Iron Ingots • 16x Gold Ingots",
+      "4x Golden Apples",
+      "64x Oak Logs • 8x Obsidian",
+    ],
+    utility: [
+      "Shield • Bow + 64 Arrows",
+      "2x Water Buckets • 1x Lava Bucket",
+      "24x Cobwebs",
+    ],
+  },
+  {
+    name: "ELITE Kit",
+    cmd: "/kit elite",
+    rank: "ELITE RANK",
+    cooldown: "30 Days Cooldown",
+    color: "text-purple-400 border-purple-500/30 bg-purple-500/10",
+    badge: "Official Server NPC Kit",
+    money: "$15,000 In-Game Cash",
+    claimBlocks: "4,000 Bonus Claim Blocks",
+    gear: [
+      "Full Diamond Armor Set (Max Enchantments)",
+      "ELITE Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
+      "Full Diamond Tools Set (Pickaxe, Axe, Shovel)",
+    ],
+    resources: [
+      "16x Diamonds",
+      "32x Iron Ingots • 16x Gold Ingots",
+      "64x Golden Apples (Full Stack)",
+      "64x Oak Logs • 16x Obsidian",
+    ],
+    utility: [
+      "Shield • Bow + 64 Arrows",
+      "2x Water Buckets • 1x Lava Bucket",
+      "32x Cobwebs",
+    ],
+  },
+  {
+    name: "SUPREME Kit",
+    cmd: "/kit supreme",
+    rank: "SUPREME RANK",
+    cooldown: "1 Hour Cooldown",
+    color: "text-amber-500 border-amber-500/40 bg-amber-500/10",
+    badge: "Official Server NPC Kit",
+    money: "$25,000 In-Game Cash",
+    claimBlocks: "6,000 Bonus Claim Blocks",
+    gear: [
+      "Full Diamond Armor Set (Max Enchantments)",
+      "SUPREME Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
+      "Full Diamond Tools Set (Pickaxe, Axe, Shovel)",
+    ],
+    resources: [
+      "24x Diamonds",
+      "48x Iron Ingots • 24x Gold Ingots",
+      "64x Golden Apples (Full Stack)",
+      "64x Oak Logs • 24x Obsidian",
+    ],
+    utility: [
+      "Shield • Bow + 64 Arrows",
+      "2x Water Buckets • 1x Lava Bucket",
+      "48x Cobwebs",
+    ],
+  },
+  {
+    name: "OVERLORD God Kit",
+    cmd: "/kit overlord",
+    rank: "OVERLORD RANK",
+    cooldown: "30 Days Cooldown",
+    color: "text-yellow-400 border-yellow-500/40 bg-yellow-500/10",
+    badge: "Supreme Server God Kit",
+    money: "$40,000 In-Game Cash",
+    claimBlocks: "10,000 Bonus Claim Blocks",
+    gear: [
+      "Full Netherite Armor Set (God Max Enchantments)",
+      "OVERLORD Netherite Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
+      "Full Netherite Tools Set (Pickaxe, Axe, Shovel, Hoe)",
+    ],
+    resources: [
+      "32x Diamonds",
+      "64x Iron Ingots • 32x Gold Ingots",
+      "64x Golden Apples (Full Stack)",
+      "64x Oak Logs • 32x Obsidian",
+    ],
+    utility: [
+      "Shield • Bow + 64 Arrows",
+      "2x Water Buckets • 1x Lava Bucket",
+      "64x Cobwebs (Full Stack)",
+    ],
+  },
+];
+
+const CUSTOM_ENCHANTS_PREVIEW = [
   {
     name: "Lifesteal",
     tier: "LEGENDARY",
@@ -185,7 +348,7 @@ const JOBS = [
 ];
 
 export default function WikiPage() {
-  const [activeTab, setActiveTab] = useState<"claims" | "commands" | "enchants" | "jobs" | "faq">("claims");
+  const [activeTab, setActiveTab] = useState<"kits" | "claims" | "commands" | "enchants" | "jobs" | "faq">("kits");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
 
@@ -214,7 +377,7 @@ export default function WikiPage() {
           SERVER <span className="text-emerald-400">WIKI &amp; GUIDE</span>
         </h1>
         <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-          The complete player manual for Harsh Unlimited Survival SMP. Master land claiming, auction house trading, custom enchantments, in-game jobs, and all player commands.
+          The complete player manual for Harsh Unlimited Survival SMP. Master server kits, land claiming, auction house trading, in-game jobs, and player commands.
         </p>
 
         {/* Quick Search */}
@@ -230,7 +393,7 @@ export default function WikiPage() {
                   setActiveTab("commands");
                 }
               }}
-              placeholder="Search commands, land claims, enchantments..."
+              placeholder="Search commands, kits, land claims..."
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-xl shadow-black/40"
             />
           </div>
@@ -240,6 +403,18 @@ export default function WikiPage() {
       {/* Navigation Tabs */}
       <div className="flex items-center justify-center">
         <div className="inline-flex flex-wrap items-center justify-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
+          <button
+            onClick={() => setActiveTab("kits")}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
+              activeTab === "kits"
+                ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+            }`}
+          >
+            <Swords className="w-4 h-4" />
+            <span>Server Kits (NPC)</span>
+          </button>
+
           <button
             onClick={() => setActiveTab("claims")}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
@@ -266,7 +441,7 @@ export default function WikiPage() {
 
           <button
             onClick={() => setActiveTab("enchants")}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "enchants"
                 ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
                 : "text-slate-400 hover:text-white hover:bg-slate-800/60"
@@ -274,6 +449,9 @@ export default function WikiPage() {
           >
             <Sparkles className="w-4 h-4" />
             <span>Custom Enchants</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded font-black tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase">
+              SOON
+            </span>
           </button>
 
           <button
@@ -301,6 +479,136 @@ export default function WikiPage() {
           </button>
         </div>
       </div>
+
+      {/* TAB CONTENT 0: SERVER KITS (OFFICIAL SERVER NPC) */}
+      {activeTab === "kits" && (
+        <div className="space-y-8 animate-in fade-in duration-200">
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <Swords className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white">Official Server Kits &amp; NPC Roster</h2>
+                  <p className="text-xs sm:text-sm text-slate-400">
+                    Exact kit rewards synchronized with our in-game spawn NPCs, DeluxeMenus, and PlayerKits2.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-xl border border-emerald-500/20 w-fit">
+                <Check className="w-3.5 h-3.5" />
+                <span>Live In-Game Verified</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SERVER_KITS.map((kit) => (
+              <div
+                key={kit.name}
+                className="glass-panel rounded-2xl p-6 border border-slate-800/80 hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-5 bg-slate-900/60"
+              >
+                <div className="space-y-4">
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-black text-white text-lg">{kit.name}</h3>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider font-mono ${kit.color}`}>
+                        {kit.rank}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-[11px] font-bold text-slate-400 flex items-center justify-end gap-1 font-mono">
+                        <Clock className="w-3 h-3 text-slate-500" />
+                        <span>{kit.cooldown}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Highlights (Cash & Claims) */}
+                  <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 text-center">
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Economy</div>
+                      <div className="text-xs font-mono font-bold text-emerald-400">{kit.money}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Protection</div>
+                      <div className="text-xs font-mono font-bold text-amber-400">{kit.claimBlocks}</div>
+                    </div>
+                  </div>
+
+                  {/* Gear List */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Swords className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Combat &amp; Armor Gear</span>
+                    </div>
+                    <ul className="space-y-1 text-xs text-slate-300">
+                      {kit.gear.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-emerald-400 leading-none mt-1">▸</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Resources List */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Resources &amp; Minerals</span>
+                    </div>
+                    <ul className="space-y-1 text-xs text-slate-300">
+                      {kit.resources.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-cyan-400 leading-none mt-1">▸</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Utility List */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5 text-purple-400" />
+                      <span>Utility &amp; Defense</span>
+                    </div>
+                    <ul className="space-y-1 text-xs text-slate-300">
+                      {kit.utility.map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <span className="text-purple-400 leading-none mt-1">▸</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Claim Command Button */}
+                <div className="pt-2 border-t border-slate-800/80">
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800">
+                    <code className="text-xs font-mono font-bold text-emerald-400 pl-1">{kit.cmd}</code>
+                    <button
+                      onClick={() => copyToClipboard(kit.cmd)}
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      {copiedCmd === kit.cmd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedCmd === kit.cmd ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* TAB CONTENT 1: LAND CLAIMING */}
       {activeTab === "claims" && (
@@ -502,27 +810,41 @@ export default function WikiPage() {
         </div>
       )}
 
-      {/* TAB CONTENT 3: CUSTOM ENCHANTS */}
+      {/* TAB CONTENT 3: CUSTOM ENCHANTS (COMING SOON) */}
       {activeTab === "enchants" && (
         <div className="space-y-6 animate-in fade-in duration-200">
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                <Sparkles className="w-6 h-6" />
+          {/* Prominent Coming Soon Banner */}
+          <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-slate-900 to-amber-950/20 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black uppercase tracking-wider">
+                <Clock className="w-3.5 h-3.5 animate-spin" />
+                <span>Feature Under Active Development</span>
               </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-white">Custom Enchantments</h2>
-                <p className="text-xs sm:text-sm text-slate-400">
-                  Over 100+ custom enchants accessible in-game via Enchanter NPC, Tinkerer, and Dungeon Boss drops.
-                </p>
-              </div>
+              <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/20 px-3 py-1 rounded-xl border border-amber-500/30">
+                COMING SOON
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
-              {CUSTOM_ENCHANTS.map((enc) => (
+            <h2 className="text-2xl sm:text-3xl font-black text-white">Custom Enchantments &amp; Spellbinding</h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl leading-relaxed">
+              Our administration is currently fine-tuning and play-testing over 100+ planned custom enchantments for weapons, armor, and tools. Below is an official preview of the upcoming enchantment tiers that will release in a future network update!
+            </p>
+          </div>
+
+          <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-lg font-black text-white">Upcoming Enchantments Preview</h3>
+              </div>
+              <span className="text-[11px] font-mono text-slate-400">Subject to gameplay balance</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+              {CUSTOM_ENCHANTS_PREVIEW.map((enc) => (
                 <div
                   key={enc.name}
-                  className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3 bg-slate-900/60 hover:border-purple-500/30 transition-all"
+                  className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3 bg-slate-900/60 relative overflow-hidden"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white text-base">{enc.name}</span>
@@ -535,6 +857,13 @@ export default function WikiPage() {
                     <span>Applies to: {enc.target}</span>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">{enc.desc}</p>
+
+                  <div className="pt-2 flex items-center justify-between text-[10px] font-mono border-t border-slate-800/80">
+                    <span className="text-amber-400/80 font-bold">Status:</span>
+                    <span className="text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold">
+                      Coming Soon
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -583,7 +912,7 @@ export default function WikiPage() {
                 <span>Player Auction House (/ah)</span>
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Sell rare enchanted books, Netherite gear, or custom heads to the entire network:
+                Sell rare gear, tools, or custom heads to the entire network:
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
                 <span className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-emerald-400">
@@ -658,10 +987,10 @@ export default function WikiPage() {
           </NextLink>
 
           <NextLink
-            href="/leaderboards"
+            href="/store"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs uppercase tracking-wider transition-all"
           >
-            <span>View Leaderboards</span>
+            <span>Browse Rank Kits &amp; Store</span>
           </NextLink>
         </div>
       </div>
