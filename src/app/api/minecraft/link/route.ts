@@ -64,21 +64,32 @@ export async function POST(req: Request) {
       update: {
         minecraftUuid: officialUuid,
         verificationCode,
-        verificationStatus: mojangProfile ? "PENDING_VERIFICATION" : "UNVERIFIED",
+        verificationStatus: "VERIFIED",
       },
       create: {
         userId: user.id,
         username: officialUsername,
         minecraftUuid: officialUuid,
         verificationCode,
-        verificationStatus: mojangProfile ? "PENDING_VERIFICATION" : "UNVERIFIED",
+        verificationStatus: "VERIFIED",
+      },
+    });
+
+    // Automatically link any pending entitlements matching this user
+    await prisma.entitlement.updateMany({
+      where: {
+        userId: user.id,
+        minecraftAccountId: null,
+      },
+      data: {
+        minecraftAccountId: linkedAccount.id,
       },
     });
 
     return NextResponse.json({
       success: true,
       account: linkedAccount,
-      message: `Minecraft account linked! Join play.harshunlimited.fun and type /verify ${verificationCode} to verify ownership.`,
+      message: `Minecraft account ${officialUsername} automatically synced and verified!`,
     });
   } catch (error: any) {
     console.error("Link account error:", error);

@@ -231,13 +231,14 @@ export default function CustomerDashboard() {
                   <div>
                     <h4 className="font-bold text-sm text-white font-mono">{acc.username}</h4>
                     <span
-                      className={`text-[10px] font-bold ${
+                      className={`inline-flex items-center gap-1 text-[10px] font-bold ${
                         acc.verificationStatus === "VERIFIED"
                           ? "text-emerald-400"
                           : "text-amber-400"
                       }`}
                     >
-                      {acc.verificationStatus}
+                      {acc.verificationStatus === "VERIFIED" && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+                      <span>{acc.verificationStatus === "VERIFIED" ? "SYNCED & VERIFIED" : acc.verificationStatus}</span>
                     </span>
                   </div>
                 </div>
