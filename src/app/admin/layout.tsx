@@ -13,6 +13,7 @@ import {
   Server,
   Gamepad2,
   Bell,
+  Trophy,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -31,6 +32,7 @@ export default async function AdminLayout({
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
     { href: "/admin/announcements", label: "Announcements", icon: Bell },
+    { href: "/admin/leaderboards", label: "Leaderboards", icon: Trophy },
     { href: "/admin/products", label: "Products & Ranks", icon: ShoppingBag },
     { href: "/admin/staff", label: "Staff Team", icon: Shield },
     { href: "/admin/orders", label: "Orders & Delivery", icon: ShoppingCart },

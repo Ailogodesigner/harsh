@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -390,5 +391,20 @@ model StaffMember {
   @@index([active])
   @@index([sortOrder])
 }
+
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  category  String   // ECONOMY, PVP, COINS, VOTES
+  name      String   // Minecraft IGN
+  score     String   // e.g. "$40,250,949", "482 Kills"
+  rawScore  Float    @default(0)
+  subtext   String?  // e.g. "Rank: OWNER", "₹500 Store Voucher"
+  rank      Int      @default(1)
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([rank])
+}
+
 
 

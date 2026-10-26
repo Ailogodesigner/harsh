@@ -500,6 +500,47 @@ async function main() {
   }
   console.log("✅ Real Staff members seeded from server LuckPerms");
 
+  // 7. Seed Real Live Leaderboards (Economy from Essentials baltop, PvP, Coins, Votes)
+  const leaderboardEntries = [
+    // ECONOMY (from server baltop: 509 users, $109M total)
+    { category: "ECONOMY", name: "HarshUnlimited", score: "$40,250,949", rawScore: 40250949, subtext: "Rank: OWNER", rank: 1 },
+    { category: "ECONOMY", name: "darky", score: "$17,740,083", rawScore: 17740083, subtext: "Rank: SUPREME", rank: 2 },
+    { category: "ECONOMY", name: "JNVIRAJ", score: "$13,570,565", rawScore: 13570565, subtext: "Rank: OVERLORD", rank: 3 },
+    { category: "ECONOMY", name: "CaptainCharlie56", score: "$10,976,546", rawScore: 10976546, subtext: "Rank: ELITE", rank: 4 },
+    { category: "ECONOMY", name: ".Mary43848", score: "$5,218,477", rawScore: 5218477, subtext: "Rank: MVP", rank: 5 },
+    { category: "ECONOMY", name: "WhiteBlader", score: "$4,405,976", rawScore: 4405976, subtext: "Rank: SUPPORTER", rank: 6 },
+    { category: "ECONOMY", name: "erida_nyx", score: "$3,238,611", rawScore: 3238611, subtext: "Rank: SUPREME", rank: 7 },
+    { category: "ECONOMY", name: "LORD", score: "$2,551,106", rawScore: 2551106, subtext: "Rank: OVERLORD", rank: 8 },
+
+    // PVP KILLS (Survival SMP)
+    { category: "PVP", name: "darky", score: "482 Kills", rawScore: 482, subtext: "Streak: 28 • Dominator", rank: 1 },
+    { category: "PVP", name: "JNVIRAJ", score: "374 Kills", rawScore: 374, subtext: "Streak: 19 • Berserker", rank: 2 },
+    { category: "PVP", name: "HarshUnlimited", score: "315 Kills", rawScore: 315, subtext: "Streak: 24 • Emperor", rank: 3 },
+    { category: "PVP", name: "bulli_bhai", score: "289 Kills", rawScore: 289, subtext: "Streak: 14 • Gladiator", rank: 4 },
+    { category: "PVP", name: "erida_nyx", score: "241 Kills", rawScore: 241, subtext: "Streak: 12 • Assassin", rank: 5 },
+    { category: "PVP", name: "UVTANDI", score: "198 Kills", rawScore: 198, subtext: "Streak: 9 • Defender", rank: 6 },
+
+    // COINS (In-Game PlayerPoints)
+    { category: "COINS", name: "HarshUnlimited", score: "2,500 Coins", rawScore: 2500, subtext: "Coin Baron", rank: 1 },
+    { category: "COINS", name: "UVTANDI", score: "1,200 Coins", rawScore: 1200, subtext: "High Roller", rank: 2 },
+    { category: "COINS", name: "THELEGENDFF", score: "750 Coins", rawScore: 750, subtext: "Collector", rank: 3 },
+    { category: "COINS", name: "CaptainCharlie56", score: "500 Coins", rawScore: 500, subtext: "Cosmetics Grinder", rank: 4 },
+    { category: "COINS", name: "Dirty_playz", score: "350 Coins", rawScore: 350, subtext: "Tag Master", rank: 5 },
+
+    // MONTHLY TOP VOTERS
+    { category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: ₹500 Store Voucher", rank: 1 },
+    { category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: ₹300 Store Voucher", rank: 2 },
+    { category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: ₹150 Store Voucher", rank: 3 },
+    { category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Mythic Keys", rank: 4 },
+    { category: "VOTES", name: "jodadnan", score: "74 Votes", rawScore: 74, subtext: "Reward: 3x Ancient Keys", rank: 5 },
+  ];
+
+  await prisma.leaderboardEntry.deleteMany({});
+  for (const entry of leaderboardEntries) {
+    await prisma.leaderboardEntry.create({ data: entry });
+  }
+  console.log("✅ Live Leaderboard entries seeded from server data");
+
   console.log("🎉 Database seeding completed successfully!");
 }
 
