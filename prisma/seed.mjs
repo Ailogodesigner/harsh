@@ -285,6 +285,126 @@ async function main() {
         commands: ["kit give god {username}"],
       }),
     },
+    {
+      name: "500 Server Coins (Pouch)",
+      slug: "coins-500",
+      description: "Starter coin pouch for in-game /coinshop tags, chat colors, and particle trails.",
+      category: "COINS",
+      price: 4900, // ₹49.00
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "emerald",
+      sortOrder: 10,
+      perks: JSON.stringify([
+        "500 In-Game Server Coins",
+        "Spend immediately via /coinshop in-game",
+        "Unlock custom chat colors & basic cosmetics",
+        "Permanent on your linked player account",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "p give {username} 500",
+          "broadcast &e[Store] &a{username} &7has purchased &e500 Coins&7!",
+        ],
+      }),
+    },
+    {
+      name: "1,200 Server Coins (Sack)",
+      slug: "coins-1200",
+      description: "Popular bundle with +20% bonus coins. Spend in /coinshop for crate keys and custom player tags.",
+      category: "COINS",
+      price: 9900, // ₹99.00
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "cyan",
+      sortOrder: 11,
+      perks: JSON.stringify([
+        "1,200 In-Game Server Coins (+20% Bonus)",
+        "Unlock premium /coinshop tags & glow colors",
+        "Redeemable for Rare Crate Keys in-game",
+        "Permanent currency addition",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "p give {username} 1200",
+          "broadcast &e[Store] &a{username} &7has purchased &e1,200 Coins&7!",
+        ],
+      }),
+    },
+    {
+      name: "3,000 Server Coins (Chest)",
+      slug: "coins-3000",
+      description: "Heavy coin stack with +25% bonus coins. Unlock rare tags, particle auras, and crate keys.",
+      category: "COINS",
+      price: 24900, // ₹249.00
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "purple",
+      sortOrder: 12,
+      perks: JSON.stringify([
+        "3,000 In-Game Server Coins (+25% Bonus)",
+        "Massive purchasing power in /coinshop",
+        "Unlock exclusive emotes, skins, and crate keys",
+        "Instantly delivered to your character",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "p give {username} 3000",
+          "broadcast &e[Store] &a{username} &7has purchased &e3,000 Coins&7!",
+        ],
+      }),
+    },
+    {
+      name: "7,500 Server Coins (Vault)",
+      slug: "coins-7500",
+      description: "Best Value bundle with +50% bonus coins! Max out your cosmetics and /coinshop unlocking.",
+      category: "COINS",
+      price: 49900, // ₹499.00
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: true,
+      badgeColor: "gold",
+      sortOrder: 13,
+      perks: JSON.stringify([
+        "7,500 In-Game Server Coins (+50% Bonus!)",
+        "Best value coin bundle on the network",
+        "Unlock high-tier /coinshop tags, emotes & crates",
+        "Exclusive Gold Coin Purchaser Discord badge",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "p give {username} 7500",
+          "broadcast &6★ [Store] &e{username} &7has unlocked the &67,500 Coins Vault&7! ★",
+        ],
+      }),
+    },
+    {
+      name: "16,000 Server Coins (Dragon's Hoard)",
+      slug: "coins-16000",
+      description: "The ultimate coin hoard with +60% bonus coins. Unlock the entire /coinshop catalog effortlessly.",
+      category: "COINS",
+      price: 99900, // ₹999.00
+      currency: "INR",
+      duration: "ONE_TIME",
+      featured: false,
+      badgeColor: "purple",
+      sortOrder: 14,
+      perks: JSON.stringify([
+        "16,000 In-Game Server Coins (+60% Bonus!)",
+        "Supreme coin purchasing power in /coinshop",
+        "Unlock every chat color, custom tag, and key bundle",
+        "Server-wide announcement upon purchase",
+      ]),
+      deliveryConfig: JSON.stringify({
+        commands: [
+          "p give {username} 16000",
+          "broadcast &d★ [Store] &e{username} &7has acquired the legendary &d16,000 Dragon's Hoard&7! ★",
+        ],
+      }),
+    },
   ];
 
   for (const p of products) {
@@ -294,18 +414,18 @@ async function main() {
       create: p,
     });
   }
-  console.log("✅ Products seeded");
+  console.log("✅ Products seeded (including Coin Shop packages)");
 
   // 5. Seed Announcements
   const announcements = [
     {
-      title: "Harsh Unlimited Season 4 Launch",
-      content: "Welcome to Season 4! Explore new custom enchantments, revampled Lifesteal SMP, and brand new BoxPvP tiers.",
+      title: "Harsh Unlimited Survival SMP Online & Season Drop",
+      content: "Survival SMP is officially LIVE! Join at paid58.cavrixcloud.fun:25565 or play.harshunlimited.fun. Explore /coinshop and new rewards!",
       tag: "UPDATE",
     },
     {
       title: "Weekend Store Discount - 20% Off",
-      content: "Use coupon code HARSH at checkout for an instant 20% discount on all ranks this weekend.",
+      content: "Use coupon code HARSH at checkout for an instant 20% discount on all ranks and coin bundles this weekend.",
       tag: "SALE",
     },
   ];
@@ -317,6 +437,68 @@ async function main() {
     }
   }
   console.log("✅ Announcements seeded");
+
+  // 6. Seed Real Server Staff Members (matching LuckPerms)
+  const staffMembers = [
+    {
+      name: "HarshUnlimited",
+      displayName: "Harsh",
+      role: "Network Director & Founder",
+      tag: "OWNER",
+      category: "LEADERSHIP",
+      color: "rose",
+      sortOrder: 1,
+    },
+    {
+      name: "UVTANDI",
+      displayName: "UV Tandi",
+      role: "Network Operations & Community Manager",
+      tag: "MANAGER",
+      category: "LEADERSHIP",
+      color: "amber",
+      sortOrder: 2,
+    },
+    {
+      name: "akhilplayzyt",
+      displayName: "Akhil",
+      role: "Lead Systems Architect & Developer",
+      tag: "LEAD DEV",
+      category: "DEVELOPMENT",
+      color: "cyan",
+      sortOrder: 3,
+    },
+    {
+      name: "kairo04_",
+      displayName: "Kairo",
+      role: "Server Administrator & Technical Ops",
+      tag: "ADMIN",
+      category: "MANAGEMENT",
+      color: "purple",
+      sortOrder: 4,
+    },
+    {
+      name: "nxt_mohit",
+      displayName: "Mohit",
+      role: "Senior Survival SMP Moderator",
+      tag: "MOD",
+      category: "MODERATION",
+      color: "emerald",
+      sortOrder: 5,
+    },
+  ];
+
+  for (const s of staffMembers) {
+    const existing = await prisma.staffMember.findFirst({ where: { name: s.name } });
+    if (existing) {
+      await prisma.staffMember.update({
+        where: { id: existing.id },
+        data: s,
+      });
+    } else {
+      await prisma.staffMember.create({ data: s });
+    }
+  }
+  console.log("✅ Real Staff members seeded from server LuckPerms");
 
   console.log("🎉 Database seeding completed successfully!");
 }

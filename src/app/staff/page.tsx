@@ -1,26 +1,168 @@
-import { Shield, Code, HeartHandshake, UserCheck, MessageSquare } from "lucide-react";
+import prisma from "@/lib/prisma";
+import { getMinecraftServerStatus } from "@/lib/minecraft/ping";
+import { Shield, Code, HeartHandshake, UserCheck, Sparkles, CheckCircle2 } from "lucide-react";
+import NextLink from "next/link";
 
 export const metadata = {
   title: "Staff Team | Harsh Unlimited Minecraft Network",
-  description: "Meet the administration, development, and moderation team keeping Harsh Unlimited safe and active.",
+  description: "Meet the administration, development, and moderation team keeping Harsh Unlimited safe, active, and cheat-free.",
 };
 
-export default function StaffPage() {
-  const leadership = [
-    { name: "Harsh", role: "Owner & Network Director", tag: "OWNER", color: "text-rose-400 bg-rose-500/10 border-rose-500/20" },
-    { name: "Aditya", role: "Lead Systems Architect & Tech", tag: "LEAD DEV", color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20" },
-  ];
+const DEFAULT_STAFF = [
+  {
+    id: "1",
+    name: "HarshUnlimited",
+    displayName: "Harsh",
+    role: "Network Director & Founder",
+    tag: "OWNER",
+    category: "LEADERSHIP",
+    color: "rose",
+    sortOrder: 1,
+  },
+  {
+    id: "2",
+    name: "UVTANDI",
+    displayName: "UV Tandi",
+    role: "Network Operations & Community Manager",
+    tag: "MANAGER",
+    category: "LEADERSHIP",
+    color: "amber",
+    sortOrder: 2,
+  },
+  {
+    id: "3",
+    name: "akhilplayzyt",
+    displayName: "Akhil",
+    role: "Lead Systems Architect & Developer",
+    tag: "LEAD DEV",
+    category: "DEVELOPMENT",
+    color: "cyan",
+    sortOrder: 3,
+  },
+  {
+    id: "4",
+    name: "kairo04_",
+    displayName: "Kairo",
+    role: "Server Administrator & Technical Ops",
+    tag: "ADMIN",
+    category: "MANAGEMENT",
+    color: "purple",
+    sortOrder: 4,
+  },
+  {
+    id: "5",
+    name: "nxt_mohit",
+    displayName: "Mohit",
+    role: "Senior Survival SMP Moderator",
+    tag: "MOD",
+    category: "MODERATION",
+    color: "emerald",
+    sortOrder: 5,
+  },
+];
 
-  const administration = [
-    { name: "NexusAdmin", role: "Server Operations & Billing", tag: "ADMIN", color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
-    { name: "ShadowMod", role: "Head of Moderation", tag: "HEAD MOD", color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
-  ];
+const COLOR_MAP: Record<string, string> = {
+  rose: "text-rose-400 bg-rose-500/10 border-rose-500/25",
+  amber: "text-amber-400 bg-amber-500/10 border-amber-500/25",
+  cyan: "text-cyan-400 bg-cyan-500/10 border-cyan-500/25",
+  purple: "text-purple-400 bg-purple-500/10 border-purple-500/25",
+  emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+  blue: "text-blue-400 bg-blue-500/10 border-blue-500/25",
+};
 
-  const moderators = [
-    { name: "FrostyGuard", role: "Senior Moderator (Lifesteal)", tag: "MOD", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-    { name: "IronShield", role: "Senior Moderator (Survival)", tag: "MOD", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-    { name: "BlazeHelper", role: "Community Helper & Support", tag: "HELPER", color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
-  ];
+interface StaffItem {
+  id: string;
+  name: string;
+  displayName?: string | null;
+  role: string;
+  tag: string;
+  category: string;
+  color: string;
+  sortOrder: number;
+}
+
+export default async function StaffPage() {
+  let staffList: StaffItem[] = DEFAULT_STAFF;
+
+  try {
+    const dbStaff = await prisma.staffMember.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+    if (dbStaff && dbStaff.length > 0) {
+      staffList = dbStaff;
+    }
+  } catch {
+    // Graceful fallback to verified staff
+  }
+
+  // Fetch live server players to detect who is currently playing in-game!
+  let onlinePlayers: string[] = [];
+  try {
+    const status = await getMinecraftServerStatus();
+    if (status.online && status.players?.list) {
+      onlinePlayers = status.players.list.map((p) => p.toLowerCase());
+    }
+  } catch {
+    // Ignore ping error
+  }
+
+  const leadership = staffList.filter((s) => s.category === "LEADERSHIP");
+  const development = staffList.filter((s) => s.category === "DEVELOPMENT");
+  const management = staffList.filter((s) => s.category === "MANAGEMENT");
+  const moderation = staffList.filter((s) => s.category === "MODERATION" || (!["LEADERSHIP", "DEVELOPMENT", "MANAGEMENT"].includes(s.category)));
+
+  const renderStaffCard = (member: (typeof staffList)[0]) => {
+    const isOnlineNow = onlinePlayers.includes(member.name.toLowerCase());
+    const badgeStyle = COLOR_MAP[member.color] || COLOR_MAP.emerald;
+
+    return (
+      <div
+        key={member.id}
+        className="glass-panel rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700 transition-all flex items-center justify-between gap-4 group relative overflow-hidden"
+      >
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0">
+            <img
+              src={`https://mc-heads.net/avatar/${member.name}/54`}
+              alt={member.name}
+              className="w-13 h-13 rounded-2xl bg-slate-950 border border-slate-800 shadow-md object-cover"
+            />
+            {isOnlineNow && (
+              <span
+                className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center animate-pulse"
+                title="Playing online right now!"
+              />
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-white text-base">
+                {member.displayName || member.name}
+              </h3>
+              <span className={`text-[9px] font-black px-2 py-0.5 rounded-md border tracking-wider uppercase ${badgeStyle}`}>
+                {member.tag}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">{member.role}</p>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] text-slate-500 font-mono">IGN: {member.name}</span>
+              {isOnlineNow && (
+                <>
+                  <span className="text-[10px] text-slate-600">•</span>
+                  <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-ping" />
+                    In-Game Now
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
@@ -32,120 +174,77 @@ export default function StaffPage() {
           STAFF <span className="text-emerald-400">TEAM</span>
         </h1>
         <p className="text-sm text-slate-300 leading-relaxed">
-          The dedicated volunteers, developers, and administrators committed to maintaining a high-performance, cheat-free environment.
+          The dedicated administrators, developers, and moderators keeping Harsh Unlimited high-performance, welcoming, and cheat-free.
         </p>
       </div>
 
       <div className="space-y-10">
         {/* Leadership */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Shield className="w-5 h-5 text-rose-400" />
-            <span>Network Leadership</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {leadership.map((member) => (
-              <div
-                key={member.name}
-                className="glass-panel rounded-2xl p-6 border border-slate-800 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={`https://mc-heads.net/avatar/${member.name}/48`}
-                    alt={member.name}
-                    className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800"
-                  />
-                  <div>
-                    <h3 className="font-bold text-white text-base">{member.name}</h3>
-                    <p className="text-xs text-slate-400">{member.role}</p>
-                  </div>
-                </div>
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md border ${member.color}`}>
-                  {member.tag}
-                </span>
-              </div>
-            ))}
+        {leadership.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Shield className="w-5 h-5 text-rose-400" />
+              <span>Network Leadership & Founders</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {leadership.map(renderStaffCard)}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Administration */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Code className="w-5 h-5 text-amber-400" />
-            <span>Server Administration</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {administration.map((member) => (
-              <div
-                key={member.name}
-                className="glass-panel rounded-2xl p-6 border border-slate-800 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-4">
-                  <img
-                    src={`https://mc-heads.net/avatar/${member.name}/48`}
-                    alt={member.name}
-                    className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800"
-                  />
-                  <div>
-                    <h3 className="font-bold text-white text-base">{member.name}</h3>
-                    <p className="text-xs text-slate-400">{member.role}</p>
-                  </div>
-                </div>
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md border ${member.color}`}>
-                  {member.tag}
-                </span>
-              </div>
-            ))}
+        {/* Development & Tech */}
+        {development.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Code className="w-5 h-5 text-cyan-400" />
+              <span>Systems Architecture & Development</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {development.map(renderStaffCard)}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Server Management */}
+        {management.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-purple-400" />
+              <span>Operations & Infrastructure</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {management.map(renderStaffCard)}
+            </div>
+          </div>
+        )}
 
         {/* Moderation */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <HeartHandshake className="w-5 h-5 text-emerald-400" />
-            <span>Community Moderation Team</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {moderators.map((member) => (
-              <div
-                key={member.name}
-                className="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between space-y-4"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={`https://mc-heads.net/avatar/${member.name}/40`}
-                    alt={member.name}
-                    className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800"
-                  />
-                  <div>
-                    <h3 className="font-bold text-white text-sm">{member.name}</h3>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded border ${member.color}`}>
-                      {member.tag}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-[11px] text-slate-400">{member.role}</p>
-              </div>
-            ))}
+        {moderation.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <HeartHandshake className="w-5 h-5 text-emerald-400" />
+              <span>Community Moderation Team</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {moderation.map(renderStaffCard)}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Staff Application CTA */}
         <div className="glass-panel rounded-2xl p-8 border border-emerald-500/30 text-center space-y-3 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950">
           <h3 className="text-xl font-bold text-white">Interested in joining our staff team?</h3>
           <p className="text-xs text-slate-300 max-w-lg mx-auto">
-            We are always scouting for enthusiastic, mature, and dedicated community moderators and developers.
+            We are always scouting for enthusiastic, mature, and dedicated community moderators and builders.
           </p>
           <div className="pt-2">
-            <a
-              href="https://discord.gg/harshunlimited"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 transition-all"
+            <NextLink
+              href="/apply"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>APPLY VIA DISCORD</span>
-            </a>
+              <Sparkles className="w-4 h-4" />
+              <span>Submit Staff Application</span>
+            </NextLink>
           </div>
         </div>
       </div>

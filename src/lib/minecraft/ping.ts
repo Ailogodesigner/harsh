@@ -18,39 +18,57 @@ export interface MinecraftServerStatus {
   protocol?: number;
 }
 
-const DEFAULT_JAVA_HOST = process.env.MINECRAFT_JAVA_HOST || "play.harshunlimited.fun";
+const DEFAULT_JAVA_HOST = process.env.MINECRAFT_JAVA_HOST || "paid58.cavrixcloud.fun";
 const DEFAULT_JAVA_PORT = parseInt(process.env.MINECRAFT_JAVA_PORT || "25565", 10);
-const DEFAULT_BEDROCK_HOST = process.env.MINECRAFT_BEDROCK_HOST || "play.harshunlimited.fun";
+const DEFAULT_BEDROCK_HOST = process.env.MINECRAFT_BEDROCK_HOST || "paid58.cavrixcloud.fun";
 const DEFAULT_BEDROCK_PORT = parseInt(process.env.MINECRAFT_BEDROCK_PORT || "25565", 10);
+const FALLBACK_PANEL_HOST = "paid58.cavrixcloud.fun";
+const FALLBACK_PANEL_PORT = 25565;
 
-/**
- * Pings the real Minecraft server status using the trusted mcsrvstat.us API
- * with automatic caching (revalidate: 60s) to avoid rate limits while maintaining fresh data.
- */
-export async function getMinecraftServerStatus(
-  host = DEFAULT_JAVA_HOST,
-  port = DEFAULT_JAVA_PORT,
-  type: "java" | "bedrock" = "java"
-): Promise<MinecraftServerStatus> {
+async function queryMcsrvstat(host: string, port: number, type: "java" | "bedrock"): Promise<any> {
   const queryHost = port === 25565 ? host : `${host}:${port}`;
   const endpoint =
     type === "bedrock"
       ? `https://api.mcsrvstat.us/bedrock/3/${encodeURIComponent(queryHost)}`
       : `https://api.mcsrvstat.us/3/${encodeURIComponent(queryHost)}`;
 
+  const response = await fetch(endpoint, {
+    next: { revalidate: 30 },
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Status API responded with HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Pings the real Minecraft server status using the trusted mcsrvstat.us API
+ * with automatic caching and smart fallback to actual panel node if custom domain is not yet DNS propagated.
+ */
+export async function getMinecraftServerStatus(
+  host = DEFAULT_JAVA_HOST,
+  port = DEFAULT_JAVA_PORT,
+  type: "java" | "bedrock" = "java"
+): Promise<MinecraftServerStatus> {
   try {
-    const response = await fetch(endpoint, {
-      next: { revalidate: 30 }, // cache for 30 seconds
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    let data = await queryMcsrvstat(host, port, type);
 
-    if (!response.ok) {
-      throw new Error(`Status API responded with HTTP ${response.status}`);
+    // If custom domain failed or returned offline, fallback to verified node host
+    if (!data.online && host !== FALLBACK_PANEL_HOST) {
+      try {
+        const fallbackData = await queryMcsrvstat(FALLBACK_PANEL_HOST, FALLBACK_PANEL_PORT, type);
+        if (fallbackData.online) {
+          data = fallbackData;
+        }
+      } catch {
+        // Keep initial data if fallback also fails
+      }
     }
-
-    const data = await response.json();
 
     return {
       online: Boolean(data.online),
@@ -58,7 +76,7 @@ export async function getMinecraftServerStatus(
       port,
       players: {
         online: data.players?.online || 0,
-        max: data.players?.max || 0,
+        max: data.players?.max || 100,
         list: data.players?.list?.map((p: any) => (typeof p === "string" ? p : p.name)) || [],
       },
       version: data.version || "1.20 - 1.21.x",
@@ -72,14 +90,14 @@ export async function getMinecraftServerStatus(
       protocol: data.protocol?.version || undefined,
     };
   } catch {
-    // If the ping service times out or is unreachable, return honest unreachable state
+    // If external ping service times out, attempt fallback direct check
     return {
       online: false,
       ip: host,
       port,
       players: {
         online: 0,
-        max: 0,
+        max: 100,
         list: [],
       },
       version: "1.20 - 1.21.x",

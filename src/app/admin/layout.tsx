@@ -32,6 +32,7 @@ export default async function AdminLayout({
     { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
     { href: "/admin/announcements", label: "Announcements", icon: Bell },
     { href: "/admin/products", label: "Products & Ranks", icon: ShoppingBag },
+    { href: "/admin/staff", label: "Staff Team", icon: Shield },
     { href: "/admin/orders", label: "Orders & Delivery", icon: ShoppingCart },
     { href: "/admin/applications", label: "Staff Applications", icon: Users },
     { href: "/admin/audit", label: "Audit Logs", icon: FileText },

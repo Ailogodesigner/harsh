@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import CopyButton from "./CopyButton";
-import { Server, Smartphone, Monitor, Activity, Users, ShieldCheck, RefreshCw } from "lucide-react";
+import { Server, Smartphone, Monitor, Activity, Users, ShieldCheck, RefreshCw, Sparkles } from "lucide-react";
 
 interface StatusData {
   online: boolean;
@@ -11,6 +11,7 @@ interface StatusData {
   players: {
     online: number;
     max: number;
+    list?: string[];
   };
   version: string;
   motd: {
@@ -35,14 +36,15 @@ export default function ServerStatusCard() {
 
   useEffect(() => {
     fetchStatus();
-    const interval = setInterval(fetchStatus, 45000); // refresh every 45s
+    const interval = setInterval(fetchStatus, 30000); // refresh every 30s
     return () => clearInterval(interval);
   }, []);
 
   const isOnline = status?.online ?? true;
   const onlinePlayers = status?.players?.online ?? 0;
-  const maxPlayers = status?.players?.max ?? 500;
+  const maxPlayers = status?.players?.max ?? 100;
   const version = status?.version || "1.20 - 1.21.x";
+  const playerList = status?.players?.list || [];
 
   return (
     <div className="w-full max-w-4xl mx-auto glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-emerald-500/20">
@@ -56,7 +58,7 @@ export default function ServerStatusCard() {
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
             <Server className="w-5 h-5" />
           </div>
-          <div>
+          <div className="text-left">
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-white text-lg">Server Network Status</h3>
               <span
@@ -75,12 +77,12 @@ export default function ServerStatusCard() {
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Verified ping to <span className="text-emerald-400 font-mono">play.harshunlimited.fun</span>
+              Verified node: <span className="text-emerald-400 font-mono">paid58.cavrixcloud.fun:25565</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-1.5 rounded-xl border border-slate-800">
             <Users className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-bold text-white">
@@ -102,7 +104,7 @@ export default function ServerStatusCard() {
       </div>
 
       {/* Two Connection Cards: Java & Bedrock */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 relative z-10 text-left">
         {/* Java Card */}
         <div className="bg-slate-950/80 rounded-xl p-5 border border-slate-800/80 hover:border-emerald-500/30 transition-all group">
           <div className="flex items-center justify-between mb-3">
@@ -122,9 +124,9 @@ export default function ServerStatusCard() {
 
           <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-lg p-2.5 border border-slate-800">
             <span className="font-mono text-xs text-slate-200 select-all truncate">
-              play.harshunlimited.fun
+              paid58.cavrixcloud.fun:25565
             </span>
-            <CopyButton textToCopy="play.harshunlimited.fun" label="Copy" />
+            <CopyButton textToCopy="paid58.cavrixcloud.fun:25565" label="Copy" />
           </div>
         </div>
 
@@ -147,12 +149,39 @@ export default function ServerStatusCard() {
 
           <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-lg p-2.5 border border-slate-800">
             <span className="font-mono text-xs text-slate-200 select-all truncate">
-              play.harshunlimited.fun
+              paid58.cavrixcloud.fun
             </span>
-            <CopyButton textToCopy="play.harshunlimited.fun" label="Copy IP" />
+            <CopyButton textToCopy="paid58.cavrixcloud.fun" label="Copy IP" />
           </div>
         </div>
       </div>
+
+      {/* Online Members List Display */}
+      {playerList.length > 0 && (
+        <div className="mt-6 pt-5 border-t border-slate-800/80 text-left relative z-10">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Members Online Right Now ({playerList.length})
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {playerList.map((player) => (
+              <div
+                key={player}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition-colors shadow-sm"
+              >
+                <img
+                  src={`https://mc-heads.net/avatar/${player}/24`}
+                  alt={player}
+                  className="w-5 h-5 rounded-md bg-slate-950 border border-slate-700"
+                />
+                <span className="text-xs font-semibold text-slate-200">{player}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Network Perks Bar */}
       <div className="mt-6 pt-4 border-t border-slate-800/60 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 relative z-10">

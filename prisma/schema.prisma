@@ -373,3 +373,22 @@ model StaffApplication {
   @@index([createdAt])
 }
 
+model StaffMember {
+  id          String   @id @default(cuid())
+  name        String   // Minecraft IGN
+  displayName String?  // Optional custom display name
+  role        String   // e.g. "Network Director & Founder"
+  tag         String   // e.g. "OWNER", "MANAGER", "DEV", "ADMIN", "MOD"
+  category    String   @default("LEADERSHIP") // LEADERSHIP, MANAGEMENT, DEVELOPMENT, MODERATION
+  color       String   @default("rose") // rose, amber, cyan, purple, emerald, blue
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([active])
+  @@index([sortOrder])
+}
+
+

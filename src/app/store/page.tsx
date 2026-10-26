@@ -158,7 +158,7 @@ export default function StorePage() {
           </div>
           <div>
             <h4 className="font-bold text-xs text-white">Automated Delivery</h4>
-            <p className="text-[11px] text-slate-400">Ranks applied in-game within seconds</p>
+            <p className="text-[11px] text-slate-400">Ranks & Coins applied in-game within seconds</p>
           </div>
         </div>
 
@@ -171,6 +171,34 @@ export default function StorePage() {
             <p className="text-[11px] text-slate-400">Restricted backend execution via Pterodactyl</p>
           </div>
         </div>
+      </div>
+
+      {/* Coin Shop Quick Banner */}
+      <div className="glass-panel rounded-2xl p-5 border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg shadow-amber-500/5">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-md shadow-amber-500/20">
+            <Coins className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-xs font-bold text-white">Server Coin Shop is LIVE</h4>
+              <span className="text-[9px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider uppercase">
+                /COINSHOP
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              Buy Server Coins for instant in-game delivery via PlayerPoints. Spend on custom prefixes, chat colors, crate keys, tags &amp; emotes!
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setSelectedCategory("COINS")}
+          className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shrink-0 shadow-md shadow-amber-500/20 flex items-center gap-1.5"
+        >
+          <Coins className="w-3.5 h-3.5" />
+          <span>Browse Coins ({products.filter((p) => p.category === "COINS").length})</span>
+        </button>
       </div>
 
       {/* Search & Category Filter Controls */}
@@ -187,7 +215,9 @@ export default function StorePage() {
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
+                    ? cat.id === "COINS"
+                      ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
+                      : "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
                     : "bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800"
                 }`}
               >
@@ -236,26 +266,43 @@ export default function StorePage() {
               perksList = [];
             }
 
+            const isCoinProduct = product.category === "COINS";
+
             return (
               <div
                 key={product.id}
-                className={`glass-panel rounded-2xl p-7 flex flex-col justify-between border transition-all duration-200 relative hover:border-emerald-500/50 ${
-                  product.featured ? "emerald-border-glow" : "border-slate-800"
+                className={`glass-panel rounded-2xl p-7 flex flex-col justify-between border transition-all duration-200 relative ${
+                  isCoinProduct
+                    ? product.featured
+                      ? "border-amber-500/50 shadow-lg shadow-amber-500/10"
+                      : "border-amber-500/20 hover:border-amber-500/40"
+                    : product.featured
+                    ? "emerald-border-glow"
+                    : "border-slate-800 hover:border-emerald-500/50"
                 }`}
               >
                 {product.featured && (
-                  <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow-md shadow-emerald-500/20">
-                    FEATURED
+                  <div className={`absolute -top-3 right-6 px-3 py-0.5 rounded-full text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow-md ${
+                    isCoinProduct
+                      ? "bg-amber-400 shadow-amber-500/30"
+                      : "bg-emerald-500 shadow-emerald-500/20"
+                  }`}>
+                    BEST VALUE
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md">
-                      {product.category}
+                    <span className={`text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-md flex items-center gap-1.5 ${
+                      isCoinProduct
+                        ? "text-amber-300 bg-amber-500/15 border border-amber-500/30"
+                        : "text-emerald-400 bg-emerald-500/10"
+                    }`}>
+                      {isCoinProduct && <Coins className="w-3 h-3 text-amber-400" />}
+                      <span>{isCoinProduct ? "IN-GAME COINS" : product.category}</span>
                     </span>
                     <span className="text-xs text-slate-400 font-mono">
-                      {product.duration === "LIFETIME" ? "Permanent" : product.duration}
+                      {product.duration === "LIFETIME" ? "Permanent" : isCoinProduct ? "Instant /coinshop" : product.duration}
                     </span>
                   </div>
 
@@ -298,10 +345,14 @@ export default function StorePage() {
                     setCheckoutError(null);
                     setSetupRequiredNote(null);
                   }}
-                  className="w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className={`w-full py-3.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md ${
+                    isCoinProduct
+                      ? "bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-amber-500/20 hover:shadow-amber-500/40"
+                      : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                  }`}
                 >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>PURCHASE NOW</span>
+                  {isCoinProduct ? <Coins className="w-4 h-4" /> : <ShoppingBag className="w-4 h-4" />}
+                  <span>{isCoinProduct ? "ACQUIRE COINS" : "PURCHASE NOW"}</span>
                 </button>
               </div>
             );
