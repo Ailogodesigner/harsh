@@ -15,6 +15,7 @@ import {
   Bell,
   Trophy,
   MessageSquare,
+  LifeBuoy,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -31,6 +32,7 @@ export default async function AdminLayout({
 
   const adminNav = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/tickets", label: "Support Tickets", icon: LifeBuoy },
     { href: "/admin/chat", label: "Live Chat & Console", icon: MessageSquare },
     { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
     { href: "/admin/announcements", label: "Announcements", icon: Bell },

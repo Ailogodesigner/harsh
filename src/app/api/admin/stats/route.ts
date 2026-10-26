@@ -14,6 +14,7 @@ export async function GET() {
       totalUsers,
       recentOrders,
       recentLogs,
+      openTickets,
     ] = await Promise.all([
       prisma.order.count(),
       prisma.order.findMany({
@@ -38,6 +39,9 @@ export async function GET() {
         take: 8,
         orderBy: { timestamp: "desc" },
       }),
+      prisma.supportTicket.count({
+        where: { status: { in: ["OPEN", "WAITING_ADMIN"] } },
+      }),
     ]);
 
     const totalRevenueMinor = paidOrders.reduce((acc, curr) => acc + curr.totalAmount, 0);
@@ -50,6 +54,7 @@ export async function GET() {
         pendingOrders,
         failedDeliveries,
         totalUsers,
+        openTickets,
       },
       recentOrders,
       recentLogs,

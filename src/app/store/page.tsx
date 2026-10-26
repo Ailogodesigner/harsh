@@ -21,6 +21,7 @@ import {
   Package,
   Swords,
 } from "lucide-react";
+import MinecraftChestModal from "@/components/MinecraftChestModal";
 
 interface Product {
   id: string;
@@ -49,6 +50,7 @@ export default function StorePage() {
   const [checkingOut, setCheckingOut] = useState<boolean>(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [setupRequiredNote, setSetupRequiredNote] = useState<string | null>(null);
+  const [chestKitSlug, setChestKitSlug] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/products")
@@ -339,6 +341,16 @@ export default function StorePage() {
                   </div>
                 </div>
 
+                {(product.category === "KIT" || product.slug.startsWith("kit-")) && (
+                  <button
+                    type="button"
+                    onClick={() => setChestKitSlug(product.slug)}
+                    className="w-full py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-slate-900/90 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/60 transition-all flex items-center justify-center gap-2 mb-2.5 cursor-pointer shadow-sm hover:shadow-cyan-950/40"
+                  >
+                    <span>📦 View All Items in Chest</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   onClick={() => {
@@ -494,6 +506,28 @@ export default function StorePage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Minecraft Chest Inventory Modal */}
+      {chestKitSlug && (
+        <MinecraftChestModal
+          kitSlug={chestKitSlug}
+          onClose={() => setChestKitSlug(null)}
+          onPurchase={(kitId) => {
+            const p = products.find(
+              (prod) =>
+                prod.id === kitId ||
+                prod.slug === kitId ||
+                prod.slug === kitId.replace(/^kit-/, "") ||
+                `kit-${prod.slug}` === kitId
+            );
+            if (p) {
+              setSelectedProduct(p);
+              setCheckoutError(null);
+              setSetupRequiredNote(null);
+            }
+          }}
+        />
       )}
     </div>
   );

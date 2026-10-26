@@ -27,6 +27,7 @@ import {
   Heart,
   Flame,
 } from "lucide-react";
+import MinecraftChestModal from "@/components/MinecraftChestModal";
 
 interface CommandItem {
   cmd: string;
@@ -351,6 +352,7 @@ export default function WikiPage() {
   const [activeTab, setActiveTab] = useState<"kits" | "claims" | "commands" | "enchants" | "jobs" | "faq">("kits");
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
+  const [chestKitSlug, setChestKitSlug] = useState<string | null>(null);
 
   const copyToClipboard = (cmd: string) => {
     navigator.clipboard.writeText(cmd);
@@ -591,8 +593,16 @@ export default function WikiPage() {
                   </div>
                 </div>
 
-                {/* Claim Command Button */}
-                <div className="pt-2 border-t border-slate-800/80">
+                {/* Actions & Claim Command Button */}
+                <div className="pt-2 border-t border-slate-800/80 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setChestKitSlug(kit.cmd.replace("/kit ", ""))}
+                    className="w-full py-2.5 rounded-xl text-center text-xs font-bold uppercase tracking-wider bg-slate-900/90 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 hover:border-cyan-500/60 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-cyan-950/40"
+                  >
+                    <span>📦 View All Items in Chest</span>
+                  </button>
+
                   <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800">
                     <code className="text-xs font-mono font-bold text-emerald-400 pl-1">{kit.cmd}</code>
                     <button
@@ -994,6 +1004,17 @@ export default function WikiPage() {
           </NextLink>
         </div>
       </div>
+
+      {/* Minecraft Chest Inventory Modal */}
+      {chestKitSlug && (
+        <MinecraftChestModal
+          kitSlug={chestKitSlug}
+          onClose={() => setChestKitSlug(null)}
+          onPurchase={() => {
+            window.location.href = "/store";
+          }}
+        />
+      )}
     </div>
   );
 }
