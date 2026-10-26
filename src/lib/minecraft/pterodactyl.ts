@@ -56,22 +56,37 @@ export class PterodactylClient {
 
     const endpoint = `${this.baseUrl}/api/client/servers/${encodeURIComponent(this.serverId)}/command`;
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-        Accept: "Application/vnd.pterodactyl.v1+json",
-      },
-      body: JSON.stringify({ command: sanitized }),
-    });
+    let lastError = "";
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+            Accept: "Application/vnd.pterodactyl.v1+json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HarshUnlimited/1.0",
+          },
+          body: JSON.stringify({ command: sanitized }),
+        });
 
-    if (res.status === 204 || res.ok) {
-      return { success: true, responseText: "Command dispatched to Pterodactyl console" };
+        if (res.status === 204 || res.ok) {
+          return { success: true, responseText: "Command dispatched to Pterodactyl console" };
+        }
+
+        const errorBody = await res.text();
+        lastError = `Pterodactyl API error (${res.status}): ${errorBody}`;
+      } catch (err: any) {
+        lastError = err?.message || "Network error";
+      }
+
+      // Small backoff before retry if Cloudflare had edge glitch
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+      }
     }
 
-    const errorBody = await res.text();
-    throw new Error(`Pterodactyl API error (${res.status}): ${errorBody}`);
+    throw new Error(lastError);
   }
 }
 
