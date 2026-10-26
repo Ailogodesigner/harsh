@@ -19,6 +19,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { getPlayerRankInfo } from "@/lib/minecraft/ranks";
+
 interface LeaderboardEntry {
   id: string;
   category: "ECONOMY" | "PVP" | "COINS" | "VOTES" | string;
@@ -32,12 +34,12 @@ interface LeaderboardEntry {
 const DEFAULT_LEADERBOARDS: LeaderboardEntry[] = [
   // ECONOMY (from real server baltop: 509 users, $109M total)
   { id: "e1", category: "ECONOMY", name: "HarshUnlimited", score: "$40,250,949", rawScore: 40250949, subtext: "Rank: OWNER", rank: 1 },
-  { id: "e2", category: "ECONOMY", name: "darky", score: "$17,740,083", rawScore: 17740083, subtext: "Rank: SUPREME", rank: 2 },
-  { id: "e3", category: "ECONOMY", name: "JNVIRAJ", score: "$13,570,565", rawScore: 13570565, subtext: "Rank: OVERLORD", rank: 3 },
-  { id: "e4", category: "ECONOMY", name: "CaptainCharlie56", score: "$10,976,546", rawScore: 10976546, subtext: "Rank: ELITE", rank: 4 },
-  { id: "e5", category: "ECONOMY", name: ".Mary43848", score: "$5,218,477", rawScore: 5218477, subtext: "Rank: MVP", rank: 5 },
-  { id: "e6", category: "ECONOMY", name: "WhiteBlader", score: "$4,405,976", rawScore: 4405976, subtext: "Rank: SUPPORTER", rank: 6 },
-  { id: "e7", category: "ECONOMY", name: "erida_nyx", score: "$3,238,611", rawScore: 3238611, subtext: "Rank: SUPREME", rank: 7 },
+  { id: "e2", category: "ECONOMY", name: "darky", score: "$17,740,083", rawScore: 17740083, subtext: "Rank: ELITE", rank: 2 },
+  { id: "e3", category: "ECONOMY", name: "JNVIRAJ", score: "$13,570,565", rawScore: 13570565, subtext: "Rank: MVP", rank: 3 },
+  { id: "e4", category: "ECONOMY", name: "CaptainCharlie56", score: "$10,976,546", rawScore: 10976546, subtext: "Rank: OVERLORD", rank: 4 },
+  { id: "e5", category: "ECONOMY", name: ".Mary43848", score: "$5,218,477", rawScore: 5218477, subtext: "Rank: MEMBER", rank: 5 },
+  { id: "e6", category: "ECONOMY", name: "WhiteBlader", score: "$4,405,976", rawScore: 4405976, subtext: "Rank: MEMBER", rank: 6 },
+  { id: "e7", category: "ECONOMY", name: "erida_nyx", score: "$3,238,611", rawScore: 3238611, subtext: "Rank: MEMBER", rank: 7 },
   { id: "e8", category: "ECONOMY", name: "LORD", score: "$2,551,106", rawScore: 2551106, subtext: "Rank: OVERLORD", rank: 8 },
 
   // PVP KILLS
@@ -110,6 +112,16 @@ export default function LeaderboardsPage() {
   const remaining = filteredEntries.filter((e) => !top3.some((t) => t.id === e.id) || searchQuery.trim().length > 0);
 
   const isPlayerOnline = (name: string) => onlinePlayers.includes(name.toLowerCase());
+
+  const getPlayerDisplaySubtext = (player: LeaderboardEntry) => {
+    const rankInfo = getPlayerRankInfo(player.name);
+    if (!player.subtext || player.subtext.startsWith("Rank:")) {
+      return rankInfo.isDonorOrStaff
+        ? `Status: ${rankInfo.rank}`
+        : "Status: MEMBER";
+    }
+    return player.subtext;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
@@ -217,8 +229,13 @@ export default function LeaderboardsPage() {
               )}
             </div>
             <div>
-              <h3 className="font-black text-white text-lg">{top3[1].name}</h3>
-              <p className="text-xs text-slate-400">{top3[1].subtext}</p>
+              <div className="flex items-center justify-center gap-1.5">
+                <h3 className="font-black text-white text-lg">{top3[1].name}</h3>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPlayerRankInfo(top3[1].name).color} ${getPlayerRankInfo(top3[1].name).border}`}>
+                  {getPlayerRankInfo(top3[1].name).rank}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">{getPlayerDisplaySubtext(top3[1])}</p>
             </div>
             <div className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-400/30 font-mono font-black text-slate-200 text-sm">
               {top3[1].score}
@@ -245,8 +262,13 @@ export default function LeaderboardsPage() {
               )}
             </div>
             <div>
-              <h3 className="font-black text-white text-xl">{top3[0].name}</h3>
-              <p className="text-xs text-amber-300 font-semibold">{top3[0].subtext}</p>
+              <div className="flex items-center justify-center gap-1.5">
+                <h3 className="font-black text-white text-xl">{top3[0].name}</h3>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPlayerRankInfo(top3[0].name).color} ${getPlayerRankInfo(top3[0].name).border}`}>
+                  {getPlayerRankInfo(top3[0].name).rank}
+                </span>
+              </div>
+              <p className="text-xs text-amber-300 font-semibold mt-0.5">{getPlayerDisplaySubtext(top3[0])}</p>
             </div>
             <div className="px-5 py-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 font-mono font-black text-amber-300 text-lg shadow-inner">
               {top3[0].score}
@@ -273,8 +295,13 @@ export default function LeaderboardsPage() {
               )}
             </div>
             <div>
-              <h3 className="font-black text-white text-lg">{top3[2].name}</h3>
-              <p className="text-xs text-slate-400">{top3[2].subtext}</p>
+              <div className="flex items-center justify-center gap-1.5">
+                <h3 className="font-black text-white text-lg">{top3[2].name}</h3>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${getPlayerRankInfo(top3[2].name).color} ${getPlayerRankInfo(top3[2].name).border}`}>
+                  {getPlayerRankInfo(top3[2].name).rank}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">{getPlayerDisplaySubtext(top3[2])}</p>
             </div>
             <div className="px-4 py-2 rounded-xl bg-slate-900 border border-amber-700/40 font-mono font-black text-amber-400 text-sm">
               {top3[2].score}
@@ -338,13 +365,16 @@ export default function LeaderboardsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white text-sm">{player.name}</span>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${getPlayerRankInfo(player.name).color} ${getPlayerRankInfo(player.name).border}`}>
+                          {getPlayerRankInfo(player.name).rank}
+                        </span>
                         {isOnline && (
                           <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
                             ONLINE
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-slate-400">{player.subtext || "Active Player"}</span>
+                      <span className="text-xs text-slate-400">{getPlayerDisplaySubtext(player)}</span>
                     </div>
                   </div>
 

@@ -13,12 +13,12 @@ interface RecentPurchase {
 }
 
 const DEFAULT_PURCHASES: RecentPurchase[] = [
-  { id: "1", username: "HarshWarrior", productName: "TITAN Rank (Permanent)", price: "₹999", timeAgo: "4m ago" },
-  { id: "2", username: "ShadowSniper", productName: "MVP Rank (Permanent)", price: "₹499", timeAgo: "12m ago" },
-  { id: "3", username: "CraftMaster_99", productName: "5x Mythic Crates", price: "₹249", timeAgo: "23m ago" },
-  { id: "4", username: "LifestealKing", productName: "VIP Rank (Permanent)", price: "₹199", timeAgo: "38m ago" },
-  { id: "5", username: "DragonSlayer_IN", productName: "10x Revive Beacons", price: "₹149", timeAgo: "55m ago" },
-  { id: "6", username: "PhantomGamer", productName: "TITAN Rank (Permanent)", price: "₹999", timeAgo: "1h ago" },
+  { id: "1", username: "HarshUnlimited", productName: "OVERLORD Rank (30 Days)", price: "₹999", timeAgo: "4m ago" },
+  { id: "2", username: "UVTANDI", productName: "SUPREME Rank (30 Days)", price: "₹499", timeAgo: "14m ago" },
+  { id: "3", username: "JNVIRAJ", productName: "500 Server Coins (₹1/coin)", price: "₹500", timeAgo: "26m ago" },
+  { id: "4", username: "darky", productName: "ELITE Rank (30 Days)", price: "₹399", timeAgo: "38m ago" },
+  { id: "5", username: "Manav_123", productName: "MVP Rank (30 Days)", price: "₹299", timeAgo: "52m ago" },
+  { id: "6", username: "bulli_bhai", productName: "VIP Rank (30 Days)", price: "₹99", timeAgo: "1h ago" },
 ];
 
 export default function RecentPurchasesTicker() {

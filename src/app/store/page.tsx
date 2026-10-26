@@ -65,11 +65,12 @@ export default function StorePage() {
     { id: "ALL", label: "All Items", icon: ShoppingBag },
     { id: "RANK", label: "Ranks", icon: Crown },
     { id: "CRATE", label: "Crates & Keys", icon: Package },
-    { id: "KIT", label: "Kits & Bundles", icon: Zap },
     { id: "COINS", label: "Coins", icon: Coins },
   ];
 
   const filteredProducts = products.filter((p) => {
+    // Exclude kits and bundles completely
+    if (p.category === "KIT" || p.slug.startsWith("kit-")) return false;
     const matchesCategory = selectedCategory === "ALL" || p.category === selectedCategory;
     const matchesSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -136,7 +137,7 @@ export default function StorePage() {
           HARSH UNLIMITED <span className="text-emerald-400">STORE</span>
         </h1>
         <p className="text-sm text-slate-300 leading-relaxed">
-          Enhance your server experience with permanent ranks, exclusive cosmetics, and in-game bundles. Instant rank delivery powered by Cashfree Payments.
+          Enhance your server experience with verified server ranks, crate keys, and coins. Instant delivery powered by Cashfree Payments.
         </p>
       </div>
 
@@ -181,13 +182,13 @@ export default function StorePage() {
           </div>
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <h4 className="text-xs font-bold text-white">Server Coin Shop is LIVE</h4>
+              <h4 className="text-xs font-bold text-white">Server Coin Shop &bull; Rate: 1 Coin = ₹1</h4>
               <span className="text-[9px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider uppercase">
                 /COINSHOP
               </span>
             </div>
             <p className="text-[11px] text-slate-300">
-              Buy Server Coins for instant in-game delivery via PlayerPoints. Spend on custom prefixes, chat colors, crate keys, tags &amp; emotes!
+              Official server exchange rate: <strong className="text-amber-300 font-semibold">1 Coin = 1 Rs (₹1)</strong>. Instant automated in-game delivery via PlayerPoints. Spend on custom prefixes, chat colors, crate keys, tags &amp; emotes!
             </p>
           </div>
         </div>
@@ -302,7 +303,7 @@ export default function StorePage() {
                       <span>{isCoinProduct ? "IN-GAME COINS" : product.category}</span>
                     </span>
                     <span className="text-xs text-slate-400 font-mono">
-                      {product.duration === "LIFETIME" ? "Permanent" : isCoinProduct ? "Instant /coinshop" : product.duration}
+                      {product.duration === "30_DAYS" ? "30 Days" : product.duration === "LIFETIME" ? "Permanent" : isCoinProduct ? "Instant /coinshop" : product.duration}
                     </span>
                   </div>
 

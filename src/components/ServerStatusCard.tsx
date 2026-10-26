@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import CopyButton from "./CopyButton";
 import { Server, Smartphone, Monitor, Activity, Users, ShieldCheck, RefreshCw, Sparkles } from "lucide-react";
 
+import { getPlayerRankInfo } from "@/lib/minecraft/ranks";
+
 interface StatusData {
   online: boolean;
   ip: string;
@@ -47,7 +49,7 @@ export default function ServerStatusCard() {
   const playerList = status?.players?.list || [];
 
   return (
-    <div className="w-full max-w-4xl mx-auto glass-panel rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-emerald-500/20">
+    <div className="w-full max-w-5xl mx-auto glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-emerald-500/20 bg-gradient-to-b from-slate-950/95 via-slate-900/90 to-slate-950/95">
       {/* Background glow accent */}
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -55,14 +57,14 @@ export default function ServerStatusCard() {
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800/80 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
             <Server className="w-5 h-5" />
           </div>
           <div className="text-left">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-lg">Server Network Status</h3>
+              <h3 className="font-black text-white text-lg tracking-tight">Harsh Unlimited Status</h3>
               <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                   isOnline
                     ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                     : "bg-amber-500/15 text-amber-400 border border-amber-500/30"
@@ -77,16 +79,16 @@ export default function ServerStatusCard() {
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Verified node: <span className="text-emerald-400 font-mono">paid58.cavrixcloud.fun:25565</span>
+              Active Node: <span className="text-emerald-400 font-mono font-semibold">play.harshunlimited.fun</span>
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-slate-900/90 px-3.5 py-1.5 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2 bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-800">
             <Users className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-bold text-white">
-              {onlinePlayers} <span className="text-slate-400 font-normal">/ {maxPlayers} Online</span>
+              {onlinePlayers} <span className="text-slate-400 font-normal">/ {maxPlayers} Players</span>
             </span>
           </div>
 
@@ -94,7 +96,7 @@ export default function ServerStatusCard() {
             type="button"
             onClick={fetchStatus}
             disabled={loading}
-            className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 text-slate-400 hover:text-white transition-all cursor-pointer"
             title="Refresh Server Status"
             aria-label="Refresh Server Status"
           >
@@ -106,10 +108,10 @@ export default function ServerStatusCard() {
       {/* Two Connection Cards: Java & Bedrock */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 relative z-10 text-left">
         {/* Java Card */}
-        <div className="bg-slate-950/80 rounded-xl p-5 border border-slate-800/80 hover:border-emerald-500/30 transition-all group">
+        <div className="bg-slate-950/80 rounded-2xl p-5 border border-slate-800 hover:border-emerald-500/40 transition-all group shadow-md">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <Monitor className="w-4 h-4" />
               </div>
               <div>
@@ -117,24 +119,24 @@ export default function ServerStatusCard() {
                 <p className="text-[11px] text-slate-400">PC / Mac / Linux (1.20 - 1.21.x)</p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
               Port: 25565
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-lg p-2.5 border border-slate-800">
-            <span className="font-mono text-xs text-slate-200 select-all truncate">
-              paid58.cavrixcloud.fun:25565
+          <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+            <span className="font-mono text-xs text-slate-200 select-all truncate font-semibold">
+              play.harshunlimited.fun
             </span>
-            <CopyButton textToCopy="paid58.cavrixcloud.fun:25565" label="Copy" />
+            <CopyButton textToCopy="play.harshunlimited.fun" label="Copy IP" />
           </div>
         </div>
 
         {/* Bedrock Card */}
-        <div className="bg-slate-950/80 rounded-xl p-5 border border-slate-800/80 hover:border-emerald-500/30 transition-all group">
+        <div className="bg-slate-950/80 rounded-2xl p-5 border border-slate-800 hover:border-cyan-500/40 transition-all group shadow-md">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400">
+              <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                 <Smartphone className="w-4 h-4" />
               </div>
               <div>
@@ -142,46 +144,100 @@ export default function ServerStatusCard() {
                 <p className="text-[11px] text-slate-400">Mobile (MCPE) / Windows 10 / Console</p>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">
-              Port: 25565
+            <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+              Port: 19132
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-lg p-2.5 border border-slate-800">
-            <span className="font-mono text-xs text-slate-200 select-all truncate">
-              paid58.cavrixcloud.fun
+          <div className="flex items-center justify-between gap-2 bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+            <span className="font-mono text-xs text-slate-200 select-all truncate font-semibold">
+              play.harshunlimited.fun
             </span>
-            <CopyButton textToCopy="paid58.cavrixcloud.fun" label="Copy IP" />
+            <CopyButton textToCopy="play.harshunlimited.fun:19132" label="Copy IP & Port" />
           </div>
         </div>
       </div>
 
-      {/* Online Members List Display */}
-      {playerList.length > 0 && (
-        <div className="mt-6 pt-5 border-t border-slate-800/80 text-left relative z-10">
-          <div className="flex items-center gap-2 mb-3">
+      {/* Online Members List Display with Real In-Game Ranks */}
+      <div className="mt-6 pt-5 border-t border-slate-800/80 text-left relative z-10">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Members Online Right Now ({playerList.length})
+              {playerList.length > 0
+                ? `Online Players (${playerList.length})`
+                : "Active Community Network Roster"}
             </span>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {playerList.map((player) => (
-              <div
-                key={player}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition-colors shadow-sm"
-              >
-                <img
-                  src={`https://mc-heads.net/avatar/${player}/24`}
-                  alt={player}
-                  className="w-5 h-5 rounded-md bg-slate-950 border border-slate-700"
-                />
-                <span className="text-xs font-semibold text-slate-200">{player}</span>
-              </div>
-            ))}
-          </div>
+          <span className="text-[11px] text-slate-400 font-mono">
+            Verified LuckPerms Synchronization
+          </span>
         </div>
-      )}
+
+        {playerList.length > 0 ? (
+          <div className="flex items-center gap-2 flex-wrap">
+            {playerList.map((player) => {
+              const rankInfo = getPlayerRankInfo(player);
+              return (
+                <div
+                  key={player}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition-colors shadow-sm"
+                >
+                  <img
+                    src={`https://mc-heads.net/avatar/${player}/24`}
+                    alt={player}
+                    className="w-5 h-5 rounded-md bg-slate-950 border border-slate-700"
+                  />
+                  <span className="text-xs font-bold text-slate-200">{player}</span>
+                  <span
+                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${rankInfo.color} ${rankInfo.border}`}
+                  >
+                    {rankInfo.rank}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400">
+              No players currently in-game. Be the first to join at{" "}
+              <span className="text-emerald-400 font-mono font-semibold">play.harshunlimited.fun</span>!
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              {[
+                "HarshUnlimited",
+                "UVTANDI",
+                "CaptainCharlie56",
+                "darky",
+                "JNVIRAJ",
+                "bulli_bhai",
+                "erida_nyx",
+              ].map((name) => {
+                const rankInfo = getPlayerRankInfo(name);
+                return (
+                  <div
+                    key={name}
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800/80 shadow-sm"
+                  >
+                    <img
+                      src={`https://mc-heads.net/avatar/${name}/24`}
+                      alt={name}
+                      className="w-5 h-5 rounded-md bg-slate-950 border border-slate-700"
+                    />
+                    <span className="text-xs font-semibold text-slate-200">{name}</span>
+                    <span
+                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${rankInfo.color} ${rankInfo.border}`}
+                    >
+                      {rankInfo.rank}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Network Perks Bar */}
       <div className="mt-6 pt-4 border-t border-slate-800/60 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 relative z-10">

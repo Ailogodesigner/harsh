@@ -1,3 +1,9 @@
+import { getPlayerRankInfo, PlayerRankInfo } from "@/lib/minecraft/ranks";
+
+export interface DetailedPlayer extends PlayerRankInfo {
+  name: string;
+}
+
 export interface MinecraftServerStatus {
   online: boolean;
   ip: string;
@@ -6,6 +12,7 @@ export interface MinecraftServerStatus {
     online: number;
     max: number;
     list?: string[];
+    detailed?: DetailedPlayer[];
   };
   version: string;
   motd: {
@@ -70,6 +77,14 @@ export async function getMinecraftServerStatus(
       }
     }
 
+    const playerNames: string[] =
+      data.players?.list?.map((p: any) => (typeof p === "string" ? p : p.name)).filter(Boolean) || [];
+
+    const detailedPlayers: DetailedPlayer[] = playerNames.map((name) => ({
+      name,
+      ...getPlayerRankInfo(name),
+    }));
+
     return {
       online: Boolean(data.online),
       ip: host,
@@ -77,7 +92,8 @@ export async function getMinecraftServerStatus(
       players: {
         online: data.players?.online || 0,
         max: data.players?.max || 100,
-        list: data.players?.list?.map((p: any) => (typeof p === "string" ? p : p.name)) || [],
+        list: playerNames,
+        detailed: detailedPlayers,
       },
       version: data.version || "1.20 - 1.21.x",
       motd: {

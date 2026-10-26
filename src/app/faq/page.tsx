@@ -24,8 +24,8 @@ export default function FAQPage() {
           a: "Contact our staff team immediately via our Discord or open a Support Ticket on this website before claiming perks in-game. Please provide your order ID (HU-ORD-...) and Cashfree payment reference.",
         },
         {
-          q: "Are store purchases permanent?",
-          a: "Yes! All ranks (VIP, MVP, TITAN, IMMORTAL) are permanent lifetime upgrades that persist across map resets and season updates.",
+          q: "What ranks are available on the server?",
+          a: "Our network offers 5 tiered server ranks: VIP, MVP, ELITE, SUPREME, and OVERLORD. Each tier unlocks unique kits, extra player homes, custom prefixes, and cosmetic benefits.",
         },
       ],
     },
