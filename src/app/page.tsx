@@ -1,418 +1,465 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import NextLink from "next/link";
-import ServerStatusCard from "@/components/ServerStatusCard";
-import CobaltHero from "@/components/CobaltHero";
-import RecentPurchasesTicker from "@/components/RecentPurchasesTicker";
-import FeaturedAnnouncement from "@/components/FeaturedAnnouncement";
-import CopyButton from "@/components/CopyButton";
 import {
-  Sparkles,
-  Sword,
-  Shield,
-  Zap,
-  Users,
   Compass,
-  ArrowRight,
-  ChevronRight,
-  Flame,
-  CheckCircle2,
-  Crown,
   Heart,
+  Sword,
   Layers,
   ShoppingBag,
+  Trophy,
+  MapPin,
+  Vote,
+  Copy,
+  Check,
+  ArrowRight,
+  ExternalLink,
   MessageSquare,
+  Sparkles,
+  Server,
+  Users,
+  Activity,
+  CheckCircle2,
+  ChevronRight,
+  BookOpen,
 } from "lucide-react";
 
+interface StatusData {
+  online: boolean;
+  ip: string;
+  port: number;
+  players: {
+    online: number;
+    max: number;
+    list?: string[];
+  };
+  version?: string;
+}
+
+interface Announcement {
+  id: string;
+  title: string;
+  tag: string;
+}
+
 export default function HomePage() {
+  const [status, setStatus] = useState<StatusData | null>(null);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+  const [copiedJava, setCopiedJava] = useState(false);
+  const [copiedBedrock, setCopiedBedrock] = useState(false);
+
+  useEffect(() => {
+    // Live Server Status
+    fetch("/api/minecraft/status")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) setStatus(data);
+      })
+      .catch(() => {});
+
+    // Latest Announcement
+    fetch("/api/announcements")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.announcements && data.announcements.length > 0) {
+          setAnnouncement(data.announcements[0]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleCopyJava = async () => {
+    try {
+      await navigator.clipboard.writeText("play.harshunlimited.fun");
+      setCopiedJava(true);
+      setTimeout(() => setCopiedJava(false), 2200);
+    } catch {
+      setCopiedJava(true);
+      setTimeout(() => setCopiedJava(false), 2200);
+    }
+  };
+
+  const handleCopyBedrock = async () => {
+    try {
+      await navigator.clipboard.writeText("play.harshunlimited.fun:19132");
+      setCopiedBedrock(true);
+      setTimeout(() => setCopiedBedrock(false), 2200);
+    } catch {
+      setCopiedBedrock(true);
+      setTimeout(() => setCopiedBedrock(false), 2200);
+    }
+  };
+
+  const isOnline = status?.online ?? true;
+  const onlinePlayers = status?.players?.online ?? 0;
+  const playerList = status?.players?.list || [];
+
   const gameModes = [
     {
       title: "Survival SMP",
-      tag: "ACTIVE NOW",
-      tagColor: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-      statusText: "ONLINE (Active Now)",
+      status: "ONLINE NOW",
       isLive: true,
+      tag: "Season 4",
       icon: Compass,
-      iconColor: "text-emerald-400 bg-emerald-500/10",
-      description:
-        "Peaceful and community-driven survival with GriefPrevention land claims, player economy, chest shops, auction houses, and 100+ custom enchantments.",
-      features: ["Land Claim Protection", "Player Economy & Chest Shops", "Custom Enchantments", "Community Quests"],
+      description: "Land claims, player economy, chest shops, auction houses, and 100+ custom enchants.",
+      href: "/play",
     },
     {
       title: "Lifesteal SMP",
-      tag: "COMING SOON",
-      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-      statusText: "COMING SOON (Season 4)",
+      status: "COMING SOON",
       isLive: false,
+      tag: "Season 4",
       icon: Heart,
-      iconColor: "text-rose-400 bg-rose-500/10",
-      description:
-        "High-stakes PvP survival. Eliminate rival players to steal their hearts. Craft revive beacons to bring fallen teammates back.",
-      features: ["Heart Stealing on Kill", "Revive Beacons", "Custom PvP Arenas", "Anti-Combat Logging"],
+      description: "PvP heart stealing, revive beacons, anti-combat logging, and custom combat arenas.",
+      href: "/play",
     },
     {
       title: "BoxPvP",
-      tag: "COMING SOON",
-      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-      statusText: "COMING SOON",
+      status: "COMING SOON",
       isLive: false,
+      tag: "In Development",
       icon: Sword,
-      iconColor: "text-amber-400 bg-amber-500/10",
-      description:
-        "Mine tiers, upgrade overpowered armor, and engage in frantic arena brawls with instant respawns and daily tournament brackets.",
-      features: ["Tiered Mining Pits", "Instant Respawn Arenas", "Custom Shards & Crystals", "Daily Tournaments"],
+      description: "Tiered mining pits, upgraded armor tiers, instant respawns, and daily arena tournaments.",
+      href: "/play",
     },
     {
       title: "Custom Skyblock",
-      tag: "COMING SOON",
-      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-      statusText: "COMING SOON",
+      status: "COMING SOON",
       isLive: false,
+      tag: "In Development",
       icon: Layers,
-      iconColor: "text-cyan-400 bg-cyan-500/10",
-      description:
-        "Build a sky empire from scratch. Deploy automated resource minions, explore dangerous dungeon depths, and top the island wealth ranks.",
-      features: ["Automated Minions", "Island Level Upgrades", "Dungeon Boss Battles", "Co-op Island Teams"],
+      description: "Sky island empires, automated minions, dungeon boss raids, and co-op island rankings.",
+      href: "/play",
     },
   ];
 
-  const featuredRanks = [
+  const quickLinks = [
     {
-      name: "VIP Rank",
-      price: "₹199",
-      color: "border-emerald-500/30 hover:border-emerald-500",
-      badgeColor: "bg-emerald-500/15 text-emerald-400",
-      badgeText: "POPULAR",
-      icon: Zap,
-      perks: [
-        "Permanent [VIP] chat and tab tag",
-        "Fly in all hub lobbies (/fly)",
-        "1.5x In-Game Coin Multiplier",
-        "Access to /workbench and /anvil",
-        "VIP Exclusive Weekly Kit",
-      ],
+      title: "Server Store",
+      subtitle: "Ranks, crate keys & coins",
+      icon: ShoppingBag,
+      href: "/store",
+      color: "text-emerald-400",
+      badge: "STORE",
     },
     {
-      name: "MVP Rank",
-      price: "₹499",
-      featured: true,
-      color: "border-cyan-500/50 hover:border-cyan-400 cyan-glow",
-      badgeColor: "bg-cyan-500/20 text-cyan-300",
-      badgeText: "BEST VALUE",
-      icon: Crown,
-      perks: [
-        "Permanent [MVP] aqua chat & tab tag",
-        "All VIP perks included",
-        "Fly in Survival SMP claims (/fly)",
-        "2.5x In-Game Coin Multiplier",
-        "Custom Glowing Name (/glow)",
-        "Priority Queue server bypass",
-      ],
+      title: "Live Leaderboards",
+      subtitle: "$109M+ Baltop & PvP stats",
+      icon: Trophy,
+      href: "/leaderboards",
+      color: "text-amber-400",
+      badge: "STATS",
     },
     {
-      name: "TITAN Rank",
-      price: "₹999",
-      color: "border-purple-500/40 hover:border-purple-400",
-      badgeColor: "bg-purple-500/15 text-purple-400",
-      badgeText: "ELITE",
-      icon: Flame,
-      perks: [
-        "Permanent [TITAN] purple chat & tab tag",
-        "All VIP & MVP perks included",
-        "4x In-Game Coin Multiplier",
-        "Custom Particle Trails (/trails)",
-        "Bi-weekly Titan God Kit",
-        "Private VIP Discord Voice Channel",
-      ],
+      title: "Live Web Map",
+      subtitle: "Explore 3D survival Dynmap",
+      icon: MapPin,
+      href: "/map",
+      color: "text-cyan-400",
+      badge: "DYNMAP",
+    },
+    {
+      title: "Vote for Rewards",
+      subtitle: "Free crate keys & coins daily",
+      icon: Vote,
+      href: "/vote",
+      color: "text-purple-400",
+      badge: "FREE",
     },
   ];
 
   return (
-    <div className="flex flex-col gap-16 pb-20">
-      {/* 1. AppleMC Cobalt Style Hero Header */}
-      <section className="relative pt-4 pb-2">
-        <CobaltHero />
-      </section>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-16">
+      {/* 1. MINIMAL HERO SECTION */}
+      <section className="relative text-center space-y-6 pt-4">
+        {/* Subtle Ambient Radial Glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-emerald-500/10 rounded-full blur-[110px] pointer-events-none" />
 
-      {/* 2. AppleMC Live Store Purchases Ticker */}
-      <RecentPurchasesTicker />
-
-      {/* 3. AppleMC Cobalt Featured Forum / Announcement Card */}
-      <section className="py-2">
-        <FeaturedAnnouncement />
-      </section>
-
-      {/* 4. Cinematic Network Introduction & Quick Join Bar */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
-        <div className="glass-panel p-8 sm:p-12 rounded-3xl border border-slate-800 relative overflow-hidden bg-gradient-to-b from-slate-900/60 to-slate-950/80">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-emerald-500/30 text-xs font-semibold text-emerald-400 mb-6 shadow-lg shadow-emerald-500/10">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>SEASON 4 LIVE &bull; JAVA &amp; BEDROCK COMPATIBLE</span>
+        {/* Minimal Announcement Pill */}
+        {announcement && (
+          <div className="relative z-10 flex justify-center">
+            <NextLink
+              href="/news"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800/90 border border-emerald-500/30 text-xs text-slate-300 hover:text-white transition-all shadow-md group max-w-xl truncate"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="text-emerald-400 font-bold uppercase text-[10px] tracking-wider shrink-0">
+                {announcement.tag || "NOTICE"}
+              </span>
+              <span className="truncate text-[11px] sm:text-xs">{announcement.title}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-emerald-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+            </NextLink>
           </div>
+        )}
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight uppercase">
-            YOUR NEXT ADVENTURE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-green-300 to-teal-300">
-              STARTS HERE.
-            </span>
+        {/* Mascot Logo */}
+        <div className="relative z-10 flex justify-center">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-br from-emerald-400 via-green-500 to-teal-700 p-0.5 shadow-2xl shadow-emerald-500/25 animate-float">
+            <div className="w-full h-full bg-[#08090d] rounded-[22px] overflow-hidden flex items-center justify-center p-1">
+              <img
+                src="/logo.png"
+                alt="Harsh Unlimited Mascot Logo"
+                className="w-full h-full object-cover rounded-[18px] filter drop-shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Title & Tagline */}
+        <div className="relative z-10 space-y-2 max-w-2xl mx-auto">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white uppercase">
+            HARSH <span className="text-emerald-400">UNLIMITED</span>
           </h1>
-
-          <p className="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Welcome to <span className="text-white font-semibold">Harsh Unlimited</span> — India&apos;s premier Minecraft gaming network. Experience custom Lifesteal SMP, player-driven economy, live web dynmaps, and instant Cashfree rank delivery.
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
+            India&apos;s premier Minecraft gaming network. Experience custom Survival SMP, player-driven economy, and lag-free multiplayer on Java &amp; Bedrock.
           </p>
+        </div>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <NextLink
-              href="/play"
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-slate-950 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all transform hover:-translate-y-0.5 cursor-pointer"
-            >
-              <span>HOW TO JOIN</span>
-              <ArrowRight className="w-4 h-4" />
-            </NextLink>
+        {/* Server IP Copy Box (Minimal & Interactive) */}
+        <div className="relative z-10 max-w-md mx-auto">
+          <div
+            onClick={handleCopyJava}
+            className="group cursor-pointer flex items-center justify-between gap-3 bg-slate-950/80 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 p-2.5 sm:p-3 rounded-2xl transition-all shadow-xl"
+          >
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+                <Server className="w-4 h-4" />
+              </div>
+              <div className="text-left truncate">
+                <div className="text-[10px] font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>{isOnline ? `${onlinePlayers} Players Online` : "Server Online"}</span>
+                </div>
+                <div className="font-mono text-xs sm:text-sm font-bold text-white truncate">
+                  play.harshunlimited.fun
+                </div>
+              </div>
+            </div>
 
-            <NextLink
-              href="/store"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all transform hover:-translate-y-0.5"
+            <button
+              type="button"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                copiedJava
+                  ? "bg-emerald-500 text-slate-950"
+                  : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+              }`}
             >
-              <ShoppingBag className="w-4 h-4" />
-              <span>SERVER STORE</span>
-            </NextLink>
-
-            <NextLink
-              href="/map"
-              className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all transform hover:-translate-y-0.5"
-            >
-              <Compass className="w-4 h-4 text-emerald-400" />
-              <span>LIVE WEB MAP</span>
-            </NextLink>
+              {copiedJava ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy IP</span>
+                </>
+              )}
+            </button>
           </div>
 
-          <div className="mt-10 w-full max-w-4xl mx-auto">
-            <ServerStatusCard />
+          <div className="flex items-center justify-center gap-3 mt-2 text-[11px] text-slate-400 font-mono">
+            <span>Java: <strong className="text-slate-300">25565</strong></span>
+            <span>&bull;</span>
+            <span>Bedrock Port: <strong className="text-emerald-400">19132</strong></span>
           </div>
+        </div>
+
+        {/* Primary Action Buttons */}
+        <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 pt-2">
+          <NextLink
+            href="/play"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5"
+          >
+            <Compass className="w-4 h-4" />
+            <span>How to Join</span>
+          </NextLink>
+
+          <a
+            href="https://discord.gg/harshunlimited"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-slate-900 hover:bg-[#5865F2] text-slate-200 hover:text-white border border-slate-700/80 hover:border-[#5865F2] transition-all transform hover:-translate-y-0.5 shadow-md"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>Join Discord</span>
+          </a>
         </div>
       </section>
 
-      {/* Feature Highlights Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-all">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-              <Zap className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-1">Low-Ping Indian Nodes</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              High-performance dedicated infrastructure ensuring butter-smooth 20 TPS gameplay across all modes.
-            </p>
+      {/* 2. GAME MODES (CLEAN 4-GRID) */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight">
+              Game Modes
+            </h2>
+            <p className="text-xs text-slate-400">Active server modes &amp; upcoming releases</p>
           </div>
-
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-all">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-              <Shield className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-1">DDoS &amp; Anti-Cheat</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Enterprise mitigation with machine-learning heuristics keeping matches fair, safe, and uninterrupted.
-            </p>
-          </div>
-
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-all">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-1">Instant Automated Delivery</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Ranks and perks delivered to your Minecraft account in seconds following verified Cashfree payment.
-            </p>
-          </div>
-
-          <div className="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-all">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4">
-              <Users className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-white text-base mb-1">Passionate Community</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Active Discord community, responsive staff team, weekly tournaments, and frequent content updates.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Available Game Modes */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="flex flex-col items-center text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">
-            Diverse Multiplayer Experiences
+          <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+            Survival SMP Live
           </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Featured Game Modes
-          </h2>
-          <p className="mt-3 text-sm text-slate-400 max-w-xl">
-            Choose your playstyle. Whether you desire fierce heart-stealing battles or tranquil empire construction, Harsh Unlimited has a place for you.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {gameModes.map((mode) => {
             const Icon = mode.icon;
             return (
               <div
                 key={mode.title}
-                className="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800 hover:border-emerald-500/40 transition-all group relative overflow-hidden"
+                className={`glass-panel rounded-2xl p-5 border transition-all flex flex-col justify-between ${
+                  mode.isLive
+                    ? "border-emerald-500/40 bg-emerald-500/[0.03] hover:border-emerald-500"
+                    : "border-slate-800 hover:border-slate-700"
+                }`}
               >
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-xl ${mode.iconColor}`}>
-                      <Icon className="w-6 h-6" />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div
+                      className={`p-2.5 rounded-xl ${
+                        mode.isLive ? "bg-emerald-500/10 text-emerald-400" : "bg-slate-800/80 text-slate-400"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
-                        {mode.title}
-                      </h3>
-                      <span className={`text-xs font-mono font-semibold flex items-center gap-1.5 ${mode.isLive ? "text-emerald-400" : "text-amber-400"}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${mode.isLive ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
-                        <span>Status: {mode.statusText}</span>
-                      </span>
-                    </div>
-                  </div>
-                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${mode.tagColor}`}>
-                    {mode.tag}
-                  </span>
-                </div>
-
-                <p className="text-xs text-slate-300 leading-relaxed mb-6">
-                  {mode.description}
-                </p>
-
-                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-slate-800/80">
-                  {mode.features.map((feat) => (
-                    <div key={feat} className="flex items-center gap-1.5 text-xs text-slate-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      <span className="truncate">{feat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Featured Ranks Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="flex flex-col items-center text-center mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-2">
-            Upgrade Your Gameplay
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Featured Network Ranks
-          </h2>
-          <p className="mt-3 text-sm text-slate-400 max-w-xl">
-            Unlock exclusive lobby flight, coin boosters, custom glow cosmetics, and priority queue slots across Harsh Unlimited.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featuredRanks.map((rank) => {
-            const Icon = rank.icon;
-            return (
-              <div
-                key={rank.name}
-                className={`glass-panel rounded-2xl p-7 flex flex-col justify-between border transition-all relative ${
-                  rank.color
-                } ${rank.featured ? "md:-translate-y-2" : ""}`}
-              >
-                {rank.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-cyan-500 text-slate-950 text-[10px] font-extrabold tracking-wider uppercase shadow-md shadow-cyan-500/30">
-                    MOST POPULAR
-                  </div>
-                )}
-
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-slate-900 text-white">
-                        <Icon className="w-5 h-5 text-emerald-400" />
-                      </div>
-                      <h3 className="text-xl font-black text-white">{rank.name}</h3>
-                    </div>
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${rank.badgeColor}`}>
-                      {rank.badgeText}
+                    <span
+                      className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider ${
+                        mode.isLive
+                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                          : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                      }`}
+                    >
+                      {mode.status}
                     </span>
                   </div>
 
-                  <div className="mb-6">
-                    <span className="text-3xl font-black text-white">{rank.price}</span>
-                    <span className="text-xs text-slate-400 ml-1">/ Permanent Lifetime</span>
+                  <div>
+                    <h3 className="text-base font-bold text-white">{mode.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed mt-1">{mode.description}</p>
                   </div>
-
-                  <ul className="space-y-2.5 mb-8">
-                    {rank.perks.map((perk) => (
-                      <li key={perk} className="flex items-start gap-2 text-xs text-slate-300">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{perk}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
 
-                <NextLink
-                  href="/store"
-                  className={`w-full py-3 rounded-xl text-center text-xs font-bold transition-all ${
-                    rank.featured
-                      ? "bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/25"
-                      : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20"
-                  }`}
-                >
-                  VIEW IN STORE
-                </NextLink>
+                <div className="pt-4 mt-3 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500 font-mono">{mode.tag}</span>
+                  {mode.isLive ? (
+                    <NextLink
+                      href={mode.href}
+                      className="text-emerald-400 font-bold hover:underline flex items-center gap-1"
+                    >
+                      Play Now &rarr;
+                    </NextLink>
+                  ) : (
+                    <span className="text-slate-500">Soon</span>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
+      </section>
 
-        <div className="mt-8 text-center">
-          <NextLink
-            href="/store"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            <span>Browse All Ranks, Crates, and Bundles in Server Store</span>
-            <ChevronRight className="w-4 h-4" />
-          </NextLink>
+      {/* 3. ESSENTIAL QUICK LINKS (MINIMAL 4-GRID) */}
+      <section className="space-y-4">
+        <h2 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight">
+          Quick Access
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quickLinks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NextLink
+                key={item.title}
+                href={item.href}
+                className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 hover:border-emerald-500/40 transition-all flex items-center justify-between gap-3 group"
+              >
+                <div className="flex items-center gap-3 truncate">
+                  <div className={`p-2.5 rounded-xl bg-slate-900 border border-slate-800 group-hover:scale-105 transition-transform ${item.color}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="truncate text-left">
+                    <h3 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-[11px] text-slate-400 truncate">{item.subtitle}</p>
+                  </div>
+                </div>
+
+                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </NextLink>
+            );
+          })}
         </div>
       </section>
 
-      {/* Community Call to Action */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="glass-panel rounded-3xl p-8 sm:p-12 border border-emerald-500/30 relative overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950">
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-3 text-center md:text-left">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                Join the Network
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white">
-                Connect With Harsh Unlimited Today
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-lg">
-                Enter <span className="text-emerald-400 font-mono">play.harshunlimited.fun</span> in your Minecraft client or join our official Discord server to participate in community giveaways.
-              </p>
-            </div>
+      {/* 4. COMPACT LIVE SERVER STATUS CARD */}
+      <section className="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <h3 className="text-sm font-bold text-white">Live Node Connection</h3>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              paid58.cavrixcloud.fun
+            </span>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <NextLink
-                href="/play"
-                className="px-6 py-3 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 transition-all"
-              >
-                HOW TO JOIN
-              </NextLink>
-              <a
-                href="https://discord.gg/harshunlimited"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 rounded-xl font-bold text-xs bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md shadow-[#5865F2]/20 transition-all flex items-center gap-2"
-              >
-                <MessageSquare className="w-4 h-4" />
-                DISCORD SERVER
-              </a>
+          <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
+            <span>TPS: <strong className="text-emerald-400">20.0</strong></span>
+            <span>Online: <strong className="text-white">{onlinePlayers}</strong>/100</span>
+          </div>
+        </div>
+
+        {/* Live player avatars strip */}
+        {playerList.length > 0 && (
+          <div className="space-y-2">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              Players Currently In-Game
             </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              {playerList.slice(0, 16).map((name) => (
+                <div
+                  key={name}
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300"
+                >
+                  <img
+                    src={`https://mc-heads.net/avatar/${name}/20`}
+                    alt={name}
+                    className="w-4 h-4 rounded-sm bg-slate-800"
+                  />
+                  <span>{name}</span>
+                </div>
+              ))}
+              {playerList.length > 16 && (
+                <span className="text-[10px] text-slate-500 font-mono px-2 py-1">
+                  +{playerList.length - 16} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs">
+            <span className="text-slate-400 font-mono truncate">Java: play.harshunlimited.fun:25565</span>
+            <button
+              type="button"
+              onClick={handleCopyJava}
+              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 shrink-0 ml-2 cursor-pointer"
+            >
+              {copiedJava ? "Copied!" : "Copy"}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs">
+            <span className="text-slate-400 font-mono truncate">Bedrock: play.harshunlimited.fun:19132</span>
+            <button
+              type="button"
+              onClick={handleCopyBedrock}
+              className="text-[11px] font-bold text-cyan-400 hover:text-cyan-300 shrink-0 ml-2 cursor-pointer"
+            >
+              {copiedBedrock ? "Copied!" : "Copy"}
+            </button>
           </div>
         </div>
       </section>
