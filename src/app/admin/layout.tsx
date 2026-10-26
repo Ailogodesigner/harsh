@@ -14,6 +14,7 @@ import {
   Gamepad2,
   Bell,
   Trophy,
+  MessageSquare,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -30,6 +31,7 @@ export default async function AdminLayout({
 
   const adminNav = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/chat", label: "Live Chat & Console", icon: MessageSquare },
     { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
     { href: "/admin/announcements", label: "Announcements", icon: Bell },
     { href: "/admin/leaderboards", label: "Leaderboards", icon: Trophy },
@@ -41,7 +43,7 @@ export default async function AdminLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090d] flex flex-col md:flex-row border-t border-slate-800">
+    <div className="min-h-screen bg-[#08090d] flex flex-col md:flex-row border-t border-slate-800 pt-20">
       {/* Admin Sidebar */}
       <aside className="w-full md:w-64 bg-slate-950/90 border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0">
         <div className="space-y-6">
