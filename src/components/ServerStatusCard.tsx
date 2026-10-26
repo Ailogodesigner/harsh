@@ -145,7 +145,7 @@ export default function ServerStatusCard() {
               </div>
             </div>
             <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
-              Port: 19132
+              Port: 25565
             </span>
           </div>
 
@@ -153,7 +153,7 @@ export default function ServerStatusCard() {
             <span className="font-mono text-xs text-slate-200 select-all truncate font-semibold">
               play.harshunlimited.fun
             </span>
-            <CopyButton textToCopy="play.harshunlimited.fun:19132" label="Copy IP & Port" />
+            <CopyButton textToCopy="play.harshunlimited.fun:25565" label="Copy IP & Port" />
           </div>
         </div>
       </div>
