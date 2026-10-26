@@ -29,7 +29,11 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      if (data?.user?.role === "ADMIN" || data?.user?.role === "SUPERADMIN") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred");
       setLoading(false);

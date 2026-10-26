@@ -73,8 +73,18 @@ export async function POST(req: Request) {
     return response;
   } catch (error: any) {
     console.error("Login error:", error);
+    const isDbError =
+      error?.name === "PrismaClientInitializationError" ||
+      error?.name === "PrismaClientKnownRequestError" ||
+      error?.message?.toLowerCase().includes("connect") ||
+      error?.message?.toLowerCase().includes("database");
+
     return NextResponse.json(
-      { error: "Internal server error during login" },
+      {
+        error: isDbError
+          ? "Database connection error. Please verify your DATABASE_URL and run prisma migrations."
+          : "Internal server error during login",
+      },
       { status: 500 }
     );
   }
