@@ -159,7 +159,7 @@ export default function LeaderboardsPage() {
           <div className="text-xl sm:text-2xl font-black text-emerald-400">Survival SMP</div>
           <div className="text-[10px] text-emerald-400/80 font-semibold flex items-center justify-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Season 4 Live
+            Online 24/7
           </div>
         </div>
 

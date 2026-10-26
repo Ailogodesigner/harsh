@@ -2,18 +2,18 @@ import { Newspaper, Calendar, Tag, ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "News & Announcements | Harsh Unlimited Minecraft Network",
-  description: "Latest development logs, seasonal launches, and patch notes for Harsh Unlimited.",
+  description: "Latest development logs, server updates, and patch notes for Harsh Unlimited.",
 };
 
 export default function NewsPage() {
   const articles = [
     {
       id: 1,
-      title: "Season 4 Launch: The Revamped Lifesteal & Survival SMP",
+      title: "Network Launch: The Revamped Lifesteal & Survival SMP",
       tag: "MAJOR UPDATE",
       date: "October 2026",
       summary:
-        "We are thrilled to launch Harsh Unlimited Season 4! Featuring brand new custom enchantments, rebalanced revive beacons, optimized server ticks, and new BoxPvP tiers.",
+        "We are thrilled to launch the new Harsh Unlimited update! Featuring brand new custom enchantments, rebalanced revive beacons, optimized server ticks, and new BoxPvP tiers.",
       highlights: [
         "Brand new spawn hub with interactive parkour and NPC warps",
         "Over 20+ custom PvP enchantments added to Survival and Lifesteal",
@@ -40,7 +40,7 @@ export default function NewsPage() {
       tag: "COMMUNITY",
       date: "August 2026",
       summary:
-        "Join us this Saturday at 7:00 PM IST at /warp party for our mega seasonal drop party with Ancient keys, god kits, and rare crate rewards.",
+        "Join us this Saturday at 7:00 PM IST at /warp party for our mega community drop party with Ancient keys, god kits, and rare crate rewards.",
       highlights: [
         "2x Economy Coin Multiplier active across Survival and BoxPvP all weekend",
         "30 Ancient Crate Keys dropped into the community pit",

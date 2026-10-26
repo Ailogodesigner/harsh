@@ -110,7 +110,7 @@ export default function AdminAnnouncementsPage() {
             <span>Server Announcements & News Banners</span>
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Publish seasonal announcements, discount codes, or maintenance notices to the website homepage.
+            Publish server announcements, discount codes, or maintenance notices to the website homepage.
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export default function AdminAnnouncementsPage() {
             <input
               type="text"
               required
-              placeholder="e.g. Season 4 Launch & Weekend 20% Sale"
+              placeholder="e.g. Network Update & Weekend 20% Sale"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"

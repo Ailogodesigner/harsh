@@ -97,8 +97,8 @@ export default function Footer() {
                 </NextLink>
               </li>
               <li>
-                <NextLink href="/vote" className="hover:text-emerald-400 transition-colors">
-                  Vote for Rewards
+                <NextLink href="/wiki" className="hover:text-emerald-400 transition-colors">
+                  Server Wiki &amp; Guides
                 </NextLink>
               </li>
             </ul>

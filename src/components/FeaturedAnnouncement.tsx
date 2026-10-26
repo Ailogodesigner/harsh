@@ -85,7 +85,7 @@ export default function FeaturedAnnouncement() {
 
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-slate-400" />
-                <span>Season 2026</span>
+                <span>Live Network</span>
               </div>
 
               <div className="flex items-center gap-1.5">

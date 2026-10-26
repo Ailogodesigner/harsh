@@ -10,7 +10,7 @@ import {
   ShoppingCart,
   Gamepad2,
   Trophy,
-  Vote,
+  BookMarked,
   Newspaper,
   BookOpen,
   LifeBuoy,
@@ -82,7 +82,7 @@ export default function Navbar() {
     { href: "/play", label: "Play", icon: Gamepad2 },
     { href: "/store", label: "Store", icon: ShoppingCart, highlight: true },
     { href: "/map", label: "Map", icon: MapIcon },
-    { href: "/vote", label: "Vote", icon: Vote },
+    { href: "/wiki", label: "Wiki", icon: BookMarked },
     { href: "/leaderboards", label: "Leaderboards", icon: Trophy },
   ];
 

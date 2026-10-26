@@ -415,7 +415,7 @@ async function main() {
   // 5. Seed Announcements
   const announcements = [
     {
-      title: "Harsh Unlimited Survival SMP Online & Season Drop",
+      title: "Harsh Unlimited Survival SMP Online & Community Drop",
       content: "Survival SMP is officially LIVE! Join at paid58.cavrixcloud.fun:25565 or play.harshunlimited.fun. Explore /coinshop and new rewards!",
       tag: "UPDATE",
     },

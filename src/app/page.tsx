@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Trophy,
   MapPin,
-  Vote,
+  BookMarked,
   ChevronRight,
   Sparkles,
 } from "lucide-react";
@@ -24,7 +24,7 @@ export default function HomePage() {
       title: "Survival SMP",
       status: "ONLINE NOW",
       isLive: true,
-      tag: "Season 4",
+      tag: "Active SMP",
       icon: Compass,
       description:
         "Land claims, player economy, chest shops, auction houses, and 100+ custom enchants.",
@@ -34,7 +34,7 @@ export default function HomePage() {
       title: "Lifesteal SMP",
       status: "COMING SOON",
       isLive: false,
-      tag: "Season 4",
+      tag: "Upcoming",
       icon: Heart,
       description:
         "PvP heart stealing, revive beacons, anti-combat logging, and custom combat arenas.",
@@ -85,10 +85,10 @@ export default function HomePage() {
       color: "text-cyan-400",
     },
     {
-      title: "Vote for Rewards",
-      subtitle: "Free crate keys & coins daily",
-      icon: Vote,
-      href: "/vote",
+      title: "Server Wiki & Guide",
+      subtitle: "Commands, land claim & enchants",
+      icon: BookMarked,
+      href: "/wiki",
       color: "text-purple-400",
     },
   ];
@@ -114,7 +114,7 @@ export default function HomePage() {
               Network Game Modes
             </h2>
             <p className="text-xs text-slate-400">
-              Active server modes &amp; upcoming seasonal releases
+              Active server modes &amp; upcoming network releases
             </p>
           </div>
           <span className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
