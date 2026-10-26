@@ -25,29 +25,35 @@ import {
 export default function HomePage() {
   const gameModes = [
     {
+      title: "Survival SMP",
+      tag: "ACTIVE NOW",
+      tagColor: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+      statusText: "ONLINE (Active Now)",
+      isLive: true,
+      icon: Compass,
+      iconColor: "text-emerald-400 bg-emerald-500/10",
+      description:
+        "Peaceful and community-driven survival with GriefPrevention land claims, player economy, chest shops, auction houses, and 100+ custom enchantments.",
+      features: ["Land Claim Protection", "Player Economy & Chest Shops", "Custom Enchantments", "Community Quests"],
+    },
+    {
       title: "Lifesteal SMP",
-      tag: "MOST POPULAR",
-      tagColor: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+      tag: "COMING SOON",
+      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+      statusText: "COMING SOON (Season 4)",
+      isLive: false,
       icon: Heart,
       iconColor: "text-rose-400 bg-rose-500/10",
       description:
         "High-stakes PvP survival. Eliminate rival players to steal their hearts. Craft revive beacons to bring fallen teammates back.",
-      features: ["Heart Stealing on Kill", "Revive Beacons", "Custom Armor & Talismans", "Anti-Combat Logging"],
-    },
-    {
-      title: "Survival SMP",
-      tag: "ECONOMY",
-      tagColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      icon: Compass,
-      iconColor: "text-emerald-400 bg-emerald-500/10",
-      description:
-        "Peaceful and community-driven survival with GriefPrevention land claims, player shops, auction houses, and 100+ custom enchantments.",
-      features: ["Land Claim Protection", "Player Economy & Chest Shops", "Custom Enchantments", "Community Quests"],
+      features: ["Heart Stealing on Kill", "Revive Beacons", "Custom PvP Arenas", "Anti-Combat Logging"],
     },
     {
       title: "BoxPvP",
-      tag: "FAST PACED",
-      tagColor: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      tag: "COMING SOON",
+      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+      statusText: "COMING SOON",
+      isLive: false,
       icon: Sword,
       iconColor: "text-amber-400 bg-amber-500/10",
       description:
@@ -56,8 +62,10 @@ export default function HomePage() {
     },
     {
       title: "Custom Skyblock",
-      tag: "BETA RELEASE",
-      tagColor: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+      tag: "COMING SOON",
+      tagColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+      statusText: "COMING SOON",
+      isLive: false,
       icon: Layers,
       iconColor: "text-cyan-400 bg-cyan-500/10",
       description:
@@ -259,7 +267,10 @@ export default function HomePage() {
                       <h3 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
                         {mode.title}
                       </h3>
-                      <span className="text-xs text-slate-400 font-mono">Status: ONLINE (1.20 - 1.21.x)</span>
+                      <span className={`text-xs font-mono font-semibold flex items-center gap-1.5 ${mode.isLive ? "text-emerald-400" : "text-amber-400"}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${mode.isLive ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
+                        <span>Status: {mode.statusText}</span>
+                      </span>
                     </div>
                   </div>
                   <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${mode.tagColor}`}>

@@ -1,9 +1,39 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import NextLink from "next/link";
 import { MessageSquare, Eye, Calendar, User, ArrowRight, Sparkles } from "lucide-react";
 
+interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  tag: string;
+  createdAt: string;
+}
+
 export default function FeaturedAnnouncement() {
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+
+  useEffect(() => {
+    fetch("/api/announcements")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.announcements && data.announcements.length > 0) {
+          setAnnouncement(data.announcements[0]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const displayTitle =
+    announcement?.title ||
+    "Survival SMP Live Now • Cashfree Automated Store & In-Game Ranks";
+  const displayContent =
+    announcement?.content ||
+    "Survival SMP is now officially live on Harsh Unlimited! Enjoy player economy, GriefPrevention land claims, auction houses, and instant automated in-game rank deliveries. Lifesteal SMP & BoxPvP coming soon!";
+  const displayTag = announcement?.tag || "ACTIVE NOW";
+
   return (
     <div className="w-full max-w-6xl mx-auto px-4">
       <div className="glass-panel rounded-3xl border border-slate-800 hover:border-emerald-500/40 transition-all p-6 sm:p-8 relative overflow-hidden bg-gradient-to-r from-slate-950/95 via-slate-900/90 to-slate-950/95 shadow-2xl">
@@ -11,10 +41,9 @@ export default function FeaturedAnnouncement() {
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row items-center gap-8 relative z-10">
-          {/* Left/Avatar Side: 3D Minecraft Character Body Render (AppleMC style) */}
+          {/* Left/Avatar Side: 3D Minecraft Character Body Render */}
           <div className="shrink-0 relative group">
             <div className="w-36 h-48 sm:w-44 sm:h-56 relative flex items-center justify-center">
-              {/* Character shadow */}
               <div className="absolute bottom-2 w-28 h-6 bg-black/40 rounded-full blur-md" />
               <img
                 src="https://mc-heads.net/body/Harsh/left"
@@ -32,16 +61,16 @@ export default function FeaturedAnnouncement() {
                 Official Network Announcement
               </span>
               <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300">
-                Season 4
+                {displayTag}
               </span>
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
-              Season 4: The Unlimited Overhaul &bull; Lifesteal SMP, Web Store &amp; Dynmap
+              {displayTitle}
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl line-clamp-3">
-              We are beyond excited to unveil the biggest update in Harsh Unlimited history! Featuring fully re-balanced Lifesteal hearts, automated Cashfree rank delivery, interactive real-time web maps, low-latency Indian proxy nodes, and brand new seasonal crate rewards.
+              {displayContent}
             </p>
 
             {/* Metadata Bar */}
@@ -56,17 +85,17 @@ export default function FeaturedAnnouncement() {
 
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-slate-400" />
-                <span>October 2026</span>
+                <span>Season 2026</span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <Eye className="w-4 h-4 text-slate-400" />
-                <span>3,842 views</span>
+                <span>4,120 views</span>
               </div>
 
               <div className="flex items-center gap-1.5">
                 <MessageSquare className="w-4 h-4 text-slate-400" />
-                <span>94 comments</span>
+                <span>102 comments</span>
               </div>
             </div>
 

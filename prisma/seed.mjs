@@ -44,20 +44,6 @@ async function main() {
   // 3. Seed Game Modes
   const gameModes = [
     {
-      title: "Lifesteal SMP",
-      slug: "lifesteal",
-      description: "Eliminate players to steal their hearts. Craft custom revive beacons and conquer the brutal open wilderness.",
-      status: "ONLINE",
-      version: "1.20 - 1.21.x",
-      features: JSON.stringify([
-        "Steal +1 Heart per player kill",
-        "Craftable Revive Beacons",
-        "Custom PvP Arenas & Warps",
-        "Anti-Cheat & Anti-Combat Log",
-      ]),
-      sortOrder: 1,
-    },
-    {
       title: "Survival SMP",
       slug: "survival",
       description: "Rich enhanced survival with player economy, custom land claiming, quests, jobs, and auction house.",
@@ -69,13 +55,27 @@ async function main() {
         "Over 100+ Custom Enchantments",
         "Community Events & World Bosses",
       ]),
+      sortOrder: 1,
+    },
+    {
+      title: "Lifesteal SMP",
+      slug: "lifesteal",
+      description: "Eliminate players to steal their hearts. Craft custom revive beacons and conquer the brutal open wilderness.",
+      status: "COMING_SOON",
+      version: "1.20 - 1.21.x",
+      features: JSON.stringify([
+        "Steal +1 Heart per player kill",
+        "Craftable Revive Beacons",
+        "Custom PvP Arenas & Warps",
+        "Anti-Cheat & Anti-Combat Log",
+      ]),
       sortOrder: 2,
     },
     {
       title: "BoxPvP",
       slug: "boxpvp",
       description: "Fast-paced grinding, tier upgrades, mining mines, and competitive daily tournament arenas.",
-      status: "ONLINE",
+      status: "COMING_SOON",
       version: "1.20 - 1.21.x",
       features: JSON.stringify([
         "Multi-tier Mining Pits",
@@ -89,7 +89,7 @@ async function main() {
       title: "Custom Skyblock",
       slug: "skyblock",
       description: "Build your floating empire with automated minions, custom dungeons, and island leaderboards.",
-      status: "BETA",
+      status: "COMING_SOON",
       version: "1.20 - 1.21.x",
       features: JSON.stringify([
         "Custom Island Upgrades",

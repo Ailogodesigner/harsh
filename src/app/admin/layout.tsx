@@ -11,6 +11,8 @@ import {
   FileText,
   ArrowLeft,
   Server,
+  Gamepad2,
+  Bell,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -27,6 +29,8 @@ export default async function AdminLayout({
 
   const adminNav = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
+    { href: "/admin/announcements", label: "Announcements", icon: Bell },
     { href: "/admin/products", label: "Products & Ranks", icon: ShoppingBag },
     { href: "/admin/orders", label: "Orders & Delivery", icon: ShoppingCart },
     { href: "/admin/applications", label: "Staff Applications", icon: Users },
