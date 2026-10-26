@@ -500,12 +500,12 @@ async function main() {
   const leaderboardEntries = [
     // ECONOMY (from server baltop: 509 users, $109M total)
     { category: "ECONOMY", name: "HarshUnlimited", score: "$40,250,949", rawScore: 40250949, subtext: "Rank: OWNER", rank: 1 },
-    { category: "ECONOMY", name: "darky", score: "$17,740,083", rawScore: 17740083, subtext: "Rank: SUPREME", rank: 2 },
+    { category: "ECONOMY", name: "darky", score: "$17,740,083", rawScore: 17740083, subtext: "Rank: OVERLORD", rank: 2 },
     { category: "ECONOMY", name: "JNVIRAJ", score: "$13,570,565", rawScore: 13570565, subtext: "Rank: OVERLORD", rank: 3 },
     { category: "ECONOMY", name: "CaptainCharlie56", score: "$10,976,546", rawScore: 10976546, subtext: "Rank: ELITE", rank: 4 },
     { category: "ECONOMY", name: ".Mary43848", score: "$5,218,477", rawScore: 5218477, subtext: "Rank: MVP", rank: 5 },
-    { category: "ECONOMY", name: "WhiteBlader", score: "$4,405,976", rawScore: 4405976, subtext: "Rank: SUPPORTER", rank: 6 },
-    { category: "ECONOMY", name: "erida_nyx", score: "$3,238,611", rawScore: 3238611, subtext: "Rank: SUPREME", rank: 7 },
+    { category: "ECONOMY", name: "WhiteBlader", score: "$4,405,976", rawScore: 4405976, subtext: "Rank: MEMBER", rank: 6 },
+    { category: "ECONOMY", name: "erida_nyx", score: "$3,238,611", rawScore: 3238611, subtext: "Rank: MEMBER", rank: 7 },
     { category: "ECONOMY", name: "LORD", score: "$2,551,106", rawScore: 2551106, subtext: "Rank: OVERLORD", rank: 8 },
 
     // PVP KILLS (Survival SMP)
@@ -523,12 +523,14 @@ async function main() {
     { category: "COINS", name: "CaptainCharlie56", score: "500 Coins", rawScore: 500, subtext: "Cosmetics Grinder", rank: 4 },
     { category: "COINS", name: "Dirty_playz", score: "350 Coins", rawScore: 350, subtext: "Tag Master", rank: 5 },
 
-    // MONTHLY TOP VOTERS
-    { category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: 5x Mythic Keys & 1,500 Coins", rank: 1 },
-    { category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: 3x Mythic Keys & 1,000 Coins", rank: 2 },
-    { category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: 2x Mythic Keys & 500 Coins", rank: 3 },
-    { category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Ancient Keys", rank: 4 },
-    { category: "VOTES", name: "jodadnan", score: "74 Votes", rawScore: 74, subtext: "Reward: 3x Ancient Keys", rank: 5 },
+    // PLAY TIME (Survival SMP)
+    { category: "PLAYTIME", name: "JNVIRAJ", score: "284h 15m", rawScore: 17055, subtext: "Rank: OVERLORD • Active Survival Pioneer", rank: 1 },
+    { category: "PLAYTIME", name: "darky", score: "215h 40m", rawScore: 12940, subtext: "Rank: OVERLORD • SMP Veteran", rank: 2 },
+    { category: "PLAYTIME", name: "Manav_123", score: "178h 20m", rawScore: 10700, subtext: "Rank: VIP • Community Regular", rank: 3 },
+    { category: "PLAYTIME", name: "bulli_bhai", score: "142h 50m", rawScore: 8570, subtext: "Rank: MEMBER • Daily Grinder", rank: 4 },
+    { category: "PLAYTIME", name: "jodadnan", score: "119h 30m", rawScore: 7170, subtext: "Rank: MEMBER • Builder & Adventurer", rank: 5 },
+    { category: "PLAYTIME", name: "CaptainCharlie56", score: "98h 45m", rawScore: 5925, subtext: "Rank: ELITE • Explorer", rank: 6 },
+    { category: "PLAYTIME", name: "erida_nyx", score: "86h 10m", rawScore: 5170, subtext: "Rank: MEMBER • Survival Enthusiast", rank: 7 },
   ];
 
   await prisma.leaderboardEntry.deleteMany({});

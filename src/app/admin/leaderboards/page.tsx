@@ -12,13 +12,13 @@ import {
   Save,
   Coins,
   Skull,
-  Vote,
+  Clock,
   Crown,
 } from "lucide-react";
 
 interface LeaderboardEntry {
   id: string;
-  category: "ECONOMY" | "PVP" | "COINS" | "VOTES" | string;
+  category: "ECONOMY" | "PVP" | "COINS" | "PLAYTIME" | string;
   name: string;
   score: string;
   rawScore: number;
@@ -31,7 +31,7 @@ const CATEGORIES = [
   { id: "ECONOMY", label: "Survival Economy & Baltop", icon: Coins, color: "text-amber-400" },
   { id: "PVP", label: "PvP Combat & Top Kills", icon: Skull, color: "text-rose-400" },
   { id: "COINS", label: "In-Game Coin Shop Barons", icon: Coins, color: "text-yellow-400" },
-  { id: "VOTES", label: "Monthly Top Voters", icon: Vote, color: "text-purple-400" },
+  { id: "PLAYTIME", label: "Server Play Time", icon: Clock, color: "text-purple-400" },
 ];
 
 export default function AdminLeaderboardsPage() {
@@ -155,7 +155,7 @@ export default function AdminLeaderboardsPage() {
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white">Leaderboards Management</h1>
           <p className="text-xs text-slate-400">
-            Manage live rankings for Survival Baltop ($109M+ economy), PvP Kills, In-Game Coins, and Monthly Top Voters.
+            Manage live rankings for Survival Baltop ($109M+ economy), PvP Kills, In-Game Coins, and Server Play Time.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -243,7 +243,7 @@ export default function AdminLeaderboardsPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. $40,250,949 or 482 Kills"
+                placeholder="e.g. $40,250,949 or 284h 15m"
                 value={score}
                 onChange={(e) => setScore(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
@@ -255,7 +255,7 @@ export default function AdminLeaderboardsPage() {
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">Subtitle / Perk</label>
               <input
                 type="text"
-                placeholder="e.g. Rank: OWNER or Reward: 5x Mythic Keys"
+                placeholder="e.g. Rank: OWNER or Status: MEMBER"
                 value={subtext}
                 onChange={(e) => setSubtext(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"

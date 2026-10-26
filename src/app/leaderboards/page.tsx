@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Heart,
   Skull,
-  Vote,
+  Clock,
   Search,
   Sparkles,
   Crown,
@@ -23,7 +23,7 @@ import { getPlayerRankInfo } from "@/lib/minecraft/ranks";
 
 interface LeaderboardEntry {
   id: string;
-  category: "ECONOMY" | "PVP" | "COINS" | "VOTES" | string;
+  category: "ECONOMY" | "PVP" | "COINS" | "PLAYTIME" | string;
   name: string;
   score: string;
   rawScore: number;
@@ -57,19 +57,21 @@ const DEFAULT_LEADERBOARDS: LeaderboardEntry[] = [
   { id: "c4", category: "COINS", name: "CaptainCharlie56", score: "500 Coins", rawScore: 500, subtext: "Cosmetics Grinder", rank: 4 },
   { id: "c5", category: "COINS", name: "Dirty_playz", score: "350 Coins", rawScore: 350, subtext: "Tag Master", rank: 5 },
 
-  // VOTES
-  { id: "v1", category: "VOTES", name: "JNVIRAJ", score: "138 Votes", rawScore: 138, subtext: "Reward: 5x Mythic Keys & 1,500 Coins", rank: 1 },
-  { id: "v2", category: "VOTES", name: "darky", score: "114 Votes", rawScore: 114, subtext: "Reward: 3x Mythic Keys & 1,000 Coins", rank: 2 },
-  { id: "v3", category: "VOTES", name: "Manav_123", score: "96 Votes", rawScore: 96, subtext: "Reward: 2x Mythic Keys & 500 Coins", rank: 3 },
-  { id: "v4", category: "VOTES", name: "bulli_bhai", score: "82 Votes", rawScore: 82, subtext: "Reward: 5x Ancient Keys", rank: 4 },
-  { id: "v5", category: "VOTES", name: "jodadnan", score: "74 Votes", rawScore: 74, subtext: "Reward: 3x Ancient Keys", rank: 5 },
+  // PLAY TIME (In-Game Hours Tracked)
+  { id: "pt1", category: "PLAYTIME", name: "JNVIRAJ", score: "284h 15m", rawScore: 1023300, subtext: "Veteran Explorer", rank: 1 },
+  { id: "pt2", category: "PLAYTIME", name: "darky", score: "215h 40m", rawScore: 776400, subtext: "Dedicated Warrior", rank: 2 },
+  { id: "pt3", category: "PLAYTIME", name: "Manav_123", score: "178h 20m", rawScore: 642000, subtext: "Active Builder", rank: 3 },
+  { id: "pt4", category: "PLAYTIME", name: "bulli_bhai", score: "142h 50m", rawScore: 514200, subtext: "Survival Grinder", rank: 4 },
+  { id: "pt5", category: "PLAYTIME", name: "jodadnan", score: "119h 30m", rawScore: 430200, subtext: "Dedicated Citizen", rank: 5 },
+  { id: "pt6", category: "PLAYTIME", name: "CaptainCharlie56", score: "98h 45m", rawScore: 355500, subtext: "Active Adventurer", rank: 6 },
+  { id: "pt7", category: "PLAYTIME", name: "erida_nyx", score: "86h 10m", rawScore: 310200, subtext: "Survivalist", rank: 7 },
 ];
 
 const TABS = [
   { id: "ECONOMY", label: "Survival Economy", icon: Coins, color: "text-amber-400" },
   { id: "PVP", label: "PvP Combat", icon: Skull, color: "text-rose-400" },
   { id: "COINS", label: "Coin Barons", icon: Coins, color: "text-yellow-400" },
-  { id: "VOTES", label: "Monthly Voters", icon: Vote, color: "text-purple-400" },
+  { id: "PLAYTIME", label: "Play Time", icon: Clock, color: "text-purple-400" },
 ];
 
 export default function LeaderboardsPage() {
@@ -134,7 +136,7 @@ export default function LeaderboardsPage() {
           NETWORK <span className="text-emerald-400">LEADERBOARDS</span>
         </h1>
         <p className="text-sm text-slate-300 leading-relaxed">
-          Real-time server rankings honoring the wealthiest barons ($109M+ tracked economy), deadly PvP gladiators, and top server voters.
+          Real-time server rankings honoring the wealthiest barons ($109M+ tracked economy), deadly PvP gladiators, and top play time veterans.
         </p>
       </div>
 
@@ -162,11 +164,9 @@ export default function LeaderboardsPage() {
         </div>
 
         <div className="glass-panel p-5 rounded-2xl border border-slate-800 text-center space-y-1">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Top Voter In-Game Reward</div>
-          <div className="text-xl sm:text-2xl font-black text-purple-400 font-mono">Mythic Keys</div>
-          <NextLink href="/vote" className="text-[10px] text-purple-300 hover:text-purple-200 underline font-semibold">
-            Vote For Rewards &rarr;
-          </NextLink>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Top Play Time Record</div>
+          <div className="text-xl sm:text-2xl font-black text-purple-400 font-mono">284h+ Played</div>
+          <div className="text-[10px] text-purple-300 font-semibold">Active Survival Community</div>
         </div>
       </div>
 
@@ -391,23 +391,23 @@ export default function LeaderboardsPage() {
         )}
       </div>
 
-      {/* Monthly Voter Rewards CTA */}
+      {/* Play Time & Community Milestones CTA */}
       <div className="glass-panel rounded-3xl p-8 sm:p-10 border border-purple-500/30 text-center space-y-4 bg-gradient-to-r from-purple-950/20 via-slate-900 to-purple-950/20 relative overflow-hidden">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-[11px] font-bold text-purple-300 uppercase tracking-wider">
           <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-          <span>Monthly Voter Rewards Program</span>
+          <span>Play Time &amp; Community Milestones</span>
         </div>
-        <h3 className="text-2xl sm:text-3xl font-black text-white">Want to top the Voting Leaderboard?</h3>
+        <h3 className="text-2xl sm:text-3xl font-black text-white">Want to top the Play Time Leaderboard?</h3>
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Vote daily on all top server lists to receive free in-game crate keys, server coin drops, and exclusive seasonal player titles!
+          Hop into Harsh Unlimited Survival SMP, build your empire, trade with citizens, and rank among our most dedicated network veterans!
         </p>
         <div className="pt-2">
           <NextLink
-            href="/vote"
+            href="/play"
             className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-purple-500/25 transition-all"
           >
-            <Vote className="w-4 h-4" />
-            <span>Vote for Harsh Unlimited</span>
+            <Clock className="w-4 h-4" />
+            <span>Join Server &amp; Start Playing</span>
             <ArrowRight className="w-4 h-4" />
           </NextLink>
         </div>
