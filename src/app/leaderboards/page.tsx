@@ -321,8 +321,16 @@ export default function LeaderboardsPage() {
         </div>
 
         {filteredEntries.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            No player found matching &quot;{searchQuery}&quot;.
+          <div className="p-12 text-center space-y-2">
+            <Clock className="w-8 h-8 text-purple-400 mx-auto" />
+            <p className="text-sm font-bold text-white">
+              {searchQuery ? `No player found matching "${searchQuery}"` : "Season Play Time Reset"}
+            </p>
+            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+              {searchQuery
+                ? "Try searching for a different username or switch category tabs."
+                : "Player play times have been reset for the current season! In-game hours will automatically populate as players log in and explore."}
+            </p>
           </div>
         ) : (
           <div className="divide-y divide-slate-800/60">

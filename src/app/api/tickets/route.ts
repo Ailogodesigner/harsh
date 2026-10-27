@@ -49,6 +49,28 @@ export async function POST(req: Request) {
 
     const { subject, category, priority, message } = parsed.data;
 
+    // Enforce 1 active ticket per member policy
+    const isStaff = user.role === "ADMIN" || user.role === "SUPERADMIN";
+    if (!isStaff) {
+      const activeTicket = await prisma.supportTicket.findFirst({
+        where: {
+          userId: user.id,
+          status: { in: ["OPEN", "WAITING_ADMIN", "WAITING_USER"] },
+        },
+        select: { id: true, subject: true, status: true },
+      });
+
+      if (activeTicket) {
+        return NextResponse.json(
+          {
+            error: `Active ticket limit reached: You already have an open ticket ("${activeTicket.subject}"). Each member can have only 1 active ticket at a time. Please wait for staff or resolve your current ticket before opening another.`,
+            activeTicketId: activeTicket.id,
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     const ticket = await prisma.supportTicket.create({
       data: {
         userId: user.id,

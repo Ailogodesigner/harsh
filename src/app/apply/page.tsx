@@ -113,10 +113,10 @@ export default function ApplyPage() {
             </p>
             <div className="pt-4">
               <a
-                href="https://discord.gg/harshunlimited"
+                href="https://dsc.gg/harshunlimited"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#5865F2] text-white shadow-md shadow-[#5865F2]/20"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-md shadow-[#5865F2]/20 transition-colors"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Return to Discord</span>

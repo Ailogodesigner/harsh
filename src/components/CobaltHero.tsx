@@ -98,7 +98,7 @@ export default function CobaltHero() {
 
         {/* Right: Discord Box with Sliding Reel (AppleMC style) */}
         <a
-          href="https://discord.gg/harshunlimited"
+          href="https://dsc.gg/harshunlimited"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-4 bg-slate-950/80 hover:bg-slate-900 border border-slate-800 hover:border-[#5865F2]/50 p-4 sm:p-5 rounded-2xl transition-all duration-300 shadow-xl w-full sm:w-auto"
@@ -120,7 +120,7 @@ export default function CobaltHero() {
             <div className="relative h-5 overflow-hidden mt-0.5">
               <div className="group-hover:-translate-y-5 transition-transform duration-300">
                 <div className="h-5 text-sm font-black text-white font-mono flex items-center">
-                  discord.gg/harshunlimited
+                  dsc.gg/harshunlimited
                 </div>
                 <div className="h-5 text-xs font-semibold text-[#8a94fd] flex items-center gap-1">
                   <span>Click to join community</span>

@@ -14,6 +14,8 @@ import {
   Skull,
   Clock,
   Crown,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 
 interface LeaderboardEntry {
@@ -48,6 +50,36 @@ export default function AdminLeaderboardsPage() {
   const [subtext, setSubtext] = useState("");
   const [rank, setRank] = useState(1);
   const [msg, setMsg] = useState<string | null>(null);
+
+  // Playtime Reset modal states
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetConsole, setResetConsole] = useState(true);
+  const [broadcastNotification, setBroadcastNotification] = useState(true);
+  const [resettingPlaytime, setResettingPlaytime] = useState(false);
+
+  const handleResetPlaytime = async () => {
+    setResettingPlaytime(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/admin/leaderboards/reset-playtime", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resetConsole, broadcastNotification }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMsg(data.message || "Player play time has been reset successfully!");
+        setShowResetModal(false);
+        fetchEntries();
+      } else {
+        setMsg(data.error || "Failed to reset play time.");
+      }
+    } catch (err: any) {
+      setMsg(err?.message || "Network error resetting play time");
+    } finally {
+      setResettingPlaytime(false);
+    }
+  };
 
   const fetchEntries = async () => {
     setLoading(true);
@@ -158,7 +190,16 @@ export default function AdminLeaderboardsPage() {
             Manage live rankings for Survival Baltop ($109M+ economy), PvP Kills, In-Game Coins, and Server Play Time.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowResetModal(true)}
+            className="px-3.5 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+          >
+            <Clock className="w-3.5 h-3.5 text-purple-400" />
+            <span>Reset Player Play Time</span>
+          </button>
+
           <button
             onClick={fetchEntries}
             className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
@@ -412,6 +453,120 @@ export default function AdminLeaderboardsPage() {
           </div>
         )}
       </div>
+
+      {/* Reset Play Time Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="glass-panel w-full max-w-lg rounded-3xl border border-purple-500/30 p-6 sm:p-8 space-y-5 bg-[#090b12] shadow-2xl shadow-purple-950/40">
+            <div className="flex items-start justify-between gap-4 pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-400">
+                  <Clock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-white">Reset Player Play Time</h3>
+                  <p className="text-xs text-slate-400">Website Leaderboards &amp; Minecraft Server Console</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResetModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3 text-xs text-amber-200">
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold text-amber-300">Caution: Season Play Time Wipe</p>
+                <p className="text-[11px] text-amber-200/80 leading-relaxed">
+                  This action will permanently delete all current play time entries from the website leaderboards so a fresh new season can begin.
+                </p>
+              </div>
+            </div>
+
+            {/* Options */}
+            <div className="space-y-3 text-xs">
+              <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={true}
+                  disabled
+                  className="rounded border-slate-700 bg-slate-800 text-purple-500 mt-0.5"
+                />
+                <div>
+                  <span className="font-bold text-white block">Wipe Website Leaderboard Records</span>
+                  <span className="text-[11px] text-slate-400">
+                    Clears all stored player playtime entries from database tables.
+                  </span>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={resetConsole}
+                  onChange={(e) => setResetConsole(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-800 text-purple-500 mt-0.5"
+                />
+                <div>
+                  <span className="font-bold text-white block">Dispatch Server Console Commands</span>
+                  <span className="text-[11px] text-slate-400">
+                    Executes /playtime resetall and resets in-game statistics via Pterodactyl.
+                  </span>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={broadcastNotification}
+                  onChange={(e) => setBroadcastNotification(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-800 text-purple-500 mt-0.5"
+                />
+                <div>
+                  <span className="font-bold text-white block">Broadcast In-Game Announcement</span>
+                  <span className="text-[11px] text-slate-400">
+                    Notifies connected players in-game that playtimes have been reset.
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                disabled={resettingPlaytime}
+                onClick={() => setShowResetModal(false)}
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={resettingPlaytime}
+                onClick={handleResetPlaytime}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white shadow-lg shadow-purple-950/40 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {resettingPlaytime ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Resetting Play Time...</span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Confirm &amp; Reset Play Time</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

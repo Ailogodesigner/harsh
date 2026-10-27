@@ -3,6 +3,7 @@
 import NextLink from "next/link";
 import CopyButton from "./CopyButton";
 import { Shield, Sparkles, MessageSquare, Heart } from "lucide-react";
+import { SocialButtonsRow, SOCIAL_LINKS } from "./SocialLinks";
 
 export default function Footer() {
   const currentYear = 2026;
@@ -29,7 +30,7 @@ export default function Footer() {
               <CopyButton textToCopy="play.harshunlimited.fun" label="Copy Java" />
             </div>
             <a
-              href="https://discord.gg/harshunlimited"
+              href={SOCIAL_LINKS.discord}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-[#5865F2] hover:bg-[#4752c4] text-white transition-colors"
@@ -44,7 +45,7 @@ export default function Footer() {
       {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Col 1: Brand Info */}
+          {/* Col 1: Brand Info & Socials */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-500/30 shadow-md shadow-emerald-500/20">
@@ -61,7 +62,13 @@ export default function Footer() {
             <p className="text-xs text-slate-400 leading-relaxed">
               India&apos;s premier high-performance Minecraft gaming network. Delivering custom Lifesteal SMP, enhanced Survival, BoxPvP, and lag-free multiplayer adventures.
             </p>
-            <div className="flex items-center gap-2 text-xs text-slate-400">
+            <div className="pt-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">
+                Official Channels
+              </span>
+              <SocialButtonsRow />
+            </div>
+            <div className="flex items-center gap-2 text-xs text-slate-400 pt-1">
               <Shield className="w-4 h-4 text-emerald-400" />
               <span>DDoS Protected &bull; 99.9% Uptime</span>
             </div>
