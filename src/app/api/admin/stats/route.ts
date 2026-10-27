@@ -12,6 +12,8 @@ export async function GET() {
       pendingOrders,
       failedDeliveries,
       totalUsers,
+      todaySignups,
+      recentUsers,
       recentOrders,
       recentLogs,
       openTickets,
@@ -26,6 +28,28 @@ export async function GET() {
         where: { status: { in: ["FAILED", "MANUAL_REVIEW"] } },
       }),
       prisma.user.count(),
+      prisma.user.count({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          },
+        },
+      }),
+      prisma.user.findMany({
+        take: 6,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+          minecraftAccounts: {
+            take: 1,
+            select: { username: true },
+          },
+        },
+      }),
       prisma.order.findMany({
         take: 8,
         orderBy: { createdAt: "desc" },
@@ -36,7 +60,7 @@ export async function GET() {
         },
       }),
       prisma.auditLog.findMany({
-        take: 8,
+        take: 15,
         orderBy: { timestamp: "desc" },
       }),
       prisma.supportTicket.count({
@@ -54,8 +78,10 @@ export async function GET() {
         pendingOrders,
         failedDeliveries,
         totalUsers,
+        todaySignups,
         openTickets,
       },
+      recentUsers,
       recentOrders,
       recentLogs,
     });

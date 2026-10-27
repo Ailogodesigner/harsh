@@ -70,6 +70,21 @@ export async function POST(req: Request) {
       },
     });
 
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "CREATE_TICKET",
+          targetEntity: "SupportTicket",
+          targetId: ticket.id,
+          metadata: JSON.stringify({ subject, category, priority }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error:", e);
+    }
+
     return NextResponse.json({ success: true, ticket });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to create support ticket" }, { status: 500 });

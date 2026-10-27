@@ -49,6 +49,24 @@ export async function POST(req: Request) {
       role: user.role,
     });
 
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "USER_LOGIN",
+          targetEntity: "User",
+          targetId: user.id,
+          metadata: JSON.stringify({
+            role: user.role,
+            ip: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown",
+          }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error on login:", e);
+    }
+
     const response = NextResponse.json({
       success: true,
       user: {

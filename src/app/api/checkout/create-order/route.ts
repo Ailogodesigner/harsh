@@ -143,6 +143,25 @@ export async function POST(req: Request) {
         },
       });
 
+      try {
+        await prisma.auditLog.create({
+          data: {
+            actorId: userId || "guest",
+            actorEmail: customerEmail || "guest",
+            action: "CREATE_ORDER",
+            targetEntity: "Order",
+            targetId: order.id,
+            metadata: JSON.stringify({
+              productName: product.name,
+              amount: product.price,
+              targetMinecraftUsername: targetUsername,
+            }),
+          },
+        });
+      } catch (e) {
+        console.warn("AuditLog error on create order:", e);
+      }
+
       return NextResponse.json({
         success: true,
         orderId: order.id,

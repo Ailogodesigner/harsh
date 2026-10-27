@@ -114,6 +114,21 @@ export async function POST(
       }),
     ]);
 
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: user.role === "ADMIN" || user.role === "SUPERADMIN" ? "TICKET_STAFF_REPLY" : "TICKET_USER_REPLY",
+          targetEntity: "SupportTicket",
+          targetId: id,
+          metadata: JSON.stringify({ messagePreview: parsed.data.message.slice(0, 100), nextStatus }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error:", e);
+    }
+
     return NextResponse.json({ success: true, message: newMessage, ticket: updatedTicket });
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to send reply" }, { status: 500 });
@@ -207,6 +222,21 @@ export async function PATCH(
         },
       }),
     ]);
+
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "UPDATE_TICKET_STATUS",
+          targetEntity: "SupportTicket",
+          targetId: id,
+          metadata: JSON.stringify({ newStatus, changedBy: user.email }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error:", e);
+    }
 
     return NextResponse.json({
       success: true,

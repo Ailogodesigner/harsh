@@ -52,19 +52,29 @@ export default function AdminLiveChatPage() {
   const [dispatchMode, setDispatchMode] = useState<"say" | "broadcast" | "command">("say");
   const [dispatching, setDispatching] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ text: string; success: boolean } | null>(null);
+  const [panelWarning, setPanelWarning] = useState<string | null>(null);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const fetchChatLogs = async () => {
     try {
       const res = await fetch("/api/admin/chat");
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         if (data?.entries) {
           setEntries(data.entries);
         }
+        if (data?.warning) {
+          setPanelWarning(data.warning);
+        } else {
+          setPanelWarning(null);
+        }
+      } else {
+        if (data?.error) {
+          setPanelWarning(data.error);
+        }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to poll chat logs:", err);
     } finally {
       setLoading(false);
@@ -305,6 +315,22 @@ export default function AdminLiveChatPage() {
           />
         </div>
       </div>
+
+      {panelWarning && (
+        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs flex items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+            <span className="font-medium">{panelWarning}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => fetchChatLogs()}
+            className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[11px] font-semibold shrink-0"
+          >
+            Retry Poll
+          </button>
+        </div>
+      )}
 
       {/* Live Chat & Console Stream Box */}
       <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col bg-[#07090e]">

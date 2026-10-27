@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { pterodactylClient } from "@/lib/minecraft/pterodactyl";
 import { getPlayerRankInfo, PlayerRankInfo } from "@/lib/minecraft/ranks";
@@ -13,7 +14,7 @@ export interface ChatLogEntry {
   raw: string;
 }
 
-const PTERODACTYL_BASE_URL = (process.env.PTERODACTYL_BASE_URL || "").replace(/\/+$/, "");
+const PTERODACTYL_BASE_URL = (process.env.PTERODACTYL_BASE_URL || "https://panel.cavrixcloud.fun").replace(/\/+$/, "");
 const PTERODACTYL_API_KEY = process.env.PTERODACTYL_API_KEY || "";
 const PTERODACTYL_SERVER_ID = process.env.PTERODACTYL_SERVER_ID || "";
 
@@ -33,20 +34,42 @@ export async function GET(req: Request) {
 
     const endpoint = `${PTERODACTYL_BASE_URL}/api/client/servers/${PTERODACTYL_SERVER_ID}/files/contents?file=logs%2Flatest.log`;
 
-    const res = await fetch(endpoint, {
-      headers: {
-        Authorization: `Bearer ${PTERODACTYL_API_KEY}`,
-        Accept: "Application/vnd.pterodactyl.v1+json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HarshUnlimited/1.0",
-      },
-      next: { revalidate: 0 },
-    });
+    let res: Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+      res = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${PTERODACTYL_API_KEY}`,
+          Accept: "Application/vnd.pterodactyl.v1+json",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HarshUnlimited/1.0",
+        },
+        signal: controller.signal,
+        next: { revalidate: 0 },
+      });
+      clearTimeout(timeoutId);
+    } catch (fetchErr: any) {
+      console.warn("Pterodactyl fetch error (timeout or unreachable):", fetchErr?.message);
+      return NextResponse.json({
+        success: true,
+        entries: [],
+        totalParsed: 0,
+        serverTime: new Date().toISOString(),
+        warning: "Unable to reach server log file. Server panel may be rebooting or SSL handshake is in progress.",
+      });
+    }
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `Pterodactyl API error: HTTP ${res.status}` },
-        { status: res.status }
-      );
+      const is525 = res.status === 525;
+      return NextResponse.json({
+        success: true,
+        entries: [],
+        totalParsed: 0,
+        serverTime: new Date().toISOString(),
+        warning: is525
+          ? "Pterodactyl panel host returned HTTP 525 (SSL handshake issue at panel.cavrixcloud.fun). Log tailing is paused; commands can still be sent."
+          : `Pterodactyl API returned HTTP ${res.status}. Log stream unavailable.`,
+      });
     }
 
     const rawLog = await res.text();
@@ -239,6 +262,21 @@ export async function POST(req: Request) {
     }
 
     const result = await pterodactylClient.sendCommand(commandToExecute);
+
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "SERVER_COMMAND",
+          targetEntity: "PterodactylServer",
+          targetId: PTERODACTYL_SERVER_ID,
+          metadata: JSON.stringify({ actionType, command: commandToExecute }),
+        },
+      });
+    } catch (logErr) {
+      console.warn("Could not write audit log for command:", logErr);
+    }
 
     return NextResponse.json({
       success: true,

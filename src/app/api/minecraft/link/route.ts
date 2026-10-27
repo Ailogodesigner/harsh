@@ -86,6 +86,24 @@ export async function POST(req: Request) {
       },
     });
 
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "LINK_MINECRAFT",
+          targetEntity: "MinecraftAccount",
+          targetId: linkedAccount.id,
+          metadata: JSON.stringify({
+            username: officialUsername,
+            uuid: officialUuid,
+          }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error on minecraft link:", e);
+    }
+
     return NextResponse.json({
       success: true,
       account: linkedAccount,

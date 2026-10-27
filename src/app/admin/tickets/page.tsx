@@ -16,6 +16,7 @@ import {
   RefreshCw,
   Copy,
   Check,
+  CheckCheck,
   MessageSquare,
   ArrowRight,
   ExternalLink,
@@ -178,12 +179,12 @@ export default function AdminTicketsPage() {
     fetchTickets();
   }, [statusFilter, priorityFilter, categoryFilter, search]);
 
-  // Auto refresh interval
+  // Auto refresh interval - fast 3-second live sync for real-time customer support chat
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
       fetchTickets();
-    }, 12000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [autoRefresh, statusFilter, priorityFilter, categoryFilter, search]);
 
@@ -270,23 +271,42 @@ export default function AdminTicketsPage() {
   };
 
   const handleSendReply = async (customStatus?: string) => {
-    if (!replyText.trim() || !selectedTicketId) return;
+    const contentToSend = replyText.trim();
+    if (!contentToSend || !selectedTicketId) return;
     setSendingReply(true);
     const targetStatus = customStatus || replyStatus;
+
+    // Optimistic reply append
+    const optimisticMsg: TicketMessage = {
+      id: `opt-${Date.now()}`,
+      senderId: "admin",
+      senderName: "Support Staff",
+      senderRole: "ADMIN",
+      content: contentToSend,
+      createdAt: new Date().toISOString(),
+    };
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === selectedTicketId
+          ? { ...t, messages: [...(t.messages || []), optimisticMsg] }
+          : t
+      )
+    );
+    setReplyText("");
+    setTimeout(() => scrollToBottom(true), 40);
 
     try {
       const res = await fetch(`/api/admin/tickets/${selectedTicketId}/reply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: replyText.trim(),
+          content: contentToSend,
           status: targetStatus,
         }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setReplyText("");
         setTickets((prev) =>
           prev.map((t) => (t.id === selectedTicketId ? data.ticket : t))
         );
@@ -296,9 +316,11 @@ export default function AdminTicketsPage() {
         fetchTickets();
       } else {
         setActionMessage({ type: "error", text: data.error || "Failed to send reply" });
+        fetchTickets();
       }
     } catch {
       setActionMessage({ type: "error", text: "Network error sending reply" });
+      fetchTickets();
     } finally {
       setSendingReply(false);
     }
@@ -854,14 +876,13 @@ export default function AdminTicketsPage() {
                         <div className="flex items-center gap-2 mb-1 text-[11px] text-slate-400">
                           {isStaff ? (
                             <>
-                              <span className="font-bold text-emerald-400 flex items-center gap-1">
+                              <span className="font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                                 <Shield className="w-3 h-3 text-emerald-400" />
                                 <span>{msg.senderName}</span>
+                                <span className="text-[9px] bg-emerald-500 text-slate-950 px-1 rounded font-black uppercase">
+                                  Staff
+                                </span>
                               </span>
-                              <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.2 rounded font-bold uppercase">
-                                Staff
-                              </span>
-                              <span>•</span>
                               <span className="text-slate-500 font-mono text-[10px]">
                                 {new Date(msg.createdAt).toLocaleTimeString([], {
                                   hour: "2-digit",
@@ -871,11 +892,13 @@ export default function AdminTicketsPage() {
                             </>
                           ) : (
                             <>
-                              <span className="font-bold text-slate-300">{msg.senderName}</span>
-                              <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-semibold uppercase">
+                              <span className="font-bold text-cyan-400 flex items-center gap-1 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                                <User className="w-3 h-3 text-cyan-400" />
+                                <span>{msg.senderName}</span>
+                              </span>
+                              <span className="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-semibold uppercase">
                                 Player
                               </span>
-                              <span>•</span>
                               <span className="text-slate-500 font-mono text-[10px]">
                                 {new Date(msg.createdAt).toLocaleTimeString([], {
                                   hour: "2-digit",
@@ -887,17 +910,54 @@ export default function AdminTicketsPage() {
                         </div>
 
                         <div
-                          className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                          className={`max-w-[85%] px-4 py-3 rounded-2xl text-xs leading-relaxed ${
                             isStaff
-                              ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tr-none shadow-md shadow-emerald-950/20"
-                              : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tl-none"
+                              ? "bg-gradient-to-r from-emerald-950/80 to-slate-900 text-emerald-100 border border-emerald-500/40 rounded-tr-xs shadow-lg shadow-black/30"
+                              : "bg-[#0b101b] text-slate-200 border border-slate-800 rounded-tl-xs shadow-md shadow-black/40"
                           }`}
                         >
                           <p className="whitespace-pre-wrap">{msg.content}</p>
+
+                          {/* Timestamp and Double Tick for Staff Messages */}
+                          <div
+                            className={`flex items-center justify-end gap-1.5 mt-1.5 text-[10px] font-mono select-none ${
+                              isStaff ? "text-emerald-400/80" : "text-slate-500"
+                            }`}
+                          >
+                            <span>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            {isStaff && (
+                              <span title="Delivered to Player" className="flex items-center">
+                                <CheckCheck className="w-3.5 h-3.5 text-emerald-400" />
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
                   })}
+
+                  {/* Player Waiting Indicator */}
+                  {selectedTicket.status === "WAITING_ADMIN" && (
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] animate-pulse">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>Player is waiting for staff reply on this ticket.</span>
+                    </div>
+                  )}
+
+                  {/* Admin Draft Feedback */}
+                  {replyText.trim().length > 0 && (
+                    <div className="flex justify-end pt-1">
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3 py-1 flex items-center gap-1.5 text-[11px] text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        <span>Composing reply to customer...</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {showScrollBottom && (

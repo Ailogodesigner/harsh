@@ -177,6 +177,22 @@ export async function POST(req: Request) {
             );
           }, 100);
         }
+
+        // Record audit log for successful payment fulfillment
+        await tx.auditLog.create({
+          data: {
+            actorId: order.userId || "system",
+            actorEmail: order.user?.email || "customer",
+            action: "PAYMENT_SUCCESS",
+            targetEntity: "Order",
+            targetId: order.id,
+            metadata: JSON.stringify({
+              orderId: order.id,
+              amount: order.totalAmount,
+              paymentId,
+            }),
+          },
+        });
       });
     } else if (mappedPaymentStatus === PaymentStatus.FAILED) {
       await prisma.order.update({

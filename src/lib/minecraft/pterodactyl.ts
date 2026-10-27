@@ -17,7 +17,7 @@ export class PterodactylClient {
   private serverId: string;
 
   constructor() {
-    this.baseUrl = (process.env.PTERODACTYL_BASE_URL || "").replace(/\/+$/, "");
+    this.baseUrl = (process.env.PTERODACTYL_BASE_URL || "https://panel.cavrixcloud.fun").replace(/\/+$/, "");
     this.apiKey = process.env.PTERODACTYL_API_KEY || "";
     this.serverId = process.env.PTERODACTYL_SERVER_ID || "";
   }

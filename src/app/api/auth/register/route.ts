@@ -53,6 +53,24 @@ export async function POST(req: Request) {
       },
     });
 
+    try {
+      await prisma.auditLog.create({
+        data: {
+          actorId: user.id,
+          actorEmail: user.email,
+          action: "USER_REGISTER",
+          targetEntity: "User",
+          targetId: user.id,
+          metadata: JSON.stringify({
+            name: user.name,
+            ip: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown",
+          }),
+        },
+      });
+    } catch (e) {
+      console.warn("AuditLog error on register:", e);
+    }
+
     // Create session token
     const token = await createSessionToken({
       id: user.id,

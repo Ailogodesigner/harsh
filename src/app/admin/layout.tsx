@@ -16,6 +16,7 @@ import {
   Trophy,
   MessageSquare,
   LifeBuoy,
+  UserCheck,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -32,6 +33,7 @@ export default async function AdminLayout({
 
   const adminNav = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/users", label: "Registered Users", icon: Users },
     { href: "/admin/tickets", label: "Support Tickets", icon: LifeBuoy },
     { href: "/admin/chat", label: "Live Chat & Console", icon: MessageSquare },
     { href: "/admin/modes", label: "Game Modes", icon: Gamepad2 },
@@ -40,7 +42,7 @@ export default async function AdminLayout({
     { href: "/admin/products", label: "Products & Ranks", icon: ShoppingBag },
     { href: "/admin/staff", label: "Staff Team", icon: Shield },
     { href: "/admin/orders", label: "Orders & Delivery", icon: ShoppingCart },
-    { href: "/admin/applications", label: "Staff Applications", icon: Users },
+    { href: "/admin/applications", label: "Staff Applications", icon: UserCheck },
     { href: "/admin/audit", label: "Audit Logs", icon: FileText },
   ];
 

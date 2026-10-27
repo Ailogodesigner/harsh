@@ -15,6 +15,9 @@ import {
   ExternalLink,
   CheckCircle2,
   LifeBuoy,
+  UserPlus,
+  Gamepad2,
+  ArrowRight,
 } from "lucide-react";
 
 export default function AdminOverviewPage() {
@@ -43,6 +46,8 @@ export default function AdminOverviewPage() {
     pendingOrders: 0,
     failedDeliveries: 0,
     totalUsers: 0,
+    todaySignups: 0,
+    openTickets: 0,
   };
 
   return (
@@ -55,7 +60,7 @@ export default function AdminOverviewPage() {
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-white">Network Overview</h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time status of orders, revenue, rank delivery queues, and administrative activity.
+            Real-time status of orders, revenue, registered users, rank deliveries, and live support tickets.
           </p>
         </div>
 
@@ -70,11 +75,11 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Revenue */}
         <div className="glass-panel p-5 rounded-2xl border border-emerald-500/30 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Total Revenue (Verified)</span>
+            <span className="text-xs font-semibold">Total Revenue</span>
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
               <DollarSign className="w-4 h-4" />
             </div>
@@ -90,107 +95,214 @@ export default function AdminOverviewPage() {
         {/* Total Orders */}
         <div className="glass-panel p-5 rounded-2xl border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Total Orders Created</span>
+            <span className="text-xs font-semibold">Total Orders</span>
             <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400">
               <ShoppingCart className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-black text-white">{metrics.totalOrders}</p>
           <span className="text-[10px] text-slate-400 block font-mono">
-            All historical checkout sessions
+            All checkout sessions
           </span>
         </div>
 
-        {/* Pending Payments */}
-        <div className="glass-panel p-5 rounded-2xl border border-amber-500/30 space-y-2">
+        {/* Registered Users & Signups */}
+        <NextLink
+          href="/admin/users"
+          className="glass-panel p-5 rounded-2xl border border-blue-500/30 space-y-2 hover:border-blue-400 transition-colors block group cursor-pointer"
+        >
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Pending Payments</span>
-            <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
-              <Clock className="w-4 h-4" />
+            <span className="text-xs font-semibold group-hover:text-blue-300 transition-colors">
+              Registered Users
+            </span>
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+              <Users className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl font-black text-amber-300">{metrics.pendingOrders}</p>
-          <span className="text-[10px] text-amber-400/80 block font-mono">
-            Awaiting webhook confirmation
+          <p className="text-2xl font-black text-white">{metrics.totalUsers}</p>
+          <span className="text-[10px] text-emerald-400 block font-semibold flex items-center gap-1">
+            <UserPlus className="w-3 h-3" />
+            <span>+{metrics.todaySignups || 0} signed up today</span>
           </span>
-        </div>
+        </NextLink>
 
-        {/* Failed / Manual Delivery */}
+        {/* Active Support Tickets */}
+        <NextLink
+          href="/admin/tickets"
+          className="glass-panel p-5 rounded-2xl border border-amber-500/30 space-y-2 hover:border-amber-400 transition-colors block group cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-xs font-semibold group-hover:text-amber-300 transition-colors">
+              Support Tickets
+            </span>
+            <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">
+              <LifeBuoy className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl font-black text-amber-300">{metrics.openTickets || 0}</p>
+          <span className="text-[10px] text-amber-400/80 block font-mono">
+            Awaiting response
+          </span>
+        </NextLink>
+
+        {/* Failed / Pending Deliveries */}
         <div className="glass-panel p-5 rounded-2xl border border-rose-500/30 space-y-2">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Manual / Failed Deliveries</span>
+            <span className="text-xs font-semibold">Fulfillment Attention</span>
             <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400">
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
           <p className="text-2xl font-black text-rose-400">{metrics.failedDeliveries}</p>
           <span className="text-[10px] text-rose-400/80 block font-mono">
-            Requires admin fulfillment
+            {metrics.pendingOrders} pending webhooks
           </span>
         </div>
       </div>
 
-      {/* Recent Orders Table */}
-      <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-          <div>
-            <h2 className="text-base font-bold text-white">Recent Orders</h2>
-            <p className="text-xs text-slate-400">Live feed of store checkouts</p>
+      {/* Two Column Grid: Recent Orders & Recent Registered Users */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders Table */}
+        <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h2 className="text-base font-bold text-white">Recent Orders</h2>
+              <p className="text-xs text-slate-400">Live feed of store checkouts</p>
+            </div>
+            <NextLink
+              href="/admin/orders"
+              className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold"
+            >
+              View All Orders →
+            </NextLink>
           </div>
-          <NextLink
-            href="/admin/orders"
-            className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold"
-          >
-            View All Orders →
-          </NextLink>
+
+          {!data?.recentOrders?.length ? (
+            <p className="text-xs text-slate-400 py-6 text-center">No orders recorded yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300 border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
+                    <th className="py-2.5 px-3">Order ID</th>
+                    <th className="py-2.5 px-3">Customer</th>
+                    <th className="py-2.5 px-3">Item</th>
+                    <th className="py-2.5 px-3">Amount</th>
+                    <th className="py-2.5 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-mono">
+                  {data.recentOrders.slice(0, 6).map((ord: any) => (
+                    <tr key={ord.id} className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-3 font-bold text-white">{ord.id.slice(0, 10)}...</td>
+                      <td className="py-2.5 px-3 font-sans text-slate-300">{ord.user?.name || "Guest"}</td>
+                      <td className="py-2.5 px-3 font-sans text-white">
+                        {ord.items?.[0]?.productName || "Product"}
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-emerald-400">
+                        {formatCurrency(ord.totalAmount, ord.currency)}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                            ord.status === "PAID"
+                              ? "bg-emerald-500/15 text-emerald-400"
+                              : ord.status === "PENDING"
+                              ? "bg-amber-500/15 text-amber-400"
+                              : "bg-rose-500/15 text-rose-400"
+                          }`}
+                        >
+                          {ord.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        {!data?.recentOrders?.length ? (
-          <p className="text-xs text-slate-400 py-6 text-center">No orders recorded yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300 border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
-                  <th className="py-2.5 px-3">Order ID</th>
-                  <th className="py-2.5 px-3">Customer</th>
-                  <th className="py-2.5 px-3">Item</th>
-                  <th className="py-2.5 px-3">Amount</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
-                {data.recentOrders.map((ord: any) => (
-                  <tr key={ord.id} className="hover:bg-slate-900/40">
-                    <td className="py-2.5 px-3 font-bold text-white">{ord.id}</td>
-                    <td className="py-2.5 px-3 font-sans text-slate-300">{ord.user?.name || "Guest"}</td>
-                    <td className="py-2.5 px-3 font-sans text-white">
-                      {ord.items?.[0]?.productName || "Product"}
-                    </td>
-                    <td className="py-2.5 px-3 font-bold text-emerald-400">
-                      {formatCurrency(ord.totalAmount, ord.currency)}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
-                          ord.status === "PAID"
-                            ? "bg-emerald-500/15 text-emerald-400"
-                            : ord.status === "PENDING"
-                            ? "bg-amber-500/15 text-amber-400"
-                            : "bg-rose-500/15 text-rose-400"
-                        }`}
-                      >
-                        {ord.status}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-400">{formatDateTime(ord.createdAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Recent Member Registrations */}
+        <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <span>Recent User Signups</span>
+                <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded font-mono">
+                  {metrics.totalUsers} Total
+                </span>
+              </h2>
+              <p className="text-xs text-slate-400">Newly registered players &amp; customers</p>
+            </div>
+            <NextLink
+              href="/admin/users"
+              className="text-xs text-blue-400 hover:text-blue-300 font-semibold"
+            >
+              Manage Users →
+            </NextLink>
           </div>
-        )}
+
+          {!data?.recentUsers?.length ? (
+            <p className="text-xs text-slate-400 py-6 text-center">No registered users found.</p>
+          ) : (
+            <div className="space-y-2.5">
+              {data.recentUsers.map((u: any) => {
+                const ign = u.minecraftAccounts?.[0]?.username;
+                return (
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors text-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      {ign ? (
+                        <img
+                          src={`https://mc-heads.net/avatar/${ign}/40`}
+                          alt={ign}
+                          className="w-8 h-8 rounded-lg border border-slate-700 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                          <Users className="w-4 h-4" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white">{u.name}</span>
+                          <span
+                            className={`px-1.5 py-0.2 rounded text-[9px] font-black uppercase ${
+                              u.role === "ADMIN" || u.role === "SUPERADMIN"
+                                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                : u.role === "STAFF"
+                                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                : "bg-slate-800 text-slate-400"
+                            }`}
+                          >
+                            {u.role}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-400 block">{u.email}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      {ign ? (
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 block mb-1">
+                          IGN: {ign}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-500 block mb-1">No IGN Linked</span>
+                      )}
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        {formatDateTime(u.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Recent Administrative Audit Logs */}
@@ -220,7 +332,7 @@ export default function AdminOverviewPage() {
                 <div>
                   <span className="font-mono text-emerald-400 font-bold mr-2">[{log.action}]</span>
                   <span className="text-slate-200">
-                    Target: {log.targetEntity} #{log.targetId}
+                    Target: {log.targetEntity} #{log.targetId?.slice(0, 16)}
                   </span>
                   <span className="text-[11px] text-slate-400 block font-sans">
                     By: {log.actorEmail || log.actorId}

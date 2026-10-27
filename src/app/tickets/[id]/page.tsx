@@ -14,10 +14,12 @@ import {
   AlertCircle,
   Copy,
   Check,
+  CheckCheck,
   RefreshCw,
   MessageSquare,
   Lock,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 
 interface TicketMessage {
@@ -76,8 +78,9 @@ export default function PlayerTicketDetailPage() {
     setShowScrollBottom(distanceFromBottom > 120);
   };
 
-  const fetchTicket = async () => {
+  const fetchTicket = async (silent = false) => {
     try {
+      if (!silent) setLoading(true);
       const res = await fetch(`/api/tickets/${ticketId}`);
       const data = await res.json();
 
@@ -86,20 +89,37 @@ export default function PlayerTicketDetailPage() {
           router.push(`/login?redirect=/tickets/${ticketId}`);
           return;
         }
-        setError(data.error || "Failed to load ticket");
+        if (!silent) setError(data.error || "Failed to load ticket");
         return;
       }
 
-      setTicket(data.ticket);
+      setTicket((prev) => {
+        // If message count increased while user is scrolled to bottom, auto scroll
+        if (prev && data.ticket && data.ticket.messages.length > prev.messages.length) {
+          const el = messagesContainerRef.current;
+          const wasNearBottom = el ? el.scrollHeight - el.scrollTop - el.clientHeight < 150 : true;
+          if (wasNearBottom) {
+            setTimeout(() => scrollToBottom(true), 50);
+          }
+        }
+        return data.ticket;
+      });
     } catch {
-      setError("Network error loading ticket details.");
+      if (!silent) setError("Network error loading ticket details.");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTicket();
+    fetchTicket(false);
+
+    // Live auto-polling every 3 seconds so new staff replies appear immediately without refresh
+    const pollInterval = setInterval(() => {
+      fetchTicket(true);
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
   }, [ticketId]);
 
   // Scroll ONLY the inner message list to bottom on load without scrolling the browser window
@@ -137,7 +157,7 @@ export default function PlayerTicketDetailPage() {
       if (data.ticket) {
         setTicket(data.ticket);
       } else {
-        fetchTicket();
+        fetchTicket(true);
       }
 
       setStatusActionMsg(`Ticket status updated to ${newStatus.replace("_", " ")}`);
@@ -152,38 +172,54 @@ export default function PlayerTicketDetailPage() {
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyMessage.trim() || sending) return;
+    const contentToSend = replyMessage.trim();
+    if (!contentToSend || sending) return;
 
     setSending(true);
     setError(null);
+
+    // Optimistic UI: append the message immediately so there is zero delay!
+    const optimisticMsg: TicketMessage = {
+      id: `opt-${Date.now()}`,
+      senderId: ticket?.userId || "me",
+      senderName: "You",
+      senderRole: "USER",
+      content: contentToSend,
+      createdAt: new Date().toISOString(),
+    };
+
+    setTicket((prev) => (prev ? { ...prev, messages: [...prev.messages, optimisticMsg] } : null));
+    setReplyMessage("");
+    setTimeout(() => scrollToBottom(true), 40);
 
     try {
       const res = await fetch(`/api/tickets/${ticketId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: replyMessage.trim() }),
+        body: JSON.stringify({ message: contentToSend }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         setError(data.error || "Failed to submit reply");
+        fetchTicket(true);
         return;
       }
 
-      setReplyMessage("");
       setSendSuccess(true);
       setTimeout(() => setSendSuccess(false), 3000);
 
-      // Update state with new message & status
+      // Reconcile with server response
       if (data.ticket) {
         setTicket(data.ticket);
         setTimeout(() => scrollToBottom(true), 50);
       } else {
-        fetchTicket();
+        fetchTicket(true);
       }
     } catch {
-      setError("An unexpected network error occurred.");
+      setError("An unexpected network error occurred while sending message.");
+      fetchTicket(true);
     } finally {
       setSending(false);
     }
@@ -277,8 +313,8 @@ export default function PlayerTicketDetailPage() {
         </NextLink>
 
         <button
-          onClick={fetchTicket}
-          className="text-xs text-slate-400 hover:text-cyan-400 flex items-center gap-1.5 transition-colors"
+          onClick={() => fetchTicket(false)}
+          className="text-xs text-slate-400 hover:text-cyan-400 flex items-center gap-1.5 transition-colors cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Refresh</span>
@@ -401,15 +437,26 @@ export default function PlayerTicketDetailPage() {
 
       {/* Messages Thread */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4 shadow-xl">
-        <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-800">
-          Conversation History
-        </h3>
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-300">
+              Live Discussion Thread
+            </h3>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] text-emerald-400 font-bold shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span>Real-Time Sync</span>
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+            No refresh needed • Auto-updates every 3s
+          </span>
+        </div>
 
         <div className="relative">
           <div
             ref={messagesContainerRef}
             onScroll={handleScroll}
-            className="space-y-4 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar py-2"
+            className="space-y-4 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar py-3"
           >
             {ticket.messages.map((msg) => {
               const isStaff = msg.senderRole === "ADMIN" || msg.senderRole === "SUPERADMIN";
@@ -419,15 +466,15 @@ export default function PlayerTicketDetailPage() {
                   key={msg.id}
                   className={`flex flex-col ${isStaff ? "items-start" : "items-end"}`}
                 >
-                  {/* Message Header */}
+                  {/* Message Sender Header */}
                   <div className="flex items-center gap-2 mb-1.5 text-xs">
                     {isStaff ? (
                       <>
-                        <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/15 px-2.5 py-0.5 rounded-lg border border-emerald-500/30 shadow-sm">
                           <Shield className="w-3.5 h-3.5 text-emerald-400" />
                           <span>{msg.senderName}</span>
-                          <span className="text-[9px] bg-emerald-500 text-slate-950 px-1 rounded uppercase font-black">
-                            STAFF
+                          <span className="text-[9px] bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded font-black uppercase tracking-wide">
+                            VERIFIED STAFF
                           </span>
                         </div>
                         <span className="text-slate-500 font-mono text-[10px]">
@@ -449,27 +496,75 @@ export default function PlayerTicketDetailPage() {
                             day: "numeric",
                           })}
                         </span>
-                        <div className="flex items-center gap-1 font-bold text-slate-300">
-                          <User className="w-3 h-3 text-slate-400" />
+                        <div className="flex items-center gap-1 font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                          <User className="w-3 h-3 text-cyan-400" />
                           <span>You</span>
                         </div>
                       </>
                     )}
                   </div>
 
-                  {/* Message Body */}
+                  {/* Message Body with WhatsApp / Discord aesthetic bubble */}
                   <div
-                    className={`max-w-[85%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                    className={`max-w-[88%] sm:max-w-[78%] px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                       isStaff
-                        ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tl-none shadow-md shadow-emerald-950/20"
-                        : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tr-none"
+                        ? "bg-[#0c121d] text-slate-100 border border-emerald-500/30 rounded-tl-xs shadow-lg shadow-black/40"
+                        : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white border border-cyan-400/30 rounded-tr-xs shadow-lg shadow-cyan-950/30"
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.content}</p>
+
+                    {/* Footer with Timestamp & Double Checkmarks (✓✓) for delivered/synced */}
+                    <div
+                      className={`flex items-center justify-end gap-1.5 mt-2 text-[10px] font-mono select-none ${
+                        isStaff ? "text-slate-500" : "text-cyan-100/80"
+                      }`}
+                    >
+                      <span>
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      {!isStaff && (
+                        <span title="Delivered & Logged in Thread" className="flex items-center">
+                          <CheckCheck className="w-3.5 h-3.5 text-cyan-200" />
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
+
+            {/* Live Typing & Review Indicator */}
+            {ticket.status === "WAITING_ADMIN" && (
+              <div className="flex items-start gap-2.5 pt-1">
+                <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                </div>
+                <div className="bg-slate-900/90 border border-slate-800 rounded-2xl rounded-tl-xs px-4 py-2.5 shadow-md flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                  <span className="text-slate-400 text-[11px] font-medium ml-1">
+                    Harsh Unlimited Staff is reviewing your ticket...
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Local Draft Indicator */}
+            {replyMessage.trim().length > 0 && (
+              <div className="flex justify-end pt-1">
+                <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-1 flex items-center gap-1.5 text-[11px] text-cyan-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  <span>Drafting your reply...</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {showScrollBottom && (
