@@ -55,6 +55,8 @@ export default function PlayerTicketDetailPage() {
   const [sendSuccess, setSendSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [statusActionMsg, setStatusActionMsg] = useState<string | null>(null);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -112,6 +114,40 @@ export default function PlayerTicketDetailPage() {
     navigator.clipboard.writeText(ticket.id);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    if (updatingStatus || !ticket) return;
+    setUpdatingStatus(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`/api/tickets/${ticketId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to update ticket status");
+        return;
+      }
+
+      if (data.ticket) {
+        setTicket(data.ticket);
+      } else {
+        fetchTicket();
+      }
+
+      setStatusActionMsg(`Ticket status updated to ${newStatus.replace("_", " ")}`);
+      setTimeout(() => setStatusActionMsg(null), 3500);
+      setTimeout(() => scrollToBottom(true), 50);
+    } catch {
+      setError("Network error updating ticket status.");
+    } finally {
+      setUpdatingStatus(false);
+    }
   };
 
   const handleSendReply = async (e: React.FormEvent) => {
@@ -249,6 +285,22 @@ export default function PlayerTicketDetailPage() {
         </button>
       </div>
 
+      {/* Status Notification Alert */}
+      {statusActionMsg && (
+        <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center justify-between shadow-lg shadow-emerald-950/20">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>{statusActionMsg}</span>
+          </div>
+          <button
+            onClick={() => setStatusActionMsg(null)}
+            className="text-emerald-400 hover:text-white text-xs px-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Ticket Header Card */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
@@ -279,12 +331,52 @@ export default function PlayerTicketDetailPage() {
             <h1 className="text-xl sm:text-2xl font-black text-white">{ticket.subject}</h1>
           </div>
 
-          <div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
             <span
-              className={`inline-block px-3 py-1 rounded-xl text-xs uppercase tracking-wider border ${statusInfo.color}`}
+              className={`inline-block px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider border ${statusInfo.color}`}
             >
               {statusInfo.label}
             </span>
+
+            {/* Quick Status Action Controls */}
+            <div className="flex items-center gap-2">
+              {ticket.status !== "RESOLVED" && ticket.status !== "CLOSED" ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={() => handleUpdateStatus("RESOLVED")}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-sm"
+                    title="Mark your issue as resolved"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{updatingStatus ? "Updating..." : "Mark Resolved"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={updatingStatus}
+                    onClick={() => handleUpdateStatus("CLOSED")}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                    title="Close ticket"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Close</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  disabled={updatingStatus}
+                  onClick={() => handleUpdateStatus("OPEN")}
+                  className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-400 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-sm"
+                  title="Reopen ticket to continue discussion"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${updatingStatus ? "animate-spin" : ""}`} />
+                  <span>{updatingStatus ? "Reopening..." : "Reopen Ticket"}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -395,18 +487,31 @@ export default function PlayerTicketDetailPage() {
         {/* Member Reply Box */}
         <div className="pt-4 border-t border-slate-800">
           {ticket.status === "CLOSED" ? (
-            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
+            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
               <Lock className="w-5 h-5 text-slate-500 mx-auto" />
-              <p className="text-xs text-slate-400 font-semibold">
+              <p className="text-xs text-slate-300 font-semibold">
                 This support ticket has been closed.
               </p>
-              <p className="text-[11px] text-slate-500">
-                If you have a new question or require further assistance, please{" "}
-                <NextLink href="/support" className="text-emerald-400 hover:underline">
-                  create a new support ticket
-                </NextLink>
-                .
+              <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                Need to continue this conversation? You can reopen this ticket or open a new one.
               </p>
+              <div className="flex items-center justify-center gap-3 pt-1">
+                <button
+                  type="button"
+                  disabled={updatingStatus}
+                  onClick={() => handleUpdateStatus("OPEN")}
+                  className="px-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-400 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${updatingStatus ? "animate-spin" : ""}`} />
+                  <span>{updatingStatus ? "Reopening..." : "Reopen This Ticket"}</span>
+                </button>
+                <NextLink
+                  href="/support"
+                  className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold hover:bg-slate-800 transition-all"
+                >
+                  Create New Ticket
+                </NextLink>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSendReply} className="space-y-3">

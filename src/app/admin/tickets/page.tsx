@@ -629,13 +629,24 @@ export default function AdminTicketsPage() {
                         </span>
                       </div>
 
-                      <span
-                        className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusBadge(
+                      <select
+                        value={t.status}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleUpdateStatus(t.id, e.target.value);
+                        }}
+                        className={`text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider bg-transparent cursor-pointer focus:outline-none focus:bg-slate-900 ${getStatusBadge(
                           t.status
                         )}`}
+                        title="Change ticket status directly"
                       >
-                        {t.status.replace("_", " ")}
-                      </span>
+                        <option value="OPEN" className="bg-slate-900 text-emerald-400">OPEN</option>
+                        <option value="WAITING_ADMIN" className="bg-slate-900 text-rose-400">NEEDS STAFF</option>
+                        <option value="WAITING_USER" className="bg-slate-900 text-cyan-400">WAITING PLAYER</option>
+                        <option value="RESOLVED" className="bg-slate-900 text-emerald-300">RESOLVED</option>
+                        <option value="CLOSED" className="bg-slate-900 text-slate-400">CLOSED</option>
+                      </select>
                     </div>
 
                     {/* Subject */}
@@ -717,35 +728,63 @@ export default function AdminTicketsPage() {
 
                 {/* Status & Priority Controls */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  {/* Quick Status Changer */}
-                  <select
-                    value={selectedTicket.status}
-                    onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
-                    className="px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-white focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="OPEN">Mark: Open</option>
-                    <option value="WAITING_ADMIN">Mark: Waiting Staff</option>
-                    <option value="WAITING_USER">Mark: Waiting Player</option>
-                    <option value="RESOLVED">Mark: Resolved</option>
-                    <option value="CLOSED">Mark: Closed</option>
-                  </select>
+                  {/* Status Group */}
+                  <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status:</span>
+                    <select
+                      value={selectedTicket.status}
+                      onChange={(e) => handleUpdateStatus(selectedTicket.id, e.target.value)}
+                      className="px-2 py-1 bg-slate-950 border border-slate-700/80 rounded-lg text-xs font-bold text-cyan-400 focus:outline-none cursor-pointer"
+                    >
+                      <option value="OPEN">Open (Queued)</option>
+                      <option value="WAITING_ADMIN">Needs Staff</option>
+                      <option value="WAITING_USER">Waiting Player</option>
+                      <option value="RESOLVED">Resolved</option>
+                      <option value="CLOSED">Closed</option>
+                    </select>
+
+                    {selectedTicket.status !== "RESOLVED" && selectedTicket.status !== "CLOSED" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedTicket.id, "RESOLVED")}
+                        className="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-bold border border-emerald-500/30 flex items-center gap-1 transition-all cursor-pointer"
+                        title="Mark ticket as resolved"
+                      >
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>Resolve</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleUpdateStatus(selectedTicket.id, "OPEN")}
+                        className="px-2 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-400 text-[11px] font-bold border border-cyan-500/30 flex items-center gap-1 transition-all cursor-pointer"
+                        title="Reopen ticket"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Reopen</span>
+                      </button>
+                    )}
+                  </div>
 
                   {/* Priority Changer */}
-                  <select
-                    value={selectedTicket.priority}
-                    onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value)}
-                    className="px-2.5 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-amber-400 focus:outline-none focus:border-amber-500"
-                  >
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                    <option value="URGENT">Urgent</option>
-                  </select>
+                  <div className="flex items-center gap-1.5 bg-slate-900/90 px-2 py-1.5 rounded-xl border border-slate-800">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Priority:</span>
+                    <select
+                      value={selectedTicket.priority}
+                      onChange={(e) => handleUpdatePriority(selectedTicket.id, e.target.value)}
+                      className="px-2 py-1 bg-slate-950 border border-slate-700/80 rounded-lg text-xs font-bold text-amber-400 focus:outline-none cursor-pointer"
+                    >
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                      <option value="URGENT">Urgent</option>
+                    </select>
+                  </div>
 
                   <button
                     onClick={() => handleDeleteTicket(selectedTicket.id)}
                     title="Delete ticket"
-                    className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all"
+                    className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
