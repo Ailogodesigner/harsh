@@ -17,6 +17,7 @@ import {
   RefreshCw,
   MessageSquare,
   Lock,
+  ChevronDown,
 } from "lucide-react";
 
 interface TicketMessage {
@@ -53,8 +54,25 @@ export default function PlayerTicketDetailPage() {
   const [sending, setSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = (smooth = true) => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: smooth ? "smooth" : "auto",
+      });
+    }
+  };
+
+  const handleScroll = () => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollBottom(distanceFromBottom > 120);
+  };
 
   const fetchTicket = async () => {
     try {
@@ -82,11 +100,12 @@ export default function PlayerTicketDetailPage() {
     fetchTicket();
   }, [ticketId]);
 
+  // Scroll ONLY the inner message list to bottom on load without scrolling the browser window
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (ticket?.id && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
-  }, [ticket?.messages]);
+  }, [ticket?.id]);
 
   const handleCopyId = () => {
     if (!ticket) return;
@@ -123,6 +142,7 @@ export default function PlayerTicketDetailPage() {
       // Update state with new message & status
       if (data.ticket) {
         setTicket(data.ticket);
+        setTimeout(() => scrollToBottom(true), 50);
       } else {
         fetchTicket();
       }
@@ -293,67 +313,83 @@ export default function PlayerTicketDetailPage() {
           Conversation History
         </h3>
 
-        <div className="space-y-4 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar py-2">
-          {ticket.messages.map((msg) => {
-            const isStaff = msg.senderRole === "ADMIN" || msg.senderRole === "SUPERADMIN";
+        <div className="relative">
+          <div
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            className="space-y-4 max-h-[520px] overflow-y-auto pr-2 custom-scrollbar py-2"
+          >
+            {ticket.messages.map((msg) => {
+              const isStaff = msg.senderRole === "ADMIN" || msg.senderRole === "SUPERADMIN";
 
-            return (
-              <div
-                key={msg.id}
-                className={`flex flex-col ${isStaff ? "items-start" : "items-end"}`}
-              >
-                {/* Message Header */}
-                <div className="flex items-center gap-2 mb-1.5 text-xs">
-                  {isStaff ? (
-                    <>
-                      <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>{msg.senderName}</span>
-                        <span className="text-[9px] bg-emerald-500 text-slate-950 px-1 rounded uppercase font-black">
-                          STAFF
-                        </span>
-                      </div>
-                      <span className="text-slate-500 font-mono text-[10px]">
-                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-slate-500 font-mono text-[10px]">
-                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                      <div className="flex items-center gap-1 font-bold text-slate-300">
-                        <User className="w-3 h-3 text-slate-400" />
-                        <span>You</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Message Body */}
+              return (
                 <div
-                  className={`max-w-[85%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
-                    isStaff
-                      ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tl-none shadow-md shadow-emerald-950/20"
-                      : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tr-none"
-                  }`}
+                  key={msg.id}
+                  className={`flex flex-col ${isStaff ? "items-start" : "items-end"}`}
                 >
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                  {/* Message Header */}
+                  <div className="flex items-center gap-2 mb-1.5 text-xs">
+                    {isStaff ? (
+                      <>
+                        <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>{msg.senderName}</span>
+                          <span className="text-[9px] bg-emerald-500 text-slate-950 px-1 rounded uppercase font-black">
+                            STAFF
+                          </span>
+                        </div>
+                        <span className="text-slate-500 font-mono text-[10px]">
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-slate-500 font-mono text-[10px]">
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                        <div className="flex items-center gap-1 font-bold text-slate-300">
+                          <User className="w-3 h-3 text-slate-400" />
+                          <span>You</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Message Body */}
+                  <div
+                    className={`max-w-[85%] p-4 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+                      isStaff
+                        ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tl-none shadow-md shadow-emerald-950/20"
+                        : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tr-none"
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+              );
+            })}
+          </div>
+
+          {showScrollBottom && (
+            <button
+              type="button"
+              onClick={() => scrollToBottom(true)}
+              className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] shadow-lg shadow-cyan-950/40 flex items-center gap-1.5 transition-all z-10 cursor-pointer"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+              <span>Jump to End</span>
+            </button>
+          )}
         </div>
 
         {/* Member Reply Box */}

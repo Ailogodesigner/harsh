@@ -28,6 +28,7 @@ import {
   Bug,
   HelpCircle,
   ShieldAlert,
+  ChevronDown,
 } from "lucide-react";
 
 interface TicketMessage {
@@ -122,8 +123,25 @@ export default function AdminTicketsPage() {
   const [sendingReply, setSendingReply] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = (smooth = true) => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: smooth ? "smooth" : "auto",
+      });
+    }
+  };
+
+  const handleScroll = () => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollBottom(distanceFromBottom > 120);
+  };
 
   const fetchTickets = async (isManual = false) => {
     if (isManual) setRefreshing(true);
@@ -169,12 +187,22 @@ export default function AdminTicketsPage() {
     return () => clearInterval(interval);
   }, [autoRefresh, statusFilter, priorityFilter, categoryFilter, search]);
 
-  // Scroll to bottom of message thread on select
+  // Scroll ONLY the inner message list to bottom when a ticket is selected (never scroll full window)
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (selectedTicketId && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
-  }, [selectedTicketId, tickets]);
+  }, [selectedTicketId]);
+
+  // Keep scrolled to bottom on background poll only if the user is already near the bottom
+  useEffect(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (isNearBottom) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [tickets]);
 
   const selectedTicket = tickets.find((t) => t.id === selectedTicketId);
 
@@ -264,6 +292,7 @@ export default function AdminTicketsPage() {
         );
         setActionMessage({ type: "success", text: "Reply dispatched to player!" });
         setTimeout(() => setActionMessage(null), 3000);
+        setTimeout(() => scrollToBottom(true), 50);
         fetchTickets();
       } else {
         setActionMessage({ type: "error", text: data.error || "Failed to send reply" });
@@ -769,63 +798,79 @@ export default function AdminTicketsPage() {
               </div>
 
               {/* Conversation Messages Thread */}
-              <div className="flex-1 overflow-y-auto space-y-3.5 pr-2 custom-scrollbar my-2">
-                {selectedTicket.messages?.map((msg) => {
-                  const isStaff = msg.senderRole === "ADMIN" || msg.senderRole === "SUPERADMIN";
+              <div className="relative flex-1 min-h-0 flex flex-col my-2">
+                <div
+                  ref={messagesContainerRef}
+                  onScroll={handleScroll}
+                  className="flex-1 overflow-y-auto space-y-3.5 pr-2 custom-scrollbar"
+                >
+                  {selectedTicket.messages?.map((msg) => {
+                    const isStaff = msg.senderRole === "ADMIN" || msg.senderRole === "SUPERADMIN";
 
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${isStaff ? "items-end" : "items-start"}`}
-                    >
-                      <div className="flex items-center gap-2 mb-1 text-[11px] text-slate-400">
-                        {isStaff ? (
-                          <>
-                            <span className="font-bold text-emerald-400 flex items-center gap-1">
-                              <Shield className="w-3 h-3 text-emerald-400" />
-                              <span>{msg.senderName}</span>
-                            </span>
-                            <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.2 rounded font-bold uppercase">
-                              Staff
-                            </span>
-                            <span>•</span>
-                            <span className="text-slate-500 font-mono text-[10px]">
-                              {new Date(msg.createdAt).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="font-bold text-slate-300">{msg.senderName}</span>
-                            <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-semibold uppercase">
-                              Player
-                            </span>
-                            <span>•</span>
-                            <span className="text-slate-500 font-mono text-[10px]">
-                              {new Date(msg.createdAt).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </>
-                        )}
-                      </div>
-
+                    return (
                       <div
-                        className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
-                          isStaff
-                            ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tr-none shadow-md shadow-emerald-950/20"
-                            : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tl-none"
-                        }`}
+                        key={msg.id}
+                        className={`flex flex-col ${isStaff ? "items-end" : "items-start"}`}
                       >
-                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                        <div className="flex items-center gap-2 mb-1 text-[11px] text-slate-400">
+                          {isStaff ? (
+                            <>
+                              <span className="font-bold text-emerald-400 flex items-center gap-1">
+                                <Shield className="w-3 h-3 text-emerald-400" />
+                                <span>{msg.senderName}</span>
+                              </span>
+                              <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.2 rounded font-bold uppercase">
+                                Staff
+                              </span>
+                              <span>•</span>
+                              <span className="text-slate-500 font-mono text-[10px]">
+                                {new Date(msg.createdAt).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-bold text-slate-300">{msg.senderName}</span>
+                              <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-semibold uppercase">
+                                Player
+                              </span>
+                              <span>•</span>
+                              <span className="text-slate-500 font-mono text-[10px]">
+                                {new Date(msg.createdAt).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        <div
+                          className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                            isStaff
+                              ? "bg-emerald-950/40 text-emerald-100 border border-emerald-500/30 rounded-tr-none shadow-md shadow-emerald-950/20"
+                              : "bg-slate-900 text-slate-200 border border-slate-800 rounded-tl-none"
+                          }`}
+                        >
+                          <p className="whitespace-pre-wrap">{msg.content}</p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
-                <div ref={messagesEndRef} />
+                    );
+                  })}
+                </div>
+
+                {showScrollBottom && (
+                  <button
+                    type="button"
+                    onClick={() => scrollToBottom(true)}
+                    className="absolute bottom-3 right-4 px-3 py-1.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[11px] shadow-lg shadow-cyan-950/40 flex items-center gap-1.5 transition-all z-10 cursor-pointer"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                    <span>Jump to End</span>
+                  </button>
+                )}
               </div>
 
               {/* Staff Response Desk Area */}
