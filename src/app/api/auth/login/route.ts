@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyPassword, createSessionToken, COOKIE_NAME, SESSION_DURATION } from "@/lib/auth";
+import { isAuthLocked, recordFailedAuth, clearFailedAuth } from "@/lib/rateLimit";
+import { getClientIp, validateOrigin } from "@/lib/security";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -10,6 +12,29 @@ const loginSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // 1. Origin verification to prevent cross-site/terminal CSRF
+    const originCheck = validateOrigin(req);
+    if (!originCheck.valid) {
+      return NextResponse.json(
+        { error: "Forbidden: Security policy violation. Untrusted request origin." },
+        { status: 403 }
+      );
+    }
+
+    const ip = getClientIp(req);
+
+    // 2. Check if IP is currently in a security lockout
+    const ipLock = isAuthLocked(ip);
+    if (ipLock.locked) {
+      return NextResponse.json(
+        { error: ipLock.error || "Security lockout active. Please try again later." },
+        {
+          status: 429,
+          headers: ipLock.retryAfterSeconds ? { "Retry-After": String(ipLock.retryAfterSeconds) } : undefined,
+        }
+      );
+    }
+
     const body = await req.json();
     const parsed = loginSchema.safeParse(body);
 
@@ -23,24 +48,59 @@ export async function POST(req: Request) {
     const { email, password } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
 
+    // 3. Check if specific account is in a security lockout
+    const accountLock = isAuthLocked(normalizedEmail);
+    if (accountLock.locked) {
+      return NextResponse.json(
+        { error: accountLock.error || "Account locked due to multiple failed attempts." },
+        {
+          status: 429,
+          headers: accountLock.retryAfterSeconds ? { "Retry-After": String(accountLock.retryAfterSeconds) } : undefined,
+        }
+      );
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     });
 
     if (!user) {
+      // Record failed attempt against IP and email
+      const failIp = recordFailedAuth(ip);
+      const failAcc = recordFailedAuth(normalizedEmail);
+      if (failIp.locked || failAcc.locked) {
+        return NextResponse.json(
+          { error: failIp.error || failAcc.error || "Security lockout: 5 failed attempts reached." },
+          { status: 429 }
+        );
+      }
+
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid email or password", remainingAttempts: failIp.remaining },
         { status: 401 }
       );
     }
 
     const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
+      const failIp = recordFailedAuth(ip);
+      const failAcc = recordFailedAuth(normalizedEmail);
+      if (failIp.locked || failAcc.locked) {
+        return NextResponse.json(
+          { error: failIp.error || failAcc.error || "Security lockout: 5 failed attempts reached." },
+          { status: 429 }
+        );
+      }
+
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        { error: "Invalid email or password", remainingAttempts: failIp.remaining },
         { status: 401 }
       );
     }
+
+    // 4. Success: Clear failed attempt counters
+    clearFailedAuth(ip);
+    clearFailedAuth(normalizedEmail);
 
     const token = await createSessionToken({
       id: user.id,
@@ -59,7 +119,7 @@ export async function POST(req: Request) {
           targetId: user.id,
           metadata: JSON.stringify({
             role: user.role,
-            ip: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown",
+            ip,
           }),
         },
       });

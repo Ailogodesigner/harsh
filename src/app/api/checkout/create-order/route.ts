@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { cashfreeProvider } from "@/lib/cashfree";
 import { generateInternalOrderId } from "@/lib/utils";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { getClientIp, validateOrigin } from "@/lib/security";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -18,6 +20,21 @@ const checkoutSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    const originCheck = validateOrigin(req);
+    if (!originCheck.valid) {
+      return NextResponse.json({ error: "Forbidden: Security policy violation" }, { status: 403 });
+    }
+
+    const ip = getClientIp(req);
+    const rateCheck = checkRateLimit(`order_${ip}`, {
+      maxRequests: 15,
+      windowMs: 60 * 1000,
+      lockoutMs: 5 * 60 * 1000,
+    });
+    if (!rateCheck.allowed) {
+      return NextResponse.json({ error: rateCheck.error || "Too many checkout attempts. Please slow down." }, { status: 429 });
+    }
+
     const body = await req.json();
     const parsed = checkoutSchema.safeParse(body);
 

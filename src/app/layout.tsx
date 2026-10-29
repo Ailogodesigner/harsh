@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SecurityGuard from "@/components/SecurityGuard";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,6 +53,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="min-h-screen flex flex-col bg-[#08090d] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-300">
+        <SecurityGuard />
         <Navbar />
         <main className="flex-1 w-full">{children}</main>
         <Footer />

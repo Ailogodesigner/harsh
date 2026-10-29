@@ -3,12 +3,13 @@
 import { useState, Suspense } from "react";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert, Sparkles, KeyRound } from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle, ShieldAlert, Sparkles, KeyRound, Clock } from "lucide-react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
   const redirectParam = searchParams.get("redirect");
+  const isTimeout = searchParams.get("reason") === "timeout";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -82,6 +83,18 @@ function LoginForm() {
             <KeyRound className="w-3.5 h-3.5" />
             <span>Fill Admin Credentials</span>
           </button>
+        </div>
+      )}
+
+      {isTimeout && (
+        <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-200 text-xs space-y-1.5 animate-in fade-in">
+          <div className="flex items-center gap-2 font-semibold">
+            <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span>Session Security Timeout</span>
+          </div>
+          <p className="text-[11px] text-cyan-300/80 leading-relaxed">
+            Your previous session was automatically signed out due to inactivity to protect your account. Please log in again.
+          </p>
         </div>
       )}
 

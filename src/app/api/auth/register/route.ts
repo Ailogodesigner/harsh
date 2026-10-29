@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { hashPassword, createSessionToken, COOKIE_NAME, SESSION_DURATION } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { getClientIp, validateOrigin, sanitizeString } from "@/lib/security";
 import { z } from "zod";
 
 const registerSchema = z.object({
@@ -11,6 +13,30 @@ const registerSchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    // 1. Origin verification to prevent CSRF / cross-site terminal automation
+    const originCheck = validateOrigin(req);
+    if (!originCheck.valid) {
+      return NextResponse.json(
+        { error: "Forbidden: Security policy violation. Untrusted request origin." },
+        { status: 403 }
+      );
+    }
+
+    const ip = getClientIp(req);
+
+    // 2. Rate limit registrations: Max 5 accounts per hour per IP
+    const rateCheck = checkRateLimit(`register_${ip}`, {
+      maxRequests: 5,
+      windowMs: 60 * 60 * 1000,
+      lockoutMs: 60 * 60 * 1000,
+    });
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: rateCheck.error || "Too many registration attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);
 
@@ -22,6 +48,7 @@ export async function POST(req: Request) {
     }
 
     const { name, email, password } = parsed.data;
+    const sanitizedName = sanitizeString(name);
     const normalizedEmail = email.toLowerCase().trim();
 
     // Check if user exists
@@ -40,7 +67,7 @@ export async function POST(req: Request) {
     const passwordHash = await hashPassword(password);
     const user = await prisma.user.create({
       data: {
-        name: name.trim(),
+        name: sanitizedName,
         email: normalizedEmail,
         passwordHash,
         role: "USER",
@@ -63,7 +90,7 @@ export async function POST(req: Request) {
           targetId: user.id,
           metadata: JSON.stringify({
             name: user.name,
-            ip: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown",
+            ip,
           }),
         },
       });
