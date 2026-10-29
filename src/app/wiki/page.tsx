@@ -91,7 +91,7 @@ const SERVER_KITS = [
     name: "Starter Kit",
     cmd: "/kit starter",
     rank: "MEMBER",
-    cooldown: "One-time Free Claim",
+    cooldown: "12 Hours Cooldown",
     color: "text-slate-300 border-slate-700 bg-slate-800/40",
     badge: "Free Starter Kit",
     money: "Starter Economy",
@@ -105,6 +105,7 @@ const SERVER_KITS = [
     resources: [
       "16x Cooked Beef (Food supply)",
       "Starter Inspection Stick",
+      "32x Oak Planks",
     ],
     utility: [
       "Immediate land protection access",
@@ -121,9 +122,9 @@ const SERVER_KITS = [
     money: "$5,000 In-Game Cash",
     claimBlocks: "1,000 Bonus Claim Blocks",
     gear: [
-      "Full Iron Armor Set (Max Enchantments)",
-      "Iron Sword (Sharpness V, Fire Aspect II, Unbreaking III, Mending)",
-      "Full Iron Tools (Pickaxe, Axe, Shovel)",
+      "Full Iron Armor Set (Protection II, Unbreaking II)",
+      "VIP Iron Sword (Sharpness II, Unbreaking II)",
+      "Full Iron Tools (Pickaxe Efficiency II, Axe, Shovel)",
     ],
     resources: [
       "6x Diamonds",
@@ -147,9 +148,9 @@ const SERVER_KITS = [
     money: "$10,000 In-Game Cash",
     claimBlocks: "2,500 Bonus Claim Blocks",
     gear: [
-      "Full Netherite Armor Set (Max Enchantments)",
-      "Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
-      "Diamond Pickaxe (Max Efficiency & Fortune)",
+      "Full Netherite Armor Set (Protection II, Unbreaking II)",
+      "Diamond Sword (Sharpness III, Unbreaking II)",
+      "Diamond Pickaxe (Efficiency III, Fortune II, Unbreaking II)",
     ],
     resources: [
       "12x Diamonds",
@@ -173,9 +174,9 @@ const SERVER_KITS = [
     money: "$15,000 In-Game Cash",
     claimBlocks: "4,000 Bonus Claim Blocks",
     gear: [
-      "Full Diamond Armor Set (Max Enchantments)",
-      "ELITE Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
-      "Full Diamond Tools Set (Pickaxe, Axe, Shovel)",
+      "Full Diamond Armor Set (Protection III, Unbreaking III)",
+      "ELITE Diamond Sword (Sharpness IV, Fire Aspect II, Unbreaking III)",
+      "Full Diamond Tools Set (Efficiency IV)",
     ],
     resources: [
       "16x Diamonds",
@@ -199,9 +200,9 @@ const SERVER_KITS = [
     money: "$25,000 In-Game Cash",
     claimBlocks: "6,000 Bonus Claim Blocks",
     gear: [
-      "Full Diamond Armor Set (Max Enchantments)",
+      "Full Diamond Armor Set (Protection IV, Unbreaking III)",
       "SUPREME Diamond Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
-      "Full Diamond Tools Set (Pickaxe, Axe, Shovel)",
+      "Full Diamond Tools Set (Pickaxe Efficiency V Fortune III, Axe, Shovel)",
     ],
     resources: [
       "24x Diamonds",
@@ -225,9 +226,9 @@ const SERVER_KITS = [
     money: "$40,000 In-Game Cash",
     claimBlocks: "10,000 Bonus Claim Blocks",
     gear: [
-      "Full Netherite Armor Set (God Max Enchantments)",
-      "OVERLORD Netherite Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Unbreaking III, Mending)",
-      "Full Netherite Tools Set (Pickaxe, Axe, Shovel, Hoe)",
+      "Full Netherite Armor Set (God Protection IV, Unbreaking III, Mending)",
+      "OVERLORD Netherite Sword (Sharpness V, Sweeping Edge III, Knockback II, Fire Aspect II, Looting III, Unbreaking III, Mending)",
+      "Full Netherite Tools Set (Pickaxe, Axe, Shovel, God Hoe)",
     ],
     resources: [
       "32x Diamonds",
@@ -367,6 +368,20 @@ export default function WikiPage() {
       (c.example && c.example.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const filteredKits = SERVER_KITS.filter((kit) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      kit.name.toLowerCase().includes(q) ||
+      kit.cmd.toLowerCase().includes(q) ||
+      kit.rank.toLowerCase().includes(q) ||
+      kit.badge.toLowerCase().includes(q) ||
+      kit.gear.some((g) => g.toLowerCase().includes(q)) ||
+      kit.resources.some((r) => r.toLowerCase().includes(q)) ||
+      kit.utility.some((u) => u.toLowerCase().includes(q))
+    );
+  });
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-12">
       {/* Hero Header */}
@@ -389,12 +404,7 @@ export default function WikiPage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (e.target.value.trim().length > 0 && activeTab !== "commands") {
-                  setActiveTab("commands");
-                }
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search commands, kits, land claims..."
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-xl shadow-black/40"
             />
@@ -506,8 +516,24 @@ export default function WikiPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVER_KITS.map((kit) => (
+          {filteredKits.length === 0 ? (
+            <div className="glass-panel p-12 text-center rounded-2xl border border-slate-800 space-y-3">
+              <Swords className="w-8 h-8 text-slate-500 mx-auto" />
+              <h3 className="text-white font-bold text-base">No kits match your search</h3>
+              <p className="text-xs text-slate-400">
+                Try searching for &quot;starter&quot;, &quot;vip&quot;, &quot;mvp&quot;, &quot;sword&quot;, or &quot;overlord&quot;.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white rounded-xl transition-all cursor-pointer"
+              >
+                Clear Search Filter
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredKits.map((kit) => (
               <div
                 key={kit.name}
                 className="glass-panel rounded-2xl p-6 border border-slate-800/80 hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-5 bg-slate-900/60"
@@ -617,6 +643,7 @@ export default function WikiPage() {
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
 

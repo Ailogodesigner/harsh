@@ -766,15 +766,45 @@ export default function AdminTicketsPage() {
                     </select>
 
                     {selectedTicket.status !== "RESOLVED" && selectedTicket.status !== "CLOSED" ? (
-                      <button
-                        type="button"
-                        onClick={() => handleUpdateStatus(selectedTicket.id, "RESOLVED")}
-                        className="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-bold border border-emerald-500/30 flex items-center gap-1 transition-all cursor-pointer"
-                        title="Mark ticket as resolved"
-                      >
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>Resolve</span>
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(selectedTicket.id, "RESOLVED")}
+                          className="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 text-[11px] font-bold border border-emerald-500/30 flex items-center gap-1 transition-all cursor-pointer"
+                          title="Mark ticket as resolved"
+                        >
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Resolve</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(selectedTicket.id, "CLOSED")}
+                          className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold border border-slate-700 flex items-center gap-1 transition-all cursor-pointer"
+                          title="Close ticket"
+                        >
+                          <span>Close</span>
+                        </button>
+                      </div>
+                    ) : selectedTicket.status === "RESOLVED" ? (
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(selectedTicket.id, "OPEN")}
+                          className="px-2 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-400 text-[11px] font-bold border border-cyan-500/30 flex items-center gap-1 transition-all cursor-pointer"
+                          title="Reopen ticket"
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                          <span>Reopen</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateStatus(selectedTicket.id, "CLOSED")}
+                          className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold border border-slate-700 flex items-center gap-1 transition-all cursor-pointer"
+                          title="Close ticket"
+                        >
+                          <span>Close</span>
+                        </button>
+                      </div>
                     ) : (
                       <button
                         type="button"

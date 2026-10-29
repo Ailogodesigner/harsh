@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   X,
   Copy,
@@ -52,7 +52,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
     id: "kit-overlord",
     slug: "overlord",
     name: "OVERLORD God Kit",
-    price: 99900,
+    price: 34900,
     currency: "INR",
     cooldown: "30 Days",
     command: "/kit overlord",
@@ -166,7 +166,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         iconUrl: ASSET_ITEM("netherite_sword"),
         isEnchanted: true,
         type: "Weapon",
-        enchants: ["Sharpness V", "Fire Aspect II", "Looting III", "Unbreaking III", "Mending", "Sweeping Edge III"],
+        enchants: ["Sharpness V", "Sweeping Edge III", "Knockback II", "Fire Aspect II", "Looting III", "Unbreaking III", "Mending"],
         lore: ["Supreme blade of Harsh Unlimited overlords."],
       },
       {
@@ -296,6 +296,17 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         lore: ["Lava source bucket for cobblestone generator or smelting."],
       },
       {
+        slot: 23,
+        name: "God Netherite Hoe",
+        nameColor: "#d8b4fe",
+        count: 1,
+        iconUrl: ASSET_ITEM("netherite_hoe"),
+        isEnchanted: true,
+        type: "Tool",
+        enchants: ["Efficiency V", "Unbreaking III", "Mending"],
+        lore: ["Supreme harvesting tool for colossal automated farms."],
+      },
+      {
         slot: 26,
         name: "Kit Info & Cooldown",
         nameColor: "#e2e8f0",
@@ -311,7 +322,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
     id: "kit-supreme",
     slug: "supreme",
     name: "SUPREME Kit",
-    price: 49900,
+    price: 19900,
     currency: "INR",
     cooldown: "1 Hour",
     command: "/kit supreme",
@@ -419,7 +430,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         iconUrl: ASSET_ITEM("diamond_sword"),
         isEnchanted: true,
         type: "Weapon",
-        enchants: ["Sharpness V", "Fire Aspect II", "Unbreaking III"],
+        enchants: ["Sharpness V", "Sweeping Edge III", "Knockback II", "Fire Aspect II", "Unbreaking III", "Mending"],
       },
       {
         slot: 10,
@@ -547,7 +558,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
     id: "kit-elite",
     slug: "elite",
     name: "ELITE Kit",
-    price: 34900,
+    price: 14900,
     currency: "INR",
     cooldown: "30 Days",
     command: "/kit elite",
@@ -648,7 +659,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         iconUrl: ASSET_ITEM("diamond_sword"),
         isEnchanted: true,
         type: "Weapon",
-        enchants: ["Sharpness IV", "Unbreaking III"],
+        enchants: ["Sharpness IV", "Fire Aspect II", "Unbreaking III"],
       },
       {
         slot: 10,
@@ -776,7 +787,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
     id: "kit-mvp",
     slug: "mvp",
     name: "MVP Kit",
-    price: 24900,
+    price: 9900,
     currency: "INR",
     cooldown: "1 Hour",
     command: "/kit mvp",
@@ -877,7 +888,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         iconUrl: ASSET_ITEM("diamond_sword"),
         isEnchanted: true,
         type: "Weapon",
-        enchants: ["Sharpness III"],
+        enchants: ["Sharpness III", "Unbreaking II"],
       },
       {
         slot: 10,
@@ -887,7 +898,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         iconUrl: ASSET_ITEM("diamond_pickaxe"),
         isEnchanted: true,
         type: "Tool",
-        enchants: ["Efficiency III"],
+        enchants: ["Efficiency III", "Fortune II", "Unbreaking II"],
       },
       {
         slot: 13,
@@ -985,7 +996,7 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
     id: "kit-vip",
     slug: "vip",
     name: "VIP Kit",
-    price: 14900,
+    price: 4900,
     currency: "INR",
     cooldown: "1 Hour",
     command: "/kit vip",
@@ -1295,6 +1306,15 @@ export const KITS_CHEST_DATA: Record<string, KitData> = {
         type: "Building",
       },
       {
+        slot: 15,
+        name: "Starter Inspection Stick",
+        nameColor: "#fde047",
+        count: 1,
+        iconUrl: ASSET_ITEM("stick"),
+        type: "Utility",
+        lore: ["Right-click claims with stick to inspect land claim boundaries and owners."],
+      },
+      {
         slot: 26,
         name: "Kit Info & Cooldown",
         nameColor: "#e2e8f0",
@@ -1320,6 +1340,17 @@ export default function MinecraftChestModal({
 }: MinecraftChestModalProps) {
   const [copied, setCopied] = useState(false);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+
+  // Close modal when pressing Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   // Normalize slug (e.g. "kit-overlord" -> "overlord")
   const cleanSlug = kitSlug.replace(/^kit-/, "").toLowerCase();

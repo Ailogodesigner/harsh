@@ -10,11 +10,20 @@ const ticketSchema = z.object({
   message: z.string().min(10, "Please provide more details in your message"),
 });
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        {
+          status: 401,
+          headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+        }
+      );
     }
 
     const tickets = await prisma.supportTicket.findMany({
@@ -27,7 +36,12 @@ export async function GET() {
       orderBy: { updatedAt: "desc" },
     });
 
-    return NextResponse.json({ tickets });
+    return NextResponse.json(
+      { tickets },
+      {
+        headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch tickets" }, { status: 500 });
   }

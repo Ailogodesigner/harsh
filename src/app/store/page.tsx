@@ -74,9 +74,27 @@ export default function StorePage() {
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory = selectedCategory === "ALL" || p.category === selectedCategory;
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return matchesCategory;
+
+    let perksStr = "";
+    try {
+      const parsed = JSON.parse(p.perks);
+      if (Array.isArray(parsed)) {
+        perksStr = parsed.join(" ").toLowerCase();
+      } else {
+        perksStr = String(p.perks).toLowerCase();
+      }
+    } catch {
+      perksStr = String(p.perks || "").toLowerCase();
+    }
+
     const matchesSearch =
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      p.name.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      perksStr.includes(q);
+
     return matchesCategory && matchesSearch;
   });
 
@@ -514,15 +532,19 @@ export default function StorePage() {
           kitSlug={chestKitSlug}
           onClose={() => setChestKitSlug(null)}
           onPurchase={(kitId) => {
-            const p = products.find(
-              (prod) =>
-                prod.id === kitId ||
-                prod.slug === kitId ||
-                prod.slug === kitId.replace(/^kit-/, "") ||
-                `kit-${prod.slug}` === kitId
-            );
-            if (p) {
-              setSelectedProduct(p);
+            const normalizedKitSlug = kitId.startsWith("kit-") ? kitId : `kit-${kitId}`;
+            // Prioritize matching products in the KIT category to avoid selecting ranks with similar names
+            const kitProduct =
+              products.find(
+                (prod) =>
+                  prod.category === "KIT" &&
+                  (prod.slug === normalizedKitSlug || prod.slug === kitId || prod.id === kitId)
+              ) ||
+              products.find((prod) => prod.slug === normalizedKitSlug) ||
+              products.find((prod) => prod.id === kitId || prod.slug === kitId);
+
+            if (kitProduct) {
+              setSelectedProduct(kitProduct);
               setCheckoutError(null);
               setSetupRequiredNote(null);
             }

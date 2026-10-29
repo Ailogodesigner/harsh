@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -10,7 +13,13 @@ export async function GET(
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        {
+          status: 401,
+          headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+        }
+      );
     }
 
     const { id } = await params;
@@ -32,15 +41,32 @@ export async function GET(
     });
 
     if (!ticket) {
-      return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Ticket not found" },
+        {
+          status: 404,
+          headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+        }
+      );
     }
 
     // Only ticket creator or staff can view
     if (ticket.userId !== user.id && user.role !== "ADMIN" && user.role !== "SUPERADMIN") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden" },
+        {
+          status: 403,
+          headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+        }
+      );
     }
 
-    return NextResponse.json({ success: true, ticket });
+    return NextResponse.json(
+      { success: true, ticket },
+      {
+        headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
+      }
+    );
   } catch (error: any) {
     return NextResponse.json({ error: "Failed to fetch ticket" }, { status: 500 });
   }

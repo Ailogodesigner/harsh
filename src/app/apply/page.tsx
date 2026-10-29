@@ -30,6 +30,12 @@ export default function ApplyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (Number(age) < 15) {
+      setError("Minimum age requirement for staff applicants is 15 years.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -179,11 +185,11 @@ export default function ApplyPage() {
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Age <span className="text-emerald-400">*</span>
+                  Age <span className="text-emerald-400">* (Min 15)</span>
                 </label>
                 <input
                   type="number"
-                  min={14}
+                  min={15}
                   max={60}
                   required
                   value={age}

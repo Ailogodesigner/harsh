@@ -168,7 +168,7 @@ export default function Footer() {
                 </NextLink>
               </li>
               <li>
-                <NextLink href="/store#verification" className="hover:text-emerald-400 transition-colors">
+                <NextLink href="/verification-policy" className="hover:text-emerald-400 transition-colors">
                   Account Verification Policy
                 </NextLink>
               </li>

@@ -38,9 +38,12 @@ export default function CustomerDashboard() {
 
   const fetchDashboardData = () => {
     setLoading(true);
-    fetch("/api/auth/me")
+    fetch("/api/auth/me", { cache: "no-store" })
       .then((res) => {
-        if (!res.ok) window.location.href = "/login";
+        if (res.status === 401) {
+          window.location.href = "/login?redirect=/dashboard";
+          return null;
+        }
         return res.json();
       })
       .then((data) => {
@@ -48,23 +51,30 @@ export default function CustomerDashboard() {
           setUser(data.user);
         }
       })
-      .catch(() => (window.location.href = "/login"));
+      .catch((err) => {
+        console.warn("Session check warning:", err);
+      });
 
-    fetch("/api/tickets")
+    fetch("/api/tickets", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.tickets) setTickets(data.tickets);
+        if (Array.isArray(data?.tickets)) {
+          setTickets(data.tickets);
+        }
       })
       .catch(() => {});
 
-    // Fetch user orders & accounts
-    fetch("/api/user/profile")
+    // Fetch user orders, accounts & synchronized tickets
+    fetch("/api/user/profile", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) {
-          setAccounts(data.accounts || []);
-          setOrders(data.orders || []);
-          setEntitlements(data.entitlements || []);
+          if (Array.isArray(data.accounts)) setAccounts(data.accounts);
+          if (Array.isArray(data.orders)) setOrders(data.orders);
+          if (Array.isArray(data.entitlements)) setEntitlements(data.entitlements);
+          if (Array.isArray(data.tickets) && data.tickets.length > 0) {
+            setTickets(data.tickets);
+          }
         }
       })
       .catch(() => {})
@@ -93,6 +103,11 @@ export default function CustomerDashboard() {
         setLinkError(data.error || "Failed to link Minecraft account");
         setLinking(false);
         return;
+      }
+
+      // Immediately update linked accounts state for instant UI reflection & count increment
+      if (data.account) {
+        setAccounts((prev) => [data.account, ...prev.filter((a) => a.id !== data.account.id)]);
       }
 
       setLinkMsg(data.message);

@@ -8,7 +8,7 @@ const applySchema = z.object({
   position: z.string().min(2),
   minecraftName: z.string().min(3).max(16),
   discordTag: z.string().min(3),
-  age: z.number().int().min(14),
+  age: z.number().int().min(15, "Minimum age requirement for staff applicants is 15 years"),
   timezone: z.string().min(2),
   experience: z.string().min(10),
   whyJoin: z.string().min(10),
