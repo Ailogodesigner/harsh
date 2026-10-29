@@ -1,4 +1,4 @@
-import { PrismaClient } from ".prisma/client/wasm";
+import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { neonConfig } from "@neondatabase/serverless";
 import ws from "ws";
