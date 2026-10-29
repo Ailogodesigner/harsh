@@ -80,3 +80,4 @@ export function sanitizeString(val: string): string {
   // Strip null bytes and non-printable control characters
   return val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "").trim();
 }
+

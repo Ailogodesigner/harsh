@@ -104,6 +104,7 @@ export async function POST(req: Request) {
       name: user.name,
       email: user.email,
       role: user.role,
+      tokenVersion: 0,
     });
 
     const response = NextResponse.json({

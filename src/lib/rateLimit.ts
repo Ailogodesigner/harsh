@@ -165,3 +165,4 @@ export function isAuthLocked(key: string): { locked: boolean; retryAfterSeconds?
 export function clearFailedAuth(key: string): void {
   rateLimitStore.delete(`auth_fail:${key}`);
 }
+

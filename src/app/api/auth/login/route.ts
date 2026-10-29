@@ -107,6 +107,7 @@ export async function POST(req: Request) {
       name: user.name,
       email: user.email,
       role: user.role,
+      tokenVersion: user.tokenVersion ?? 0,
     });
 
     try {
