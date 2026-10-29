@@ -10,6 +10,14 @@ export async function GET() {
     });
     return NextResponse.json({ success: true, announcements });
   } catch (error: any) {
-    return NextResponse.json({ error: "Failed to fetch announcements" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to fetch announcements",
+        details: error?.message || String(error),
+        name: error?.name,
+        hasDbUrl: Boolean(process.env.DATABASE_URL),
+      },
+      { status: 500 }
+    );
   }
 }

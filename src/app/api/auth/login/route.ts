@@ -102,6 +102,9 @@ export async function POST(req: Request) {
         error: isDbError
           ? "Database connection error. Please verify your DATABASE_URL and run prisma migrations."
           : "Internal server error during login",
+        details: error?.message || String(error),
+        name: error?.name,
+        hasDbUrl: Boolean(process.env.DATABASE_URL),
       },
       { status: 500 }
     );
