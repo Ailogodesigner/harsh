@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, maskEmail, handleAdminError } from "@/lib/adminAuth";
 
 export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
 
     const { searchParams } = new URL(req.url);
     const search = (searchParams.get("search") || "").trim();
@@ -68,18 +69,21 @@ export async function GET(req: Request) {
       prisma.auditLog.count({ where }),
     ]);
 
+    // Mask actor emails in returned audit logs to preserve privacy
+    const sanitizedLogs = logs.map((log) => ({
+      ...log,
+      actorEmail: log.actorEmail ? maskEmail(log.actorEmail) : null,
+    }));
+
     return NextResponse.json({
       success: true,
-      logs,
+      logs: sanitizedLogs,
       total,
       page,
       limit,
       totalPages: Math.ceil(total / limit) || 1,
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Unauthorized or database error" },
-      { status: 403 }
-    );
+    return handleAdminError(error, "Failed to fetch audit logs");
   }
 }

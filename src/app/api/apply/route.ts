@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
 const applySchema = z.object({
@@ -51,12 +52,10 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPERADMIN")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-    }
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
 
     const applications = await prisma.staffApplication.findMany({
       orderBy: { createdAt: "desc" },
@@ -64,6 +63,6 @@ export async function GET() {
 
     return NextResponse.json({ applications });
   } catch (error: any) {
-    return NextResponse.json({ error: "Failed to fetch applications" }, { status: 500 });
+    return handleAdminError(error, "Failed to fetch applications");
   }
 }

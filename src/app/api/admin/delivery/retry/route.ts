@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { executeDeliveryJob } from "@/lib/minecraft/delivery";
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const { deliveryJobId } = body;
 
@@ -46,6 +48,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, result });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to retry delivery" }, { status: 500 });
+    return handleAdminError(error, "Failed to retry delivery job");
   }
 }

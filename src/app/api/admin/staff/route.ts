@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
 
     const staff = await prisma.staffMember.findMany({
       orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
@@ -12,16 +13,15 @@ export async function GET() {
 
     return NextResponse.json({ staff });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Unauthorized" },
-      { status: error?.message?.includes("Unauthorized") ? 403 : 500 }
-    );
+    return handleAdminError(error, "Failed to fetch staff members");
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
 
     const { name, displayName, role, tag, category, color, sortOrder, active } = body;
@@ -59,16 +59,15 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, staff: created });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to create staff member" },
-      { status: error?.message?.includes("Unauthorized") ? 403 : 500 }
-    );
+    return handleAdminError(error, "Failed to create staff member");
   }
 }
 
 export async function PUT(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
 
     const { id, name, displayName, role, tag, category, color, sortOrder, active } = body;
@@ -104,16 +103,15 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ success: true, staff: updated });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to update staff member" },
-      { status: error?.message?.includes("Unauthorized") ? 403 : 500 }
-    );
+    return handleAdminError(error, "Failed to update staff member");
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -138,9 +136,6 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true, message: "Staff member deleted" });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to delete staff member" },
-      { status: error?.message?.includes("Unauthorized") ? 403 : 500 }
-    );
+    return handleAdminError(error, "Failed to delete staff member");
   }
 }

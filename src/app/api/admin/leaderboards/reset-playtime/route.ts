@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { pterodactylClient } from "@/lib/minecraft/pterodactyl";
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
 
     const body = await req.json().catch(() => ({}));
     const resetConsole = body.resetConsole !== false; // default true
@@ -73,10 +74,6 @@ export async function POST(req: Request) {
       consoleResults,
     });
   } catch (error: any) {
-    console.error("Failed to reset play time:", error);
-    return NextResponse.json(
-      { error: error?.message || "Failed to reset play time" },
-      { status: error?.message?.includes("Unauthorized") ? 403 : 500 }
-    );
+    return handleAdminError(error, "Failed to reset play time");
   }
 }

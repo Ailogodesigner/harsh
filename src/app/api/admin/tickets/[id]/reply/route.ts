@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, scrubTicket, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
 const replySchema = z.object({
@@ -13,7 +13,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { id } = await params;
 
     const body = await req.json();
@@ -93,12 +95,9 @@ export async function POST(
     return NextResponse.json({
       success: true,
       message: newMessage,
-      ticket: updatedTicket,
+      ticket: scrubTicket(updatedTicket),
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to post reply" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to post reply to support ticket");
   }
 }

@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, scrubTicket, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
 export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
     const priority = searchParams.get("priority");
@@ -97,16 +99,16 @@ export async function GET(req: Request) {
     });
     statusCounts.TOTAL = total;
 
+    // Scrub player emails and sensitive PII from tickets before returning to client
+    const sanitizedTickets = tickets.map((t) => scrubTicket(t));
+
     return NextResponse.json({
       success: true,
-      tickets,
+      tickets: sanitizedTickets,
       counts: statusCounts,
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to fetch tickets" },
-      { status: error?.message?.includes("FORBIDDEN") ? 403 : 401 }
-    );
+    return handleAdminError(error, "Failed to fetch tickets");
   }
 }
 
@@ -119,7 +121,9 @@ const statusUpdateSchema = z.object({
 
 export async function PATCH(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const parsed = statusUpdateSchema.safeParse(body);
 
@@ -164,18 +168,17 @@ export async function PATCH(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, ticket: updated });
+    return NextResponse.json({ success: true, ticket: scrubTicket(updated) });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to update ticket" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to update ticket");
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -199,9 +202,6 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true, message: "Ticket deleted successfully" });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to delete ticket" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to delete ticket");
   }
 }

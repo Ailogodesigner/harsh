@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const announcements = await prisma.serverAnnouncement.findMany({
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ success: true, announcements });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to fetch announcements" }, { status: 401 });
+    return handleAdminError(error, "Failed to fetch announcements");
   }
 }
 
@@ -24,7 +26,9 @@ const announcementSchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const parsed = announcementSchema.safeParse(body);
 
@@ -56,13 +60,15 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, announcement: created });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to create announcement" }, { status: 500 });
+    return handleAdminError(error, "Failed to create announcement");
   }
 }
 
 export async function PUT(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const { id, title, content, tag, active } = body;
 
@@ -93,13 +99,15 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ success: true, announcement: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to update announcement" }, { status: 500 });
+    return handleAdminError(error, "Failed to update announcement");
   }
 }
 
 export async function DELETE(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
@@ -123,6 +131,6 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true, message: "Announcement deleted" });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to delete announcement" }, { status: 500 });
+    return handleAdminError(error, "Failed to delete announcement");
   }
 }

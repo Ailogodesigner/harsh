@@ -3,6 +3,9 @@ import { getMinecraftServerStatus } from "@/lib/minecraft/ping";
 import { Shield, Code, HeartHandshake, UserCheck, Sparkles, CheckCircle2 } from "lucide-react";
 import NextLink from "next/link";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Staff Team | Harsh Unlimited Minecraft Network",
   description: "Meet the administration, development, and moderation team keeping Harsh Unlimited safe, active, and cheat-free.",

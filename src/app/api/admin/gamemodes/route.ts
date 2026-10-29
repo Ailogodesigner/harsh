@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const modes = await prisma.gameMode.findMany({
       orderBy: { sortOrder: "asc" },
     });
     return NextResponse.json({ success: true, modes });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to fetch game modes" }, { status: 401 });
+    return handleAdminError(error, "Failed to fetch game modes");
   }
 }
 
@@ -27,7 +29,9 @@ const updateSchema = z.object({
 
 export async function PUT(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const parsed = updateSchema.safeParse(body);
 
@@ -63,6 +67,6 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ success: true, mode: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Failed to update game mode" }, { status: 500 });
+    return handleAdminError(error, "Failed to update game mode");
   }
 }

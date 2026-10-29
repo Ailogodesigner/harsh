@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { verifyAdmin, maskIdentifier, handleAdminError } from "@/lib/adminAuth";
 import { pterodactylClient } from "@/lib/minecraft/pterodactyl";
 import { getPlayerRankInfo, PlayerRankInfo } from "@/lib/minecraft/ranks";
 
@@ -20,10 +20,8 @@ const PTERODACTYL_SERVER_ID = process.env.PTERODACTYL_SERVER_ID || "";
 
 export async function GET(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPERADMIN")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await verifyAdmin(req);
+    if (authError || !user) return authError!;
 
     if (!PTERODACTYL_BASE_URL || !PTERODACTYL_API_KEY || !PTERODACTYL_SERVER_ID) {
       return NextResponse.json(
@@ -55,20 +53,17 @@ export async function GET(req: Request) {
         entries: [],
         totalParsed: 0,
         serverTime: new Date().toISOString(),
-        warning: "Unable to reach server log file. Server panel may be rebooting or SSL handshake is in progress.",
+        warning: "Unable to reach server log stream. Server may be synchronizing.",
       });
     }
 
     if (!res.ok) {
-      const is525 = res.status === 525;
       return NextResponse.json({
         success: true,
         entries: [],
         totalParsed: 0,
         serverTime: new Date().toISOString(),
-        warning: is525
-          ? "Pterodactyl panel host returned HTTP 525 (SSL handshake issue at panel.cavrixcloud.fun). Log tailing is paused; commands can still be sent."
-          : `Pterodactyl API returned HTTP ${res.status}. Log stream unavailable.`,
+        warning: "Minecraft server log tailing is currently offline or synchronizing.",
       });
     }
 
@@ -102,9 +97,34 @@ export async function GET(req: Request) {
         continue;
       }
 
-      // 2. Check if Join: "Player joined the game" or "+ Player" or "UUID of player Player is"
-      const joinMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+joined the game/i) ||
-        line.match(/]:\s*\+\s*([a-zA-Z0-9_\.]{3,16})/);
+      // 2. Check if Chat message:
+      const chatMatch1 = line.match(/]:\s*<([a-zA-Z0-9_\.]{3,16})>\s*(.+)$/);
+      const chatMatch2 = line.match(/]:\s*\[[^\]]+\]\s*([a-zA-Z0-9_\.]{3,16})\s*[:\xbb]\s*(.+)$/);
+      const chatMatch3 = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s*[:\xbb]\s*(.+)$/);
+
+      const matchedChat = chatMatch1 || chatMatch2 || chatMatch3;
+      if (matchedChat && !line.includes("issued server command:")) {
+        const player = matchedChat[1];
+        const message = matchedChat[2];
+        if (
+          player.toLowerCase() !== "server" &&
+          !line.includes("logged in with entity id")
+        ) {
+          entries.push({
+            id: `chat-${i}`,
+            timestamp,
+            type: "CHAT",
+            player,
+            rankInfo: getPlayerRankInfo(player),
+            message,
+            raw: line,
+          });
+          continue;
+        }
+      }
+
+      // 3. Check for Join events
+      const joinMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:joined the game|logged in)/i);
       if (joinMatch) {
         const player = joinMatch[1];
         entries.push({
@@ -113,16 +133,14 @@ export async function GET(req: Request) {
           type: "JOIN",
           player,
           rankInfo: getPlayerRankInfo(player),
-          message: "joined the server",
+          message: `${player} joined the network`,
           raw: line,
         });
         continue;
       }
 
-      // 3. Check if Leave: "Player lost connection: ..." or "- Player" or "Player left the game"
-      const leaveMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+lost connection/i) ||
-        line.match(/]:\s*-\s*([a-zA-Z0-9_\.]{3,16})/) ||
-        line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+left the game/i);
+      // 4. Check for Leave events
+      const leaveMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:left the game|lost connection|disconnected)/i);
       if (leaveMatch) {
         const player = leaveMatch[1];
         entries.push({
@@ -131,73 +149,14 @@ export async function GET(req: Request) {
           type: "LEAVE",
           player,
           rankInfo: getPlayerRankInfo(player),
-          message: "disconnected from server",
+          message: `${player} disconnected`,
           raw: line,
         });
         continue;
       }
 
-      // 4. Check if Advancement: "Player has made the advancement [Advancement]"
-      const advMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+has made the advancement\s*(\[.+\])/i);
-      if (advMatch) {
-        const player = advMatch[1];
-        const advancement = advMatch[2];
-        entries.push({
-          id: `adv-${i}`,
-          timestamp,
-          type: "ADVANCEMENT",
-          player,
-          rankInfo: getPlayerRankInfo(player),
-          message: `unlocked achievement ${advancement}`,
-          raw: line,
-        });
-        continue;
-      }
-
-      // 5. Check if standard player chat: "<Player> Message"
-      const chatAngleMatch = line.match(/]:\s*<([a-zA-Z0-9_\.]{3,16})>\s*(.+)$/);
-      if (chatAngleMatch) {
-        const player = chatAngleMatch[1];
-        const message = chatAngleMatch[2];
-        entries.push({
-          id: `chat-${i}`,
-          timestamp,
-          type: "CHAT",
-          player,
-          rankInfo: getPlayerRankInfo(player),
-          message,
-          raw: line,
-        });
-        continue;
-      }
-
-      // 6. Check if formatted rank chat: "[Rank] Player: Message" or "Player: Message"
-      const chatRankMatch = line.match(/]:\s*(?:\[([^\]]+)\]\s*)?([a-zA-Z0-9_\.]{3,16})\s*:\s*(.+)$/);
+      // 5. Broadcasts & System messages
       if (
-        chatRankMatch &&
-        !line.includes("Server thread/INFO") &&
-        !line.includes("DeluxeMenus") &&
-        !line.includes("BankPlus") &&
-        !line.includes("voicechat") &&
-        !line.includes("HikariPool")
-      ) {
-        const player = chatRankMatch[2];
-        const message = chatRankMatch[3];
-        entries.push({
-          id: `chat-${i}`,
-          timestamp,
-          type: "CHAT",
-          player,
-          rankInfo: getPlayerRankInfo(player),
-          message,
-          raw: line,
-        });
-        continue;
-      }
-
-      // 7. Check if Broadcast / Store Announcement
-      if (
-        line.includes("[Store]") ||
         line.includes("[Broadcast]") ||
         line.includes("Harsh Unlimited |") ||
         line.includes("BankTop has been updated")
@@ -215,7 +174,6 @@ export async function GET(req: Request) {
       }
     }
 
-    // Return the latest 200 entries
     const latestEntries = entries.slice(-200);
 
     return NextResponse.json({
@@ -225,24 +183,18 @@ export async function GET(req: Request) {
       serverTime: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error("Admin chat API error:", error);
-    return NextResponse.json(
-      { error: error?.message || "Failed to fetch live chat logs" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to fetch live chat logs");
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPERADMIN")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error: authError } = await verifyAdmin(req);
+    if (authError || !user) return authError!;
 
     const body = await req.json();
     const message = (body.message || "").trim();
-    const actionType = body.actionType || "say"; // "say" | "broadcast" | "command"
+    const actionType = body.actionType || "say";
 
     if (!message) {
       return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });
@@ -251,13 +203,10 @@ export async function POST(req: Request) {
     let commandToExecute = "";
 
     if (actionType === "command" || message.startsWith("/")) {
-      // Direct console command
       commandToExecute = message.replace(/^\/+/, "");
     } else if (actionType === "broadcast") {
-      // Prominent server broadcast
       commandToExecute = `broadcast &6★ [Admin] &f${message.replace(/["\\]/g, "")}`;
     } else {
-      // Standard in-game chat message
       commandToExecute = `say [Admin]: ${message.replace(/["\\]/g, "")}`;
     }
 
@@ -270,7 +219,7 @@ export async function POST(req: Request) {
           actorEmail: user.email,
           action: "SERVER_COMMAND",
           targetEntity: "PterodactylServer",
-          targetId: PTERODACTYL_SERVER_ID,
+          targetId: maskIdentifier(PTERODACTYL_SERVER_ID),
           metadata: JSON.stringify({ actionType, command: commandToExecute }),
         },
       });
@@ -284,10 +233,6 @@ export async function POST(req: Request) {
       result,
     });
   } catch (error: any) {
-    console.error("Failed to send message/command:", error);
-    return NextResponse.json(
-      { error: error?.message || "Failed to dispatch message to server" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to dispatch message to server");
   }
 }

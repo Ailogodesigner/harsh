@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, scrubSensitiveUserData, maskEmail, handleAdminError } from "@/lib/adminAuth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
 
     const [
       totalOrders,
@@ -70,6 +71,17 @@ export async function GET() {
 
     const totalRevenueMinor = paidOrders.reduce((acc, curr) => acc + curr.totalAmount, 0);
 
+    // Scrub player emails from dashboard stats and logs
+    const sanitizedRecentUsers = recentUsers.map((u) => scrubSensitiveUserData(u));
+    const sanitizedRecentOrders = recentOrders.map((ord) => ({
+      ...ord,
+      user: ord.user ? scrubSensitiveUserData(ord.user) : null,
+    }));
+    const sanitizedRecentLogs = recentLogs.map((log) => ({
+      ...log,
+      actorEmail: log.actorEmail ? maskEmail(log.actorEmail) : null,
+    }));
+
     return NextResponse.json({
       metrics: {
         totalOrders,
@@ -81,11 +93,11 @@ export async function GET() {
         todaySignups,
         openTickets,
       },
-      recentUsers,
-      recentOrders,
-      recentLogs,
+      recentUsers: sanitizedRecentUsers,
+      recentOrders: sanitizedRecentOrders,
+      recentLogs: sanitizedRecentLogs,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Unauthorized" }, { status: 403 });
+    return handleAdminError(error, "Failed to load dashboard statistics");
   }
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
 const productSchema = z.object({
@@ -18,21 +18,25 @@ const productSchema = z.object({
   badgeColor: z.string().default("emerald"),
 });
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const products = await prisma.product.findMany({
       orderBy: [{ sortOrder: "asc" }, { price: "asc" }],
     });
     return NextResponse.json({ products });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Unauthorized" }, { status: 403 });
+    return handleAdminError(error, "Failed to fetch products");
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const parsed = productSchema.safeParse(body);
 
@@ -103,6 +107,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, product });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message || "Operation failed" }, { status: 500 });
+    return handleAdminError(error, "Failed to save product");
   }
 }

@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
+import { verifyAdmin, scrubSensitiveUserData, handleAdminError } from "@/lib/adminAuth";
 import { z } from "zod";
 
 export async function GET(req: Request) {
   try {
-    await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search")?.trim() || "";
     const role = searchParams.get("role") || "ALL";
@@ -78,16 +80,16 @@ export async function GET(req: Request) {
       regularUsers: roleStats.find((r) => r.role === "USER")?._count._all || 0,
     };
 
+    // Redact/mask player email addresses in user lists
+    const sanitizedUsers = users.map((u) => scrubSensitiveUserData(u));
+
     return NextResponse.json({
       success: true,
-      users,
+      users: sanitizedUsers,
       stats,
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to fetch users" },
-      { status: error?.message?.includes("FORBIDDEN") ? 403 : 401 }
-    );
+    return handleAdminError(error, "Failed to fetch users");
   }
 }
 
@@ -98,7 +100,9 @@ const roleUpdateSchema = z.object({
 
 export async function PATCH(req: Request) {
   try {
-    const admin = await requireAdmin();
+    const { user: admin, error: authError } = await verifyAdmin(req);
+    if (authError || !admin) return authError!;
+
     const body = await req.json();
     const parsed = roleUpdateSchema.safeParse(body);
 
@@ -142,11 +146,8 @@ export async function PATCH(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, user: updated });
+    return NextResponse.json({ success: true, user: scrubSensitiveUserData(updated) });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || "Failed to update role" },
-      { status: 500 }
-    );
+    return handleAdminError(error, "Failed to update user role");
   }
 }
