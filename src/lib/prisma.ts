@@ -15,18 +15,6 @@ declare global {
 
 function getConnectionString(): string | undefined {
   let url = process.env.DATABASE_URL;
-  if (!url) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getCloudflareContext } = require("@opennextjs/cloudflare");
-      const ctx = getCloudflareContext();
-      if (ctx?.env?.DATABASE_URL) {
-        url = ctx.env.DATABASE_URL;
-      }
-    } catch {
-      // ignore outside opennext request context
-    }
-  }
   if (url) {
     url = url.trim();
     if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
