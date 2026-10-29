@@ -14,7 +14,7 @@ export interface ChatLogEntry {
   raw: string;
 }
 
-const PTERODACTYL_BASE_URL = (process.env.PTERODACTYL_BASE_URL || "https://panel.cavrixcloud.fun").replace(/\/+$/, "");
+const PTERODACTYL_BASE_URL = (process.env.PTERODACTYL_BASE_URL || "").replace(/\/+$/, "");
 const PTERODACTYL_API_KEY = process.env.PTERODACTYL_API_KEY || "";
 const PTERODACTYL_SERVER_ID = process.env.PTERODACTYL_SERVER_ID || "";
 

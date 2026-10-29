@@ -33,6 +33,7 @@ export default async function AdminLayout({
 
   const adminNav = [
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/servers", label: "Hosting & Servers", icon: Server },
     { href: "/admin/users", label: "Registered Users", icon: Users },
     { href: "/admin/tickets", label: "Support Tickets", icon: LifeBuoy },
     { href: "/admin/chat", label: "Live Chat & Console", icon: MessageSquare },

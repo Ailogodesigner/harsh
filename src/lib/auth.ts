@@ -16,10 +16,15 @@ const COOKIE_NAME = "hu_session";
 const SESSION_DURATION = 7 * 24 * 60 * 60; // 7 days in seconds
 
 export function getSecretKey(): Uint8Array {
-  const secret =
-    process.env.JWT_SECRET ||
-    process.env.AUTH_SECRET ||
-    "harsh-unlimited-fallback-secret-at-least-32-chars-long";
+  const secret = process.env.JWT_SECRET || process.env.AUTH_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "CRITICAL SECURITY CONFIGURATION ERROR: Neither JWT_SECRET nor AUTH_SECRET is set in the production environment."
+      );
+    }
+    return new TextEncoder().encode("harsh-unlimited-fallback-secret-at-least-32-chars-long");
+  }
   return new TextEncoder().encode(secret);
 }
 
