@@ -61,7 +61,7 @@ export default function AdminLiveChatPage() {
       const res = await fetch("/api/admin/chat");
       const data = await res.json();
       if (res.ok) {
-        if (data?.entries) {
+        if (Array.isArray(data?.entries) && data.entries.length > 0) {
           setEntries(data.entries);
         }
         if (data?.warning) {

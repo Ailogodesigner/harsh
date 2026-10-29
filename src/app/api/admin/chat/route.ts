@@ -18,6 +18,53 @@ const PTERODACTYL_BASE_URL = (process.env.PTERODACTYL_BASE_URL || "https://panel
 const PTERODACTYL_API_KEY = process.env.PTERODACTYL_API_KEY || "";
 const PTERODACTYL_SERVER_ID = process.env.PTERODACTYL_SERVER_ID || "";
 
+// In-memory cache to maintain stream continuity even if CavrixCloud origin has transient SSL (525) hiccups
+let cachedEntries: ChatLogEntry[] = [];
+let lastSuccessfulFetchTime = 0;
+
+const SYSTEM_IGNORE_STRINGS = [
+  "logged in with entity id",
+  "UUID of player",
+  "Server Ping Player",
+  "Using 4 threads",
+  "Generating keypair",
+  "Starting minecraft server",
+  "Loading properties",
+  "Default game type",
+  "Loaded 1585 recipes",
+  "Loaded 1688 advancements",
+  "Environment[sessionHost",
+  "Using libdeflate",
+  "Using OpenSSL",
+  "Vault detected",
+  "This plugin is not supposed",
+  "Running migration",
+  "Cloud commands have been registered",
+  "You are using a development build",
+  "No kits found to migrate",
+  "No provider found",
+  "No extensions to load",
+  "ABSOLUTELY NO DISCORD",
+  "The server will make no attempt",
+  "Please report them on our discord",
+  "Read more about the risks",
+  "Legacy Mode:",
+  "Adventure Native:",
+  "Using legacy text handling",
+  "Support:     https://",
+  "free plugins by SK Studio",
+  "builtbybit.com",
+  "No MaxMind credentials",
+  "There is no newer GEO IP",
+  "Could not download GeoLiteAPI",
+  "No new version available",
+  "No updates available",
+  "The 'permission message' entry has been deprecated",
+  "[voicechat] Received secret",
+  "[voicechat] Sent secret",
+  "[voicechat] Disconnecting client",
+];
+
 export async function GET(req: Request) {
   try {
     const { user, error: authError } = await verifyAdmin(req);
@@ -32,47 +79,68 @@ export async function GET(req: Request) {
 
     const endpoint = `${PTERODACTYL_BASE_URL}/api/client/servers/${PTERODACTYL_SERVER_ID}/files/contents?file=logs%2Flatest.log`;
 
-    let res: Response;
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 7000);
-      res = await fetch(endpoint, {
-        headers: {
-          Authorization: `Bearer ${PTERODACTYL_API_KEY}`,
-          Accept: "Application/vnd.pterodactyl.v1+json",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HarshUnlimited/1.0",
-        },
-        signal: controller.signal,
-        next: { revalidate: 0 },
-      });
-      clearTimeout(timeoutId);
-    } catch (fetchErr: any) {
-      console.warn("Pterodactyl fetch error (timeout or unreachable):", fetchErr?.message);
+    let rawLog = "";
+    let fetchSuccess = false;
+    let warningMessage: string | null = null;
+
+    // Retry up to 3 times to shield against CavrixCloud intermittent 525 SSL errors
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+
+        const res = await fetch(endpoint, {
+          headers: {
+            Authorization: `Bearer ${PTERODACTYL_API_KEY}`,
+            Accept: "Application/vnd.pterodactyl.v1+json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HarshUnlimited/1.0",
+          },
+          signal: controller.signal,
+          cache: "no-store",
+        });
+
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          rawLog = await res.text();
+          fetchSuccess = true;
+          break;
+        } else if (res.status === 525) {
+          // Cloudflare SSL handshake issue with host, wait and retry
+          if (attempt < 3) {
+            await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
+          }
+        }
+      } catch (err: any) {
+        if (attempt < 3) {
+          await new Promise((resolve) => setTimeout(resolve, 350 * attempt));
+        }
+      }
+    }
+
+    if (!fetchSuccess || !rawLog) {
+      if (cachedEntries.length > 0) {
+        return NextResponse.json({
+          success: true,
+          entries: cachedEntries,
+          totalParsed: cachedEntries.length,
+          serverTime: new Date().toISOString(),
+          warning: "Panel host synchronizing; displaying cached recent live server activity.",
+        });
+      }
+
       return NextResponse.json({
         success: true,
         entries: [],
         totalParsed: 0,
         serverTime: new Date().toISOString(),
-        warning: "Unable to reach server log stream. Server may be synchronizing.",
+        warning: "Minecraft server log tailing is currently offline or synchronizing. Retrying in background...",
       });
     }
 
-    if (!res.ok) {
-      return NextResponse.json({
-        success: true,
-        entries: [],
-        totalParsed: 0,
-        serverTime: new Date().toISOString(),
-        warning: "Minecraft server log tailing is currently offline or synchronizing.",
-      });
-    }
-
-    const rawLog = await res.text();
     const lines = rawLog.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    const parsedEntries: Array<ChatLogEntry & { lineIdx: number }> = [];
 
-    const entries: ChatLogEntry[] = [];
-
-    // Parse the lines into structured chat and activity objects
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
@@ -80,37 +148,117 @@ export async function GET(req: Request) {
       const timeMatch = line.match(/^\[(\d{2}:\d{2}:\d{2})\]/);
       const timestamp = timeMatch ? timeMatch[1] : "";
 
-      // 1. Check if Command: "Player issued server command: /..."
+      // 1. Player Commands (including private messages and party chats)
       const cmdMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+issued server command:\s*(.+)$/i);
       if (cmdMatch) {
         const player = cmdMatch[1];
         const command = cmdMatch[2];
-        entries.push({
-          id: `cmd-${i}`,
+
+        // Check if the command is a player chat/messaging command
+        const pmMatch = command.match(/^\/(?:msg|tell|w|whisper)\s+([a-zA-Z0-9_\.]{3,16})\s+(.+)$/i);
+        const rMatch = command.match(/^\/r\s+(.+)$/i);
+        const partyMatch = command.match(/^\/(?:pc|tc|ac|helpop|me)\s+(.+)$/i);
+
+        if (pmMatch) {
+          parsedEntries.push({
+            lineIdx: i,
+            id: `pm-${i}`,
+            timestamp,
+            type: "CHAT",
+            player,
+            rankInfo: getPlayerRankInfo(player),
+            message: `➜ ${pmMatch[1]}: ${pmMatch[2]}`,
+            raw: line,
+          });
+        } else if (rMatch) {
+          parsedEntries.push({
+            lineIdx: i,
+            id: `reply-${i}`,
+            timestamp,
+            type: "CHAT",
+            player,
+            rankInfo: getPlayerRankInfo(player),
+            message: `➜ (reply): ${rMatch[1]}`,
+            raw: line,
+          });
+        } else if (partyMatch) {
+          const channelName = command.split(" ")[0].slice(1).toUpperCase();
+          parsedEntries.push({
+            lineIdx: i,
+            id: `party-${i}`,
+            timestamp,
+            type: "CHAT",
+            player,
+            rankInfo: getPlayerRankInfo(player),
+            message: `[${channelName}] ${partyMatch[1]}`,
+            raw: line,
+          });
+        } else {
+          parsedEntries.push({
+            lineIdx: i,
+            id: `cmd-${i}`,
+            timestamp,
+            type: "COMMAND",
+            player,
+            rankInfo: getPlayerRankInfo(player),
+            message: command,
+            raw: line,
+          });
+        }
+        continue;
+      }
+
+      // 2. Player Joins (+ Player or standard Paper join message)
+      const joinPlusMatch = line.match(/]:\s*\+\s*([a-zA-Z0-9_\.]{3,16})$/);
+      const joinStdMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:joined the game|logged in)\b/i);
+      if (joinPlusMatch || joinStdMatch) {
+        const player = (joinPlusMatch || joinStdMatch)![1];
+        parsedEntries.push({
+          lineIdx: i,
+          id: `join-${i}`,
           timestamp,
-          type: "COMMAND",
+          type: "JOIN",
           player,
           rankInfo: getPlayerRankInfo(player),
-          message: command,
+          message: `${player} joined the network`,
           raw: line,
         });
         continue;
       }
 
-      // 2. Check if Chat message:
-      const chatMatch1 = line.match(/]:\s*<([a-zA-Z0-9_\.]{3,16})>\s*(.+)$/);
-      const chatMatch2 = line.match(/]:\s*\[[^\]]+\]\s*([a-zA-Z0-9_\.]{3,16})\s*[:\xbb]\s*(.+)$/);
-      const chatMatch3 = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s*[:\xbb]\s*(.+)$/);
+      // 3. Player Leaves (- Player or standard Paper disconnect)
+      const leaveMinusMatch = line.match(/]:\s*\-\s*([a-zA-Z0-9_\.]{3,16})$/);
+      const leaveStdMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:left the game|lost connection|disconnected|was kicked)\b/i);
+      if (leaveMinusMatch || leaveStdMatch) {
+        const player = (leaveMinusMatch || leaveStdMatch)![1];
+        parsedEntries.push({
+          lineIdx: i,
+          id: `leave-${i}`,
+          timestamp,
+          type: "LEAVE",
+          player,
+          rankInfo: getPlayerRankInfo(player),
+          message: `${player} disconnected`,
+          raw: line,
+        });
+        continue;
+      }
 
-      const matchedChat = chatMatch1 || chatMatch2 || chatMatch3;
-      if (matchedChat && !line.includes("issued server command:")) {
+      // 4. In-Game Public Chat: `<Player> msg` or `[Prefix] Player: msg`
+      const chatMatch1 = line.match(/]:\s*<([a-zA-Z0-9_\.]{3,16})>\s*(.+)$/);
+      const chatMatch2 = line.match(/]:\s*(?:\[[^\]]+\]\s*)*([a-zA-Z0-9_\.]{3,16})\s*[:\xbb]\s*(.+)$/);
+      const matchedChat = chatMatch1 || chatMatch2;
+      if (matchedChat) {
         const player = matchedChat[1];
         const message = matchedChat[2];
-        if (
-          player.toLowerCase() !== "server" &&
-          !line.includes("logged in with entity id")
-        ) {
-          entries.push({
+        const isSystem =
+          SYSTEM_IGNORE_STRINGS.some((ig) => line.includes(ig)) ||
+          player.toLowerCase() === "server" ||
+          player.toLowerCase() === "authme";
+
+        if (!isSystem && player.length >= 3) {
+          parsedEntries.push({
+            lineIdx: i,
             id: `chat-${i}`,
             timestamp,
             type: "CHAT",
@@ -123,46 +271,17 @@ export async function GET(req: Request) {
         }
       }
 
-      // 3. Check for Join events
-      const joinMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:joined the game|logged in)/i);
-      if (joinMatch) {
-        const player = joinMatch[1];
-        entries.push({
-          id: `join-${i}`,
-          timestamp,
-          type: "JOIN",
-          player,
-          rankInfo: getPlayerRankInfo(player),
-          message: `${player} joined the network`,
-          raw: line,
-        });
-        continue;
-      }
-
-      // 4. Check for Leave events
-      const leaveMatch = line.match(/]:\s*([a-zA-Z0-9_\.]{3,16})\s+(?:left the game|lost connection|disconnected)/i);
-      if (leaveMatch) {
-        const player = leaveMatch[1];
-        entries.push({
-          id: `leave-${i}`,
-          timestamp,
-          type: "LEAVE",
-          player,
-          rankInfo: getPlayerRankInfo(player),
-          message: `${player} disconnected`,
-          raw: line,
-        });
-        continue;
-      }
-
-      // 5. Broadcasts & System messages
+      // 5. Broadcasts & Major Server Events
       if (
         line.includes("[Broadcast]") ||
         line.includes("Harsh Unlimited |") ||
-        line.includes("BankTop has been updated")
+        line.includes("BankTop has been updated") ||
+        line.includes("Shop >>") ||
+        line.includes("Restarting in")
       ) {
         const cleanMsg = line.replace(/^.+?]:\s*/, "");
-        entries.push({
+        parsedEntries.push({
+          lineIdx: i,
           id: `bc-${i}`,
           timestamp,
           type: "BROADCAST",
@@ -174,13 +293,26 @@ export async function GET(req: Request) {
       }
     }
 
-    const latestEntries = entries.slice(-200);
+    // Ensure balanced distribution so high command activity never drowns out player chats or joins
+    const recentChats = parsedEntries.filter((e) => e.type === "CHAT").slice(-100);
+    const recentCommands = parsedEntries.filter((e) => e.type === "COMMAND").slice(-150);
+    const recentJoins = parsedEntries.filter((e) => e.type === "JOIN" || e.type === "LEAVE").slice(-60);
+    const recentBroadcasts = parsedEntries.filter((e) => e.type === "BROADCAST").slice(-40);
+
+    // Merge and sort in exact chronological order
+    const merged = [...recentChats, ...recentCommands, ...recentJoins, ...recentBroadcasts]
+      .sort((a, b) => a.lineIdx - b.lineIdx)
+      .map(({ lineIdx, ...entry }) => entry);
+
+    cachedEntries = merged;
+    lastSuccessfulFetchTime = Date.now();
 
     return NextResponse.json({
       success: true,
-      entries: latestEntries,
-      totalParsed: entries.length,
+      entries: merged,
+      totalParsed: parsedEntries.length,
       serverTime: new Date().toISOString(),
+      warning: warningMessage,
     });
   } catch (error: any) {
     return handleAdminError(error, "Failed to fetch live chat logs");
