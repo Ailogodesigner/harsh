@@ -44,3 +44,4 @@ export async function POST(req: Request) {
     return handleAdminError(error, "Failed to execute server power operation");
   }
 }
+

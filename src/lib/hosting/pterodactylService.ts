@@ -33,9 +33,14 @@ export interface LiveServerResources {
   source: "live" | "cached";
 }
 
-// In-memory cache to ensure dashboard responsiveness during transient network or SSL (525) events
+// In-memory cache to ensure dashboard responsiveness and eliminate upstream network latency
+let cachedOverview: ServerOverview | null = null;
+let lastOverviewFetchTime = 0;
+const OVERVIEW_CACHE_TTL_MS = 60000; // 60-second cache for static server specifications
+
 let cachedMetrics: LiveServerResources | null = null;
 let lastMetricsFetchTime = 0;
+const METRICS_CACHE_TTL_MS = 2500; // 2.5-second cache for live telemetry gauges
 let lastPowerActionTime = 0;
 
 const POWER_ACTION_COOLDOWN_MS = 15000; // 15-second cooldown to prevent server state flapping
@@ -140,10 +145,16 @@ export class PterodactylHostingService {
 
   /**
    * Retrieves sanitized server specifications, limits, and operational boundaries.
+   * Cached for 60 seconds to eliminate redundant upstream API overhead.
    */
   public async getServerOverview(): Promise<ServerOverview> {
+    if (cachedOverview && Date.now() - lastOverviewFetchTime < OVERVIEW_CACHE_TTL_MS) {
+      return cachedOverview;
+    }
+
     const res = await this.safeFetch(`/api/client/servers/${encodeURIComponent(this.serverId)}`);
     if (!res.ok) {
+      if (cachedOverview) return cachedOverview;
       throw new Error(`Failed to fetch server overview (HTTP ${res.status})`);
     }
 
@@ -151,7 +162,7 @@ export class PterodactylHostingService {
     const attrs = json.attributes || {};
     const limits = attrs.limits || {};
 
-    return {
+    const overview: ServerOverview = {
       name: attrs.name || "Harsh Unlimited Minecraft Network",
       identifier: attrs.identifier ? maskIdentifier(attrs.identifier, 4) : "7131****",
       node: attrs.node || "Primary Node",
@@ -162,12 +173,21 @@ export class PterodactylHostingService {
         cpuPercentage: typeof limits.cpu === "number" ? limits.cpu : 400,
       },
     };
+
+    cachedOverview = overview;
+    lastOverviewFetchTime = Date.now();
+    return overview;
   }
 
   /**
    * Retrieves real-time server telemetry: CPU %, RAM bytes, Disk, Network RX/TX, and state.
+   * Throttled with a 2.5-second cache to prevent upstream socket saturation and Cloudflare 525 spikes.
    */
   public async getLiveMetrics(): Promise<LiveServerResources> {
+    if (cachedMetrics && Date.now() - lastMetricsFetchTime < METRICS_CACHE_TTL_MS) {
+      return cachedMetrics;
+    }
+
     try {
       const res = await this.safeFetch(
         `/api/client/servers/${encodeURIComponent(this.serverId)}/resources`
@@ -405,3 +425,4 @@ export class PterodactylHostingService {
 }
 
 export const pterodactylHostingService = new PterodactylHostingService();
+

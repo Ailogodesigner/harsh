@@ -38,3 +38,4 @@ export async function GET(req: Request) {
     return handleAdminError(error, "Failed to load hosting server metrics");
   }
 }
+

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Server,
   Cpu,
@@ -68,8 +68,11 @@ export default function AdminHostingDashboard() {
   const [commandInput, setCommandInput] = useState("");
   const [commandProcessing, setCommandProcessing] = useState(false);
   const [commandHistory, setCommandHistory] = useState<Array<{ command: string; result: string; timestamp: string }>>([]);
+  const isPollingRef = useRef(false);
 
-  const fetchMetrics = async () => {
+  const fetchMetrics = async (force = false) => {
+    if (isPollingRef.current && !force) return;
+    isPollingRef.current = true;
     try {
       const res = await fetch("/api/admin/hosting");
       const data = await res.json();
@@ -85,6 +88,7 @@ export default function AdminHostingDashboard() {
     } catch (err: any) {
       console.warn("Failed to poll server metrics:", err);
     } finally {
+      isPollingRef.current = false;
       setLoading(false);
     }
   };
@@ -117,7 +121,7 @@ export default function AdminHostingDashboard() {
         setStatusMessage({ text: data.message, type: "success" });
         setPendingPowerAction(null);
         setConfirmationInput("");
-        setTimeout(() => fetchMetrics(), 1500);
+        setTimeout(() => fetchMetrics(true), 1500);
       } else {
         setStatusMessage({ text: data.error || "Action execution failed", type: "error" });
       }
@@ -133,7 +137,16 @@ export default function AdminHostingDashboard() {
     const cmd = commandInput.trim();
     if (!cmd) return;
 
+    const timestamp = new Date().toLocaleTimeString();
+    // Instant optimistic command entry
+    setCommandHistory((prev) => [
+      { command: cmd, result: "Dispatched to server...", timestamp },
+      ...prev.slice(0, 19),
+    ]);
+    setCommandInput("");
     setCommandProcessing(true);
+    setStatusMessage({ text: `Dispatched: ${cmd}`, type: "success" });
+
     try {
       const res = await fetch("/api/admin/hosting/command", {
         method: "POST",
@@ -143,17 +156,35 @@ export default function AdminHostingDashboard() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setCommandHistory((prev) => [
-          { command: cmd, result: data.message, timestamp: new Date().toLocaleTimeString() },
-          ...prev.slice(0, 19),
-        ]);
-        setCommandInput("");
+        setCommandHistory((prev) =>
+          prev.map((item) =>
+            item.command === cmd && item.timestamp === timestamp
+              ? { ...item, result: data.message || "Executed successfully" }
+              : item
+          )
+        );
         setStatusMessage({ text: `Dispatched: ${cmd}`, type: "success" });
       } else {
-        setStatusMessage({ text: data.error || "Failed to dispatch command", type: "error" });
+        const errorMsg = data.error || "Failed to dispatch command";
+        setCommandHistory((prev) =>
+          prev.map((item) =>
+            item.command === cmd && item.timestamp === timestamp
+              ? { ...item, result: `Failed: ${errorMsg}` }
+              : item
+          )
+        );
+        setStatusMessage({ text: errorMsg, type: "error" });
       }
     } catch (err: any) {
-      setStatusMessage({ text: err?.message || "Network error", type: "error" });
+      const netError = err?.message || "Network error";
+      setCommandHistory((prev) =>
+        prev.map((item) =>
+          item.command === cmd && item.timestamp === timestamp
+            ? { ...item, result: `Error: ${netError}` }
+            : item
+        )
+      );
+      setStatusMessage({ text: netError, type: "error" });
     } finally {
       setCommandProcessing(false);
       setTimeout(() => setStatusMessage(null), 4000);
@@ -230,7 +261,7 @@ export default function AdminHostingDashboard() {
 
           <button
             type="button"
-            onClick={fetchMetrics}
+            onClick={() => fetchMetrics(true)}
             disabled={loading}
             className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-400 hover:text-white transition-all cursor-pointer"
             title="Manual Telemetry Poll"
@@ -654,3 +685,4 @@ export default function AdminHostingDashboard() {
     </div>
   );
 }
+

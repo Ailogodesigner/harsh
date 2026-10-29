@@ -44,7 +44,7 @@ export default function AdminLiveChatPage() {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(3000); // 3 seconds
+  const [autoRefreshInterval, setAutoRefreshInterval] = useState<number>(3500); // 3.5 seconds
   const [autoScroll, setAutoScroll] = useState(true);
 
   // Message dispatch state
@@ -55,8 +55,11 @@ export default function AdminLiveChatPage() {
   const [panelWarning, setPanelWarning] = useState<string | null>(null);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isPollingRef = useRef(false);
 
-  const fetchChatLogs = async () => {
+  const fetchChatLogs = async (force = false) => {
+    if (isPollingRef.current && !force) return;
+    isPollingRef.current = true;
     try {
       const res = await fetch("/api/admin/chat");
       const data = await res.json();
@@ -77,6 +80,7 @@ export default function AdminLiveChatPage() {
     } catch (err: any) {
       console.error("Failed to poll chat logs:", err);
     } finally {
+      isPollingRef.current = false;
       setLoading(false);
     }
   };
@@ -98,17 +102,34 @@ export default function AdminLiveChatPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim()) return;
+    const msg = inputMessage.trim();
+    if (!msg) return;
 
+    // 1. Optimistic instant display — zero perceived delay for the sender
+    const now = new Date();
+    const timeFormatted = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    const optimisticId = `optimistic-${Date.now()}`;
+    const optimisticEntry: ChatEntry = {
+      id: optimisticId,
+      timestamp: timeFormatted,
+      type: dispatchMode === "broadcast" ? "BROADCAST" : dispatchMode === "command" ? "COMMAND" : "CHAT",
+      player: "You (Admin)",
+      rankInfo: { rank: "OWNER", color: "text-red-400", border: "border-red-500/25", isDonorOrStaff: true },
+      message: dispatchMode === "broadcast" ? `★ [Admin] ${msg}` : msg,
+      raw: `[${timeFormatted}] [Server thread/INFO]: [Admin]: ${msg}`,
+    };
+
+    setEntries((prev) => [...prev, optimisticEntry]);
+    setInputMessage("");
     setDispatching(true);
-    setStatusMessage(null);
+    setStatusMessage({ text: "Message dispatched!", success: true });
 
     try {
       const res = await fetch("/api/admin/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: inputMessage.trim(),
+          message: msg,
           actionType: dispatchMode,
         }),
       });
@@ -116,8 +137,8 @@ export default function AdminLiveChatPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setStatusMessage({ text: "Message sent into server!", success: true });
-        setInputMessage("");
-        setTimeout(() => fetchChatLogs(), 800);
+        // Background sync to reconcile timestamps
+        setTimeout(() => fetchChatLogs(true), 1200);
       } else {
         setStatusMessage({ text: data.error || "Failed to dispatch", success: false });
       }
@@ -125,7 +146,7 @@ export default function AdminLiveChatPage() {
       setStatusMessage({ text: err?.message || "Network error", success: false });
     } finally {
       setDispatching(false);
-      setTimeout(() => setStatusMessage(null), 4000);
+      setTimeout(() => setStatusMessage(null), 3000);
     }
   };
 
@@ -194,14 +215,25 @@ export default function AdminLiveChatPage() {
             </button>
             <button
               type="button"
-              onClick={() => setAutoRefreshInterval(5000)}
+              onClick={() => setAutoRefreshInterval(3500)}
               className={`px-2 py-1 rounded-lg font-bold text-[11px] transition-colors cursor-pointer ${
-                autoRefreshInterval === 5000
+                autoRefreshInterval === 3500
                   ? "bg-emerald-500 text-slate-950"
                   : "hover:bg-slate-800 text-slate-400"
               }`}
             >
-              5s
+              3.5s
+            </button>
+            <button
+              type="button"
+              onClick={() => setAutoRefreshInterval(6000)}
+              className={`px-2 py-1 rounded-lg font-bold text-[11px] transition-colors cursor-pointer ${
+                autoRefreshInterval === 6000
+                  ? "bg-emerald-500 text-slate-950"
+                  : "hover:bg-slate-800 text-slate-400"
+              }`}
+            >
+              6s
             </button>
             <button
               type="button"
@@ -218,7 +250,7 @@ export default function AdminLiveChatPage() {
 
           <button
             type="button"
-            onClick={fetchChatLogs}
+            onClick={() => fetchChatLogs(true)}
             disabled={loading}
             className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-400 hover:text-white transition-all cursor-pointer"
             title="Manual Refresh"
