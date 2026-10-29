@@ -60,11 +60,16 @@ export function getPrisma(): PrismaClient {
     return global.globalPrisma;
   }
 
-  // Fallback for build time
-  const fallback = new PrismaClient();
-  if (process.env.NODE_ENV !== "production") {
-    global.globalPrisma = fallback;
+  // In production, require connection string with Neon adapter
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "DATABASE_URL is not set. Ensure DATABASE_URL is configured in your Cloudflare Worker environment variables."
+    );
   }
+
+  // Fallback for build / local development time without DATABASE_URL
+  const fallback = new PrismaClient();
+  global.globalPrisma = fallback;
   return fallback;
 }
 
