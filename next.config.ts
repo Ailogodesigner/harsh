@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["@prisma/client", ".prisma/client"],
+  async rewrites() {
+    return [
+      {
+        source: "/google:id.html",
+        destination: "/api/google-verify?id=:id",
+      },
+    ];
+  },
   async headers() {
     return [
       {

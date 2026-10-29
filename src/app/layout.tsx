@@ -16,6 +16,15 @@ export const metadata: Metadata = {
   title: "Harsh Unlimited | Premium Minecraft Gaming Network",
   description:
     "India's premier Minecraft network featuring custom Lifesteal SMP, enhanced Survival economy, BoxPvP, and automated instant rank delivery.",
+  alternates: {
+    canonical: "https://harshunlimited.fun",
+  },
+  verification: {
+    google:
+      process.env.GOOGLE_SITE_VERIFICATION ||
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      undefined,
+  },
   keywords: [
     "Harsh Unlimited",
     "Minecraft server",
@@ -42,6 +51,20 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Harsh Unlimited",
+  url: "https://harshunlimited.fun",
+  description:
+    "India's premier Minecraft network featuring custom Lifesteal SMP, enhanced Survival economy, BoxPvP, and automated instant rank delivery.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://harshunlimited.fun/wiki?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -51,6 +74,10 @@ export default function RootLayout({
     <html lang="en" className="dark h-full antialiased scroll-smooth">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className="min-h-screen flex flex-col bg-[#08090d] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-300">
         <SecurityGuard />
