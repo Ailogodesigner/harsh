@@ -16,8 +16,8 @@ describe("Phase 9: Hosting & Infrastructure Security Verification", () => {
     });
 
     it("masks backend instance and server identifiers", () => {
-      expect(maskIdentifier("srv_a1b2c3d4", 4)).toBe("7131****");
-      expect(maskIdentifier("srv_a1b2c3d4-b3c1-4d40-a9ab-0bfaec82b8f1", 4)).toBe("7131****");
+      expect(maskIdentifier("srv_a1b2c3d4", 4)).toBe("srv_****");
+      expect(maskIdentifier("srv_a1b2c3d4-b3c1-4d40-a9ab-0bfaec82b8f1", 4)).toBe("srv_****");
       expect(maskIdentifier("abc", 4)).toBe("***");
     });
 

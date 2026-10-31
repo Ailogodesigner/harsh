@@ -191,7 +191,7 @@ export function maskEmail(email?: string | null): string {
 }
 
 /**
- * Redacts backend server IDs, instance tokens, or UUIDs (e.g. `srv_a1b2c3d4-410a` -> `7131****`).
+ * Redacts backend server IDs, instance tokens, or UUIDs (e.g. `srv_a1b2c3d4-410a` -> `srv_****`).
  */
 export function maskIdentifier(id?: string | null, keepChars = 4): string {
   if (!id || typeof id !== "string") return "";
