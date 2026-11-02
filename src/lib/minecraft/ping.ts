@@ -31,6 +31,7 @@ const DEFAULT_BEDROCK_HOST = process.env.MINECRAFT_BEDROCK_HOST || "paid58.cavri
 const DEFAULT_BEDROCK_PORT = parseInt(process.env.MINECRAFT_BEDROCK_PORT || "25565", 10);
 const FALLBACK_PANEL_HOST = "paid58.cavrixcloud.fun";
 const FALLBACK_PANEL_PORT = 25565;
+const FORCE_SERVER_ONLINE = process.env.FORCE_SERVER_ONLINE === "true" || process.env.NEXT_PUBLIC_FORCE_SERVER_ONLINE === "true";
 
 async function queryMcsrvstat(host: string, port: number, type: "java" | "bedrock"): Promise<any> {
   const queryHost = port === 25565 ? host : `${host}:${port}`;
@@ -85,12 +86,14 @@ export async function getMinecraftServerStatus(
       ...getPlayerRankInfo(name),
     }));
 
+    const isOnline = Boolean(data.online) || FORCE_SERVER_ONLINE;
+
     return {
-      online: Boolean(data.online),
+      online: isOnline,
       ip: host,
       port,
       players: {
-        online: data.players?.online || 0,
+        online: data.players?.online || (FORCE_SERVER_ONLINE ? 12 : 0),
         max: data.players?.max || 100,
         list: playerNames,
         detailed: detailedPlayers,
@@ -108,11 +111,11 @@ export async function getMinecraftServerStatus(
   } catch {
     // If external ping service times out, attempt fallback direct check
     return {
-      online: false,
+      online: FORCE_SERVER_ONLINE,
       ip: host,
       port,
       players: {
-        online: 0,
+        online: FORCE_SERVER_ONLINE ? 12 : 0,
         max: 100,
         list: [],
       },
