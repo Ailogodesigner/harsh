@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Terminal, Code, Cpu, Play, Check, Copy } from "lucide-react";
+import BorderBeam from "./ui/BorderBeam";
+import { playCyberClick, playCyberHover, playCyberSuccess } from "./ui/SoundEffects";
 
 export default function HeroTerminal() {
   const [activeTab, setActiveTab] = useState<"code" | "architecture" | "cli">("code");
@@ -52,6 +54,7 @@ export default function HeroTerminal() {
 
     setCliHistory([...cliHistory, { command: cliInput, output }]);
     setCliInput("");
+    playCyberSuccess();
   };
 
   const codeSnippet = `/**
@@ -114,62 +117,77 @@ const systemTopology: CloudArchitecture = {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden border border-slate-700/80 bg-[#090b11] shadow-2xl shadow-cyan-500/10 text-left font-mono relative">
+    <div className="w-full max-w-4xl mx-auto rounded-3xl overflow-hidden border border-purple-500/30 bg-[#080713]/95 shadow-2xl shadow-purple-950/40 text-left font-mono relative">
+      {/* Skiper UI Border Beam */}
+      <BorderBeam size={220} duration={10} colorFrom="#a855f7" colorTo="#a3e635" />
+
       {/* Decorative corner HUD markers */}
-      <span className="absolute top-2 left-2 text-[10px] text-slate-600 font-mono pointer-events-none">
+      <span className="absolute top-2 left-3 text-[10px] text-purple-400/60 font-mono pointer-events-none">
         [SYS_DEV_TERMINAL]
       </span>
-      <span className="absolute top-2 right-2 text-[10px] text-cyan-500/70 font-mono pointer-events-none">
-        PORT: 3000 // READY
+      <span className="absolute top-2 right-3 text-[10px] text-lime-400/80 font-mono pointer-events-none">
+        PORT: 3000 // LIVE
       </span>
 
       {/* Terminal Titlebar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#0d1017] border-b border-slate-800">
+      <div className="flex items-center justify-between px-4 py-3 bg-[#0d0c1e] border-b border-purple-500/20">
         {/* Left: Window Controls */}
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-rose-500/90 shadow-sm" />
           <div className="w-3 h-3 rounded-full bg-amber-500/90 shadow-sm" />
-          <div className="w-3 h-3 rounded-full bg-emerald-500/90 shadow-sm" />
-          <span className="text-xs text-slate-500 ml-2 font-mono hidden sm:inline">
+          <div className="w-3 h-3 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.6)]" />
+          <span className="text-xs text-purple-300/60 ml-2 font-mono hidden sm:inline">
             aditya@workstation: ~/portfolio
           </span>
         </div>
 
         {/* Center: Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
+        <div className="flex items-center gap-1 bg-[#06050e] p-1 rounded-xl border border-purple-500/20">
           <button
-            onClick={() => setActiveTab("code")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            onClick={() => {
+              setActiveTab("code");
+              playCyberClick();
+            }}
+            onMouseEnter={() => playCyberHover()}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "code"
-                ? "bg-slate-800 text-cyan-400 shadow-sm"
+                ? "bg-purple-600/30 text-purple-300 border border-purple-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <Code className="w-3 h-3" />
+            <Code className="w-3 h-3 text-purple-400" />
             <span>Profile.ts</span>
           </button>
 
           <button
-            onClick={() => setActiveTab("architecture")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            onClick={() => {
+              setActiveTab("architecture");
+              playCyberClick();
+            }}
+            onMouseEnter={() => playCyberHover()}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "architecture"
-                ? "bg-slate-800 text-emerald-400 shadow-sm"
+                ? "bg-lime-500/20 text-lime-300 border border-lime-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <Cpu className="w-3 h-3" />
+            <Cpu className="w-3 h-3 text-lime-400" />
             <span>Architecture.ts</span>
           </button>
 
           <button
-            onClick={() => setActiveTab("cli")}
-            className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            onClick={() => {
+              setActiveTab("cli");
+              playCyberClick();
+            }}
+            onMouseEnter={() => playCyberHover()}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               activeTab === "cli"
-                ? "bg-slate-800 text-amber-400 shadow-sm"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            <Terminal className="w-3 h-3" />
+            <Terminal className="w-3 h-3 text-amber-400" />
             <span>Interactive CLI</span>
           </button>
         </div>
@@ -178,8 +196,12 @@ const systemTopology: CloudArchitecture = {
         <div>
           {activeTab !== "cli" && (
             <button
-              onClick={handleCopyCode}
-              className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1"
+              onClick={() => {
+                handleCopyCode();
+                playCyberSuccess();
+              }}
+              onMouseEnter={() => playCyberHover()}
+              className="p-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-300 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1"
               title="Copy snippet"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -291,19 +313,19 @@ const systemTopology: CloudArchitecture = {
 
         {activeTab === "cli" && (
           <div className="space-y-3 font-mono">
-            <div className="text-slate-500 text-[11px] pb-1 border-b border-slate-800 flex items-center justify-between">
+            <div className="text-purple-400/60 text-[11px] pb-1 border-b border-purple-500/20 flex items-center justify-between">
               <span>Interactive Shell: type &apos;help&apos;, &apos;skills&apos;, &apos;projects&apos;, &apos;contact&apos;, &apos;clear&apos;</span>
-              <span className="text-emerald-400">● LIVE</span>
+              <span className="text-lime-400">● LIVE</span>
             </div>
 
             <div className="space-y-2">
               {cliHistory.map((item, idx) => (
                 <div key={idx} className="space-y-1">
-                  <div className="flex items-center gap-2 text-cyan-400">
-                    <span className="text-slate-600">$</span>
+                  <div className="flex items-center gap-2 text-lime-400">
+                    <span className="text-purple-400">$</span>
                     <span>{item.command}</span>
                   </div>
-                  <div className="text-slate-300 whitespace-pre-wrap pl-4 border-l border-slate-800 text-[12px]">
+                  <div className="text-slate-200 whitespace-pre-wrap pl-4 border-l border-purple-500/30 text-[12px]">
                     {item.output}
                   </div>
                 </div>
@@ -311,18 +333,18 @@ const systemTopology: CloudArchitecture = {
             </div>
 
             <form onSubmit={handleCliSubmit} className="flex items-center gap-2 pt-2">
-              <span className="text-emerald-400 font-bold">$</span>
+              <span className="text-lime-400 font-bold">$</span>
               <input
                 type="text"
                 value={cliInput}
                 onChange={(e) => setCliInput(e.target.value)}
                 placeholder="type a command (e.g. skills, hire, whoami)..."
-                className="w-full bg-transparent border-none text-white focus:outline-none text-xs font-mono placeholder:text-slate-600"
+                className="w-full bg-transparent border-none text-white focus:outline-none text-xs font-mono placeholder:text-purple-300/40"
                 autoFocus
               />
               <button
                 type="submit"
-                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 cursor-pointer"
+                className="px-2.5 py-0.5 rounded bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold text-[10px] cursor-pointer"
               >
                 Run
               </button>
@@ -332,18 +354,18 @@ const systemTopology: CloudArchitecture = {
       </div>
 
       {/* Terminal Footer Status Bar */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-2 bg-[#07090e] border-t border-slate-800 text-[11px] text-slate-500 font-mono">
+      <div className="flex flex-wrap items-center justify-between px-4 py-2 bg-[#06050e] border-t border-purple-500/20 text-[11px] text-purple-300/70 font-mono">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="flex items-center gap-1.5 text-lime-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse" />
             <span>ONLINE</span>
           </span>
           <span>UTF-8</span>
-          <span className="hidden sm:inline">TypeScript</span>
+          <span className="hidden sm:inline">TypeScript 5.8</span>
         </div>
         <div className="flex items-center gap-3">
           <span>Turbopack: Active</span>
-          <span className="text-cyan-400">Git: main</span>
+          <span className="text-lime-400">Git: main</span>
         </div>
       </div>
     </div>

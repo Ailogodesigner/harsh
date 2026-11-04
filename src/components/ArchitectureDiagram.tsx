@@ -1,6 +1,7 @@
 "use client";
 
 import { ShieldCheck, Server, Database, Globe, CreditCard, Cpu, ArrowRight, Zap, Radio } from "lucide-react";
+import BorderBeam from "./ui/BorderBeam";
 
 export default function ArchitectureDiagram() {
   const nodes = [
@@ -9,9 +10,9 @@ export default function ArchitectureDiagram() {
       role: "Global Visitors & Players",
       tech: "Next.js App / Desktop / Mobile",
       icon: Globe,
-      accent: "from-cyan-500/20 to-blue-500/20",
-      border: "border-cyan-500/30",
-      textAccent: "text-cyan-400",
+      accent: "from-purple-500/20 to-indigo-500/20",
+      border: "border-purple-500/30",
+      textAccent: "text-purple-300",
       status: "HTTP/3 • Zero-Lag",
     },
     {
@@ -19,9 +20,9 @@ export default function ArchitectureDiagram() {
       role: "Cloudflare Workers / OpenNext",
       tech: "Sub-15ms Edge Caching • HSTS A+",
       icon: Radio,
-      accent: "from-indigo-500/20 to-purple-500/20",
-      border: "border-indigo-500/30",
-      textAccent: "text-indigo-400",
+      accent: "from-fuchsia-500/20 to-purple-500/20",
+      border: "border-fuchsia-500/30",
+      textAccent: "text-fuchsia-300",
       status: "Edge Verified",
     },
     {
@@ -29,9 +30,9 @@ export default function ArchitectureDiagram() {
       role: "Next.js 16 Turbopack",
       tech: "React 19 RSC • JWT Auth • Zod",
       icon: Cpu,
-      accent: "from-emerald-500/20 to-teal-500/20",
-      border: "border-emerald-500/30",
-      textAccent: "text-emerald-400",
+      accent: "from-lime-500/20 to-emerald-500/20",
+      border: "border-lime-500/40",
+      textAccent: "text-lime-400",
       status: "Active Runtime",
     },
     {
@@ -39,7 +40,7 @@ export default function ArchitectureDiagram() {
       role: "PostgreSQL & Prisma",
       tech: "Neon Serverless Pool • ACID",
       icon: Database,
-      accent: "from-amber-500/20 to-orange-500/20",
+      accent: "from-amber-500/20 to-yellow-500/20",
       border: "border-amber-500/30",
       textAccent: "text-amber-400",
       status: "Persistent Storage",
@@ -57,28 +58,31 @@ export default function ArchitectureDiagram() {
   ];
 
   return (
-    <div className="w-full rounded-3xl border border-slate-800 bg-[#090b11] p-6 sm:p-10 shadow-2xl relative overflow-hidden text-left font-mono">
-      {/* Decorative Grid Lines */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px]" />
+    <div className="w-full rounded-3xl border border-purple-500/25 bg-[#070611] p-6 sm:p-10 shadow-2xl shadow-purple-950/40 relative overflow-hidden text-left font-mono">
+      {/* Skiper UI Border Beam */}
+      <BorderBeam size={240} duration={14} colorFrom="#a855f7" colorTo="#a3e635" />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800 relative z-10">
+      {/* Decorative Grid Lines */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#a855f7_1px,transparent_1px)] [background-size:24px_24px]" />
+
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-purple-500/20 relative z-10">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse shadow-[0_0_8px_rgba(163,230,53,0.7)]" />
             <h3 className="font-black text-white text-base sm:text-lg tracking-tight">
               Production Architecture Topology
             </h3>
           </div>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">
+          <p className="text-xs text-purple-200/70 font-sans mt-0.5">
             Distributed multi-tier cloud infrastructure designed for high concurrency and sub-100ms global latency.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <span className="text-[11px] px-2.5 py-1 rounded-full bg-[#0e0c1e] border border-purple-500/30 text-purple-300">
             Node: Edge Global
           </span>
-          <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">
+          <span className="text-[11px] px-2.5 py-1 rounded-full bg-lime-500/10 border border-lime-500/30 text-lime-400 font-bold">
             Uptime: 99.99%
           </span>
         </div>
@@ -126,22 +130,22 @@ export default function ArchitectureDiagram() {
       </div>
 
       {/* Benchmarks Footer Strip */}
-      <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center relative z-10">
-        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-          <div className="text-cyan-400 font-black text-lg">12ms</div>
-          <div className="text-[10px] text-slate-400">Edge Gateway Ping</div>
+      <div className="mt-8 pt-6 border-t border-purple-500/20 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center relative z-10">
+        <div className="p-3 rounded-xl bg-[#090814] border border-purple-500/20">
+          <div className="text-purple-300 font-black text-lg">12ms</div>
+          <div className="text-[10px] text-purple-300/70">Edge Gateway Ping</div>
         </div>
-        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-          <div className="text-emerald-400 font-black text-lg">A+ Grade</div>
-          <div className="text-[10px] text-slate-400">CSP / HSTS Security</div>
+        <div className="p-3 rounded-xl bg-[#090814] border border-purple-500/20">
+          <div className="text-lime-400 font-black text-lg">A+ Grade</div>
+          <div className="text-[10px] text-purple-300/70">CSP / HSTS Security</div>
         </div>
-        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-          <div className="text-purple-400 font-black text-lg">SHA-256</div>
-          <div className="text-[10px] text-slate-400">HMAC Webhooks</div>
+        <div className="p-3 rounded-xl bg-[#090814] border border-purple-500/20">
+          <div className="text-fuchsia-400 font-black text-lg">SHA-256</div>
+          <div className="text-[10px] text-purple-300/70">HMAC Webhooks</div>
         </div>
-        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+        <div className="p-3 rounded-xl bg-[#090814] border border-purple-500/20">
           <div className="text-amber-400 font-black text-lg">Zero-Wait</div>
-          <div className="text-[10px] text-slate-400">Serverless Cold-Start</div>
+          <div className="text-[10px] text-purple-300/70">Serverless Cold-Start</div>
         </div>
       </div>
     </div>

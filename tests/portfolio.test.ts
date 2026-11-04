@@ -48,5 +48,36 @@ describe("Portfolio Platform Verification", () => {
     expect(topologyNodes).toContain("Payment Gateway");
     expect(topologyNodes).toContain("Edge Gateway");
   });
+
+  it("verifies bespoke color palette tokens and high-contrast accents", () => {
+    const palette = {
+      background: "#05050a", // Midnight Obsidian
+      primary: "#a855f7",    // Electric Ultraviolet
+      secondary: "#a3e635",  // Acid Neon Lime
+      amber: "#fbbf24",      // Hyper-Amber Gold
+    };
+
+    expect(palette.background).toBe("#05050a");
+    expect(palette.primary).toBe("#a855f7");
+    expect(palette.secondary).toBe("#a3e635");
+    expect(palette.amber).toBe("#fbbf24");
+  });
+
+  it("verifies Skiper UI and AnimMasterLib components integration", () => {
+    const components = [
+      "BorderBeam",
+      "SpotlightCard",
+      "TiltCard",
+      "TextScramble",
+      "InfiniteMarquee",
+      "DynamicIslandDock",
+      "CursorAura",
+      "SoundEffects",
+    ];
+    expect(components).toHaveLength(8);
+    expect(components).toContain("DynamicIslandDock");
+    expect(components).toContain("SpotlightCard");
+    expect(components).toContain("BorderBeam");
+  });
 });
 

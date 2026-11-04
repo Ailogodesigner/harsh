@@ -8,6 +8,14 @@ import GithubIcon from "@/components/GithubIcon";
 import HeroTerminal from "@/components/HeroTerminal";
 import ArchitectureDiagram from "@/components/ArchitectureDiagram";
 import GithubCommitHeatmap from "@/components/GithubCommitHeatmap";
+import CursorAura from "@/components/ui/CursorAura";
+import DynamicIslandDock from "@/components/ui/DynamicIslandDock";
+import TextScramble from "@/components/ui/TextScramble";
+import InfiniteMarquee from "@/components/ui/InfiniteMarquee";
+import SpotlightCard from "@/components/ui/SpotlightCard";
+import TiltCard from "@/components/ui/TiltCard";
+import BorderBeam from "@/components/ui/BorderBeam";
+import { playCyberClick, playCyberHover, playCyberSuccess } from "@/components/ui/SoundEffects";
 import {
   Briefcase,
   Code2,
@@ -62,6 +70,7 @@ export default function PortfolioPage() {
       const data = await res.json();
       if (res.ok) {
         setSubmitStatus({ success: true, message: data.message });
+        playCyberSuccess();
         setFormState({
           name: "",
           email: "",
@@ -247,47 +256,54 @@ export default function PortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-slate-100 selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-[#05050a] text-slate-100 selection:bg-lime-400 selection:text-black relative">
+      {/* AnimMasterLib Interactive Cursor Aura */}
+      <CursorAura />
+
+      {/* Skiper UI Dynamic Island Floating Dock */}
+      <DynamicIslandDock />
+
       <PortfolioNavbar />
 
       {/* ========================================================================= */}
       {/* 1. HERO SECTION                                                          */}
       {/* ========================================================================= */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
         {/* Glow ambient meshes */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-cyan-500/15 via-indigo-500/10 to-emerald-500/15 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-purple-600/20 via-fuchsia-600/15 to-lime-500/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Subtle grid pattern background */}
         <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, #a855f7 1px, transparent 0)`,
             backgroundSize: "32px 32px",
           }}
         />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
-            {/* Top Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/80 shadow-inner backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-xs font-semibold text-slate-300 font-mono">
-                Full-Stack Web Developer &amp; Systems Architect
-              </span>
+            {/* Top Pill with Skiper Text Scramble */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0c0a1b]/90 border border-purple-500/30 shadow-inner backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+              <TextScramble
+                text="Full-Stack Web Developer & Systems Architect"
+                className="text-xs font-semibold text-purple-200"
+              />
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.1]">
               Crafting{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-lime-400">
                 High-Performance
               </span>{" "}
               Web Apps &amp; Digital Systems.
             </h1>
 
             {/* Subheading */}
-            <p className="text-sm sm:text-base md:text-lg text-slate-400 leading-relaxed max-w-2xl font-normal">
+            <p className="text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
               Hi, I&apos;m <span className="text-white font-semibold">Aditya Kashyap</span>. I build scalable full-stack
               applications, automated payment engines, real-time telemetry systems, and edge infrastructure with clean,
               battle-tested code.
@@ -297,7 +313,8 @@ export default function PortfolioPage() {
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <a
                 href="#projects"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:brightness-110 shadow-lg shadow-cyan-500/20 transition-all active:scale-95"
+                onClick={() => playCyberClick()}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-lime-400 hover:brightness-110 shadow-lg shadow-purple-500/25 transition-all active:scale-95 cursor-pointer"
               >
                 <span>Explore Featured Work</span>
                 <ArrowRight className="w-4 h-4" />
@@ -305,9 +322,10 @@ export default function PortfolioPage() {
 
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-200 bg-slate-900/80 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 transition-all active:scale-95"
+                onClick={() => playCyberClick()}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-purple-200 bg-[#0c0b1a] hover:bg-[#151228] border border-purple-500/30 hover:border-lime-400/50 transition-all active:scale-95 cursor-pointer"
               >
-                <Mail className="w-4 h-4 text-cyan-400" />
+                <Mail className="w-4 h-4 text-lime-400" />
                 <span>Get In Touch</span>
               </a>
 
@@ -325,49 +343,69 @@ export default function PortfolioPage() {
             </div>
 
             {/* Metric Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full pt-10 border-t border-slate-800/80 mt-6">
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-white font-mono">3+</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Years Developing</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full pt-8 border-t border-purple-500/20 mt-6">
+              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                <div className="text-2xl sm:text-3xl font-black text-purple-300 font-mono">3+</div>
+                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Years Developing</div>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-cyan-400 font-mono">20+</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Projects Delivered</div>
+              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                <div className="text-2xl sm:text-3xl font-black text-lime-400 font-mono">20+</div>
+                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Projects Delivered</div>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">100%</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">A+ Security &amp; SEO</div>
+              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">100%</div>
+                <div className="text-xs text-purple-200/70 font-medium mt-0.5">A+ Security &amp; SEO</div>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-indigo-400 font-mono">&lt;150ms</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Global Edge TTFB</div>
+              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                <div className="text-2xl sm:text-3xl font-black text-fuchsia-400 font-mono">&lt;150ms</div>
+                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Global Edge TTFB</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Skiper UI Infinite Tech Marquee Ticker */}
+      <div className="border-y border-purple-500/20 bg-[#070611]">
+        <InfiniteMarquee
+          items={[
+            { label: "Next.js 16.4", tag: "Turbopack" },
+            { label: "React 19", tag: "RSC Streaming" },
+            { label: "TypeScript 5.8", tag: "Strict Mode" },
+            { label: "Cloudflare Edge", tag: "Sub-15ms" },
+            { label: "PostgreSQL", tag: "Neon Pool" },
+            { label: "Prisma ORM", tag: "Driver Adapters" },
+            { label: "Cashfree DevStudio", tag: "Instant UPI" },
+            { label: "WebSockets", tag: "Real-Time Telemetry" },
+            { label: "HMAC-SHA256", tag: "Webhook Security" },
+            { label: "Vitest TDD", tag: "100% Passes" },
+            { label: "Tailwind CSS v4", tag: "Modern Styling" },
+          ]}
+          speed={26}
+        />
+      </div>
+
       {/* ========================================================================= */}
       {/* 2. ABOUT ME SECTION                                                      */}
       {/* ========================================================================= */}
-      <section id="about" className="py-20 border-t border-slate-800/60 relative">
+      <section id="about" className="py-20 border-t border-purple-500/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Bio Card */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+                <Sparkles className="w-3.5 h-3.5 text-lime-400" />
                 <span>About Aditya</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
                 Architecting modern software with a relentless focus on{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-lime-400">
                   speed, security, and developer craftsmanship.
                 </span>
               </h2>
 
-              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
                 I am a full-stack engineer driven by building applications that are not just visually refined, but
                 structurally rock-solid under the hood. From designing low-latency serverless edge workers to crafting
                 frictionless e-commerce checkout flows with automated rank delivery, I bridge modern frontend
@@ -375,43 +413,55 @@ export default function PortfolioPage() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-1">
-                  <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+                <SpotlightCard
+                  spotlightColor="rgba(163, 230, 53, 0.15)"
+                  borderColor="rgba(163, 230, 53, 0.4)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
+                >
+                  <div className="flex items-center gap-2 text-lime-400 font-bold text-sm">
                     <Zap className="w-4 h-4" />
                     <span>Performance First</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
                     Optimized for sub-second page loads, minimal client bundle sizes, and 99+ Core Web Vitals.
                   </p>
-                </div>
+                </SpotlightCard>
 
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 space-y-1">
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                    <Shield className="w-4 h-4" />
+                <SpotlightCard
+                  spotlightColor="rgba(168, 85, 247, 0.15)"
+                  borderColor="rgba(168, 85, 247, 0.4)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
+                >
+                  <div className="flex items-center gap-2 text-purple-300 font-bold text-sm">
+                    <Shield className="w-4 h-4 text-purple-400" />
                     <span>Bulletproof Security</span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
                     HSTS preload, strict CSP policies, cryptographic HMAC webhook signatures, and RBAC authentication.
                   </p>
-                </div>
+                </SpotlightCard>
               </div>
             </div>
 
             {/* Right Interactive Highlights Card */}
             <div className="lg:col-span-5">
-              <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900/90 to-slate-950">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
+              <SpotlightCard
+                spotlightColor="rgba(168, 85, 247, 0.18)"
+                borderColor="rgba(168, 85, 247, 0.35)"
+                className="p-6 sm:p-8 rounded-3xl border border-purple-500/25 shadow-2xl relative overflow-hidden bg-gradient-to-br from-[#0c0a1b] via-[#090815] to-[#070611]"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-purple-500/20">
+                  <span className="text-xs font-mono font-bold text-purple-300 uppercase tracking-wider">
                     Core Engineering Highlights
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-lime-500/10 text-lime-400 border border-lime-500/30">
                     2026 Production Ready
                   </span>
                 </div>
 
                 <div className="space-y-4 pt-4 text-xs">
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-slate-200">Modern Next.js 16 &amp; React 19 Mastery:</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">
@@ -421,7 +471,7 @@ export default function PortfolioPage() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-slate-200">Automated Payment &amp; Entitlement Gateways:</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">
@@ -431,7 +481,7 @@ export default function PortfolioPage() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-slate-200">Cloudflare Edge &amp; Database Architecture:</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">
@@ -441,7 +491,7 @@ export default function PortfolioPage() {
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold text-slate-200">Real-Time Telemetry &amp; Log Streaming:</span>
                       <p className="text-slate-400 text-[11px] mt-0.5">
@@ -451,17 +501,17 @@ export default function PortfolioPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-5 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Open to freelance &amp; remote contracts:</span>
+                <div className="mt-6 pt-5 border-t border-purple-500/20 flex items-center justify-between text-xs">
+                  <span className="text-purple-300/80">Open to freelance &amp; remote contracts:</span>
                   <a
                     href="#contact"
-                    className="font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                    className="font-bold text-lime-400 hover:text-lime-300 flex items-center gap-1"
                   >
                     <span>Connect</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </a>
                 </div>
-              </div>
+              </SpotlightCard>
             </div>
           </div>
         </div>
@@ -470,7 +520,7 @@ export default function PortfolioPage() {
       {/* ========================================================================= */}
       {/* 2.5 CLOUD ARCHITECTURE & SYSTEM TOPOLOGY (GFX)                            */}
       {/* ========================================================================= */}
-      <section id="architecture" className="py-20 border-t border-slate-800/60 relative cyber-grid">
+      <section id="architecture" className="py-20 border-t border-purple-500/20 relative cyber-grid">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <ArchitectureDiagram />
         </div>
@@ -479,108 +529,115 @@ export default function PortfolioPage() {
       {/* ========================================================================= */}
       {/* 3. FEATURED PROJECTS SHOWCASE                                            */}
       {/* ========================================================================= */}
-      <section id="projects" className="py-20 border-t border-slate-800/60 relative">
+      <section id="projects" className="py-20 border-t border-purple-500/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
-              <Briefcase className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+              <Briefcase className="w-3.5 h-3.5 text-lime-400" />
               <span>Proven Work &amp; Architecture</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Featured Case Studies &amp; Projects
             </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed">
               Explore real-world software platforms, full-stack applications, and backend systems I&apos;ve designed, built, and shipped.
             </p>
           </div>
 
           <div className="space-y-12">
             {projects.map((proj, idx) => (
-              <div
-                key={proj.title}
-                className="glass-panel hud-bracket p-6 sm:p-10 rounded-3xl border border-slate-800/90 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-950 via-[#0d1019] to-slate-950 transition-all duration-300 hover:border-cyan-500/30"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center font-mono font-bold text-xs text-cyan-400">
-                      0{idx + 1}
-                    </span>
-                    <div>
-                      <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-cyan-400">
-                        {proj.category}
+              <TiltCard key={proj.title} maxTilt={5} glareColor="rgba(168, 85, 247, 0.18)">
+                <div
+                  className="glass-panel hud-bracket p-6 sm:p-10 rounded-3xl border border-purple-500/20 shadow-2xl relative overflow-hidden bg-gradient-to-b from-[#0a0918] via-[#0d0a1f] to-[#070611] transition-all duration-300 hover:border-lime-400/40"
+                >
+                  {/* Highlight BorderBeam on Flagship Project */}
+                  {idx === 0 && (
+                    <BorderBeam size={280} duration={12} colorFrom="#a3e635" colorTo="#a855f7" />
+                  )}
+
+                  <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-purple-500/20">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-xl bg-[#0c0a1c] border border-purple-500/30 flex items-center justify-center font-mono font-bold text-xs text-lime-400">
+                        0{idx + 1}
                       </span>
-                      <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                        {proj.title}
-                      </h3>
+                      <div>
+                        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-purple-300">
+                          {proj.category}
+                        </span>
+                        <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                          {proj.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={proj.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => playCyberClick()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 hover:border-lime-400/40 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+                      >
+                        <GithubIcon className="w-3.5 h-3.5 text-purple-400" />
+                        <span>Codebase</span>
+                      </a>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <a
-                      href={proj.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition-colors"
-                    >
-                      <GithubIcon className="w-3.5 h-3.5" />
-                      <span>Codebase</span>
-                    </a>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6">
+                    {/* Left Column: Description & Highlights */}
+                    <div className="lg:col-span-8 space-y-4">
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        {proj.description}
+                      </p>
+
+                      <div className="space-y-2 pt-2">
+                        <span className="text-xs font-bold font-mono text-purple-300 uppercase tracking-wider block">
+                          Key Engineering Highlights:
+                        </span>
+                        <ul className="space-y-2">
+                          {proj.highlights.map((hl) => (
+                            <li key={hl} className="flex items-start gap-2.5 text-xs text-slate-300">
+                              <Check className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
+                              <span>{hl}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Right Column: Tech Stack Tags & Meta */}
+                    <div className="lg:col-span-4 bg-[#090815]/90 p-5 rounded-2xl border border-purple-500/20 space-y-4">
+                      <div>
+                        <span className="text-[11px] font-mono font-semibold text-purple-300 uppercase tracking-wider block mb-2">
+                          Technologies Used:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {proj.tech.map((t) => (
+                            <span
+                              key={t}
+                              className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-[#0f0d23] border border-purple-500/30 text-lime-300"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-purple-500/20 text-[11px] text-purple-300/70 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span>Architecture:</span>
+                          <span className="text-slate-200 font-mono">Serverless Edge &amp; Full-Stack</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>Role:</span>
+                          <span className="text-slate-200 font-mono">Lead Full-Stack Engineer</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6">
-                  {/* Left Column: Description & Highlights */}
-                  <div className="lg:col-span-8 space-y-4">
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                      {proj.description}
-                    </p>
-
-                    <div className="space-y-2 pt-2">
-                      <span className="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider block">
-                        Key Engineering Highlights:
-                      </span>
-                      <ul className="space-y-2">
-                        {proj.highlights.map((hl) => (
-                          <li key={hl} className="flex items-start gap-2.5 text-xs text-slate-300">
-                            <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                            <span>{hl}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Right Column: Tech Stack Tags & Meta */}
-                  <div className="lg:col-span-4 bg-slate-950/70 p-5 rounded-2xl border border-slate-800/80 space-y-4">
-                    <div>
-                      <span className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider block mb-2">
-                        Technologies Used:
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {proj.tech.map((t) => (
-                          <span
-                            key={t}
-                            className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-slate-900 border border-slate-800 text-slate-300"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span>Architecture:</span>
-                        <span className="text-slate-200 font-mono">Serverless Edge &amp; Full-Stack</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Role:</span>
-                        <span className="text-slate-200 font-mono">Lead Full-Stack Engineer</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -589,17 +646,17 @@ export default function PortfolioPage() {
       {/* ========================================================================= */}
       {/* 4. SKILLS & TECH STACK BENTO                                             */}
       {/* ========================================================================= */}
-      <section id="skills" className="py-20 border-t border-slate-800/60 relative">
+      <section id="skills" className="py-20 border-t border-purple-500/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
-              <Layers className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+              <Layers className="w-3.5 h-3.5 text-lime-400" />
               <span>Full-Stack Capabilities</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Technical Stack &amp; Skills
             </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed">
               A comprehensive toolkit of languages, frameworks, databases, and deployment platforms I use to build scalable products.
             </p>
           </div>
@@ -608,12 +665,14 @@ export default function PortfolioPage() {
             {skillCategories.map((cat) => {
               const Icon = cat.icon;
               return (
-                <div
+                <SpotlightCard
                   key={cat.title}
-                  className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 hover:border-cyan-500/30 transition-all bg-gradient-to-b from-slate-950 via-slate-900/60 to-slate-950 shadow-xl"
+                  spotlightColor="rgba(168, 85, 247, 0.15)"
+                  borderColor="rgba(168, 85, 247, 0.35)"
+                  className="p-6 sm:p-8 rounded-3xl border border-purple-500/20 bg-gradient-to-b from-[#0a0918] via-[#090815] to-[#070611] shadow-xl"
                 >
-                  <div className="flex items-center gap-3 pb-5 border-b border-slate-800">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                  <div className="flex items-center gap-3 pb-5 border-b border-purple-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-lime-400">
                       <Icon className="w-5 h-5" />
                     </div>
                     <h3 className="font-black text-white text-lg tracking-tight">
@@ -625,18 +684,18 @@ export default function PortfolioPage() {
                     {cat.skills.map((s) => (
                       <div
                         key={s.name}
-                        className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between"
+                        className="p-3 rounded-xl bg-[#0e0c1f] border border-purple-500/20 flex items-center justify-between hover:border-lime-400/40 transition-colors"
                       >
                         <span className="text-xs font-semibold text-slate-200">
                           {s.name}
                         </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/80 text-cyan-400 border border-slate-700">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#15122b] text-lime-300 border border-purple-500/30">
                           {s.level}
                         </span>
                       </div>
                     ))}
                   </div>
-                </div>
+                </SpotlightCard>
               );
             })}
           </div>
@@ -651,17 +710,17 @@ export default function PortfolioPage() {
       {/* ========================================================================= */}
       {/* 5. SERVICES / WHAT I OFFER                                              */}
       {/* ========================================================================= */}
-      <section id="services" className="py-20 border-t border-slate-800/60 relative">
+      <section id="services" className="py-20 border-t border-purple-500/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center space-y-3 max-w-2xl mx-auto mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+              <Sparkles className="w-3.5 h-3.5 text-lime-400" />
               <span>Client Services</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
               Services &amp; What I Deliver
             </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed">
               Available for freelance contracts, full-stack product builds, and consulting for startups and creators.
             </p>
           </div>
@@ -670,16 +729,18 @@ export default function PortfolioPage() {
             {services.map((svc) => {
               const Icon = svc.icon;
               return (
-                <div
+                <SpotlightCard
                   key={svc.title}
-                  className="p-6 rounded-3xl bg-slate-950 border border-slate-800 hover:border-cyan-500/40 transition-all flex flex-col justify-between space-y-4 shadow-xl"
+                  spotlightColor="rgba(168, 85, 247, 0.16)"
+                  borderColor="rgba(168, 85, 247, 0.35)"
+                  className="p-6 rounded-3xl bg-[#090815] border border-purple-500/20 hover:border-lime-400/40 transition-all flex flex-col justify-between space-y-4 shadow-xl"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                      <div className="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-center justify-center text-lime-400">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#120f26] border border-purple-500/30 text-purple-300">
                         {svc.badge}
                       </span>
                     </div>
@@ -695,19 +756,15 @@ export default function PortfolioPage() {
 
                   <a
                     href="#contact"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 pt-2"
+                    onClick={() => playCyberClick()}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-lime-400 hover:text-lime-300 pt-2"
                   >
                     <span>Inquire Details</span>
                     <ArrowRight className="w-3 h-3" />
                   </a>
-                </div>
+                </SpotlightCard>
               );
             })}
-          </div>
-
-          {/* GitHub Activity & Commit Heatmap GFX */}
-          <div className="mt-12">
-            <GithubCommitHeatmap />
           </div>
         </div>
       </section>
@@ -715,16 +772,16 @@ export default function PortfolioPage() {
       {/* ========================================================================= */}
       {/* 6. CONTACT & HIRE ME SECTION                                             */}
       {/* ========================================================================= */}
-      <section id="contact" className="py-24 border-t border-slate-800/60 relative">
+      <section id="contact" className="py-24 border-t border-purple-500/20 relative">
         {/* Glow ambient */}
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             {/* Left Column: Direct Outreach & Details */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-semibold text-cyan-400">
-                <Mail className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+                <Mail className="w-3.5 h-3.5 text-lime-400" />
                 <span>Start a Project</span>
               </div>
 
@@ -732,41 +789,47 @@ export default function PortfolioPage() {
                 Let&apos;s build something extraordinary together.
               </h2>
 
-              <p className="text-sm text-slate-400 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed">
                 Have an idea for a web platform, e-commerce store, or custom server backend? Or looking to bring a
                 skilled full-stack developer onto your team? Send a message and let&apos;s discuss.
               </p>
 
               <div className="space-y-3 pt-2">
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-mono text-slate-400 block uppercase">Direct Email</span>
+                <SpotlightCard
+                  spotlightColor="rgba(168, 85, 247, 0.15)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
+                >
+                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Direct Email</span>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-white">dhruve123456789@gmail.com</span>
                     <CopyButton textToCopy="dhruve123456789@gmail.com" label="Copy" />
                   </div>
-                </div>
+                </SpotlightCard>
 
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-mono text-slate-400 block uppercase">GitHub Profile</span>
+                <SpotlightCard
+                  spotlightColor="rgba(163, 230, 53, 0.15)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
+                >
+                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">GitHub Profile</span>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-white">github.com/Ailogodesigner</span>
                     <a
                       href="https://github.com/Ailogodesigner"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-white transition-colors"
+                      className="px-3 py-1.5 rounded-xl bg-[#141029] hover:bg-purple-600/30 border border-purple-500/30 text-xs font-medium text-white transition-colors"
                     >
                       Visit
                     </a>
                   </div>
-                </div>
+                </SpotlightCard>
 
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-xs">
+                <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 flex items-center justify-between text-xs">
                   <div>
-                    <span className="text-[11px] font-mono text-slate-400 block uppercase">Location &amp; Timezone</span>
+                    <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Location &amp; Timezone</span>
                     <span className="font-semibold text-white">India (IST / UTC+5:30)</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                  <span className="px-2.5 py-1 rounded-full bg-lime-500/10 text-lime-400 border border-lime-500/30 text-[10px] font-bold">
                     Worldwide Remote
                   </span>
                 </div>
@@ -775,7 +838,10 @@ export default function PortfolioPage() {
 
             {/* Right Column: Contact Form */}
             <div className="lg:col-span-7">
-              <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-slate-800 shadow-2xl relative bg-gradient-to-br from-slate-950 via-[#0d1019] to-slate-950">
+              <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-purple-500/30 shadow-2xl relative bg-gradient-to-br from-[#0c0a1e] via-[#090815] to-[#070611] overflow-hidden">
+                {/* Skiper UI Border Beam on Contact Panel */}
+                <BorderBeam size={220} duration={12} colorFrom="#a855f7" colorTo="#a3e635" />
+
                 <h3 className="text-xl font-bold text-white mb-2">Send an Inquiry</h3>
                 <p className="text-xs text-slate-400 mb-6">
                   Fill in your details below and I will respond to your email within 24 hours.
@@ -785,12 +851,12 @@ export default function PortfolioPage() {
                   <div
                     className={`p-4 rounded-2xl text-xs mb-6 font-medium flex items-start gap-2.5 ${
                       submitStatus.success
-                        ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-300"
+                        ? "bg-lime-500/10 border border-lime-500/30 text-lime-300"
                         : "bg-rose-500/10 border border-rose-500/30 text-rose-300"
                     }`}
                   >
                     {submitStatus.success ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-lime-400 shrink-0 mt-0.5" />
                     ) : (
                       <Shield className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                     )}
@@ -808,7 +874,7 @@ export default function PortfolioPage() {
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         placeholder="John Doe"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:outline-none text-xs text-white placeholder:text-slate-600 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white placeholder:text-purple-300/40 transition-colors"
                       />
                     </div>
 
@@ -820,7 +886,7 @@ export default function PortfolioPage() {
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                         placeholder="john@example.com"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:outline-none text-xs text-white placeholder:text-slate-600 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white placeholder:text-purple-300/40 transition-colors"
                       />
                     </div>
                   </div>
@@ -831,7 +897,7 @@ export default function PortfolioPage() {
                       <select
                         value={formState.projectType}
                         onChange={(e) => setFormState({ ...formState, projectType: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:outline-none text-xs text-slate-200 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-slate-200 transition-colors"
                       >
                         <option value="Full-Stack Web App">Full-Stack Web App</option>
                         <option value="E-Commerce & Store">E-Commerce Store &amp; Payments</option>
@@ -846,7 +912,7 @@ export default function PortfolioPage() {
                       <select
                         value={formState.budget}
                         onChange={(e) => setFormState({ ...formState, budget: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:outline-none text-xs text-slate-200 transition-colors"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-slate-200 transition-colors"
                       >
                         <option value="< $500 (Under ₹40,000)">&lt; $500 (Under ₹40,000)</option>
                         <option value="$500 - $1,500 (₹40,000 - ₹1,20,000)">$500 - $1,500 (₹40k - ₹1.2L)</option>
@@ -865,20 +931,20 @@ export default function PortfolioPage() {
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                       placeholder="Describe your goals, requirements, features needed, or timeline..."
-                      className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:outline-none text-xs text-white placeholder:text-slate-600 transition-colors resize-none"
+                      className="w-full px-4 py-3 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white placeholder:text-purple-300/40 transition-colors resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-3 px-6 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:brightness-110 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-3.5 px-6 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-lime-400 hover:brightness-110 shadow-lg shadow-purple-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
                     {submitting ? (
                       <span>Dispatching Message...</span>
                     ) : (
                       <>
-                        <Send className="w-4 h-4" />
+                        <Send className="w-4 h-4 text-slate-950" />
                         <span>Send Message Directly</span>
                       </>
                     )}
