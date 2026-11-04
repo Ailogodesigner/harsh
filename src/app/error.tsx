@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Minecraft web application error caught by error boundary:", error);
+    console.error("Application error caught by error boundary:", error);
   }, [error]);
 
   return (

@@ -5,8 +5,8 @@ const cspHeader = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' blob: data: https://mc-heads.net https://minotar.net https://raw.githubusercontent.com https://minecraft.wiki",
-  "connect-src 'self' https://api.cashfree.com https://sandbox.cashfree.com https://api.mojang.com https://sessionserver.mojang.com",
+  "img-src 'self' blob: data: https:",
+  "connect-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -15,15 +15,6 @@ const cspHeader = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
-  serverExternalPackages: ["@prisma/client", ".prisma/client"],
-  async rewrites() {
-    return [
-      {
-        source: "/google:id.html",
-        destination: "/api/google-verify?id=:id",
-      },
-    ];
-  },
   async headers() {
     return [
       {

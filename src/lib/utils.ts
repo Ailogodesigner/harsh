@@ -28,22 +28,13 @@ export function formatCurrency(minorUnits: number, currency = "INR"): string {
 }
 
 /**
- * Generates an internal order identifier with Harsh Unlimited branding
- * e.g. HU-ORD-20261025-A1B2C3
+ * Generates an inquiry tracking identifier
+ * e.g. INQ-20261104-A1B2C3
  */
-export function generateInternalOrderId(): string {
+export function generateInquiryId(): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const randomHex = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `HU-ORD-${dateStr}-${randomHex}`;
-}
-
-/**
- * Generates an in-game verification code
- * e.g. HU-94821
- */
-export function generateVerificationCode(): string {
-  const num = Math.floor(10000 + Math.random() * 90000);
-  return `HU-${num}`;
+  return `INQ-${dateStr}-${randomHex}`;
 }
 
 export function formatDate(date: string | Date | null | undefined): string {

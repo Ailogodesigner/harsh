@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatCurrency, generateInternalOrderId, generateVerificationCode } from "@/lib/utils";
+import { formatCurrency, generateInquiryId, formatDate } from "@/lib/utils";
 
 describe("Utility Functions", () => {
   it("formats integer minor currency units correctly in INR without floating-point artifacts", () => {
@@ -12,13 +12,13 @@ describe("Utility Functions", () => {
     expect(decimalFormatted).toContain("1,999.5");
   });
 
-  it("generates correctly formatted internal order IDs with HU-ORD prefix", () => {
-    const orderId = generateInternalOrderId();
-    expect(orderId).toMatch(/^HU-ORD-\d{8}-[A-Z0-9]+$/);
+  it("generates correctly formatted client inquiry IDs with INQ prefix", () => {
+    const inquiryId = generateInquiryId();
+    expect(inquiryId).toMatch(/^INQ-\d{8}-[A-Z0-9]+$/);
   });
 
-  it("generates valid in-game verification codes with HU- prefix", () => {
-    const code = generateVerificationCode();
-    expect(code).toMatch(/^HU-\d{5}$/);
+  it("formats dates gracefully into readable format", () => {
+    const formatted = formatDate(new Date("2026-11-04T00:00:00Z"));
+    expect(formatted).toBeTruthy();
   });
 });
