@@ -12,10 +12,13 @@ const contactSchema = z.object({
 const DEFAULT_DISCORD_WEBHOOK =
   "https://discord.com/api/webhooks/1567450558669914182/Nfa_NdwtT2NEnlKql_-KtsvJlDT3kPydph3grz-2Ai9vHw0WM0GnLsmzSy7Ho4VqWEV4";
 
+const DEFAULT_FOUNDER_ROLE_ID = "1566306403264762067";
+
 function getDiscordFounderMention(): { mentionString: string; roleId?: string; userId?: string } {
-  // If role ID is provided (e.g. 1368528703184703490)
-  if (process.env.DISCORD_FOUNDER_ROLE_ID) {
-    const rawId = process.env.DISCORD_FOUNDER_ROLE_ID.trim().replace(/[<@&>]/g, "");
+  // If role ID is configured or default
+  const roleId = process.env.DISCORD_FOUNDER_ROLE_ID?.trim() || DEFAULT_FOUNDER_ROLE_ID;
+  if (roleId) {
+    const rawId = roleId.replace(/[<@&>]/g, "");
     return { mentionString: `<@&${rawId}>`, roleId: rawId };
   }
 
@@ -34,8 +37,8 @@ function getDiscordFounderMention(): { mentionString: string; roleId?: string; u
     return { mentionString: mention };
   }
 
-  // Default text fallback
-  return { mentionString: "@🤍 ┊ founder" };
+  // Default fallback
+  return { mentionString: `<@&${DEFAULT_FOUNDER_ROLE_ID}>`, roleId: DEFAULT_FOUNDER_ROLE_ID };
 }
 
 export async function POST(req: Request) {
