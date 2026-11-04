@@ -72,6 +72,17 @@ export default function PortfolioFooter() {
                 </a>
               </li>
               <li>
+                <a href="/bot-order" className="hover:text-lime-400 text-lime-400 font-semibold transition-colors flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
+                  <span>Custom Bot Builder</span>
+                </a>
+              </li>
+              <li>
+                <a href="/login" className="hover:text-lime-400 transition-colors">
+                  Client &amp; Admin Login
+                </a>
+              </li>
+              <li>
                 <a href="#contact" className="hover:text-lime-400 transition-colors">
                   Hire Me / Contact
                 </a>

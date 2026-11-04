@@ -29,7 +29,8 @@ export default function PortfolioNavbar() {
   const navLinks = [
     { href: "#about", label: "About", icon: Code2 },
     { href: "#projects", label: "Projects", icon: Briefcase },
-    { href: "#skills", label: "Skills", icon: Layers },
+    { href: "#hosting", label: "Bot Hosting", icon: Layers },
+    { href: "/bot-order", label: "Bot Builder", icon: Sparkles },
     { href: "#services", label: "Services", icon: Wrench },
     { href: "#contact", label: "Contact", icon: Mail },
   ];

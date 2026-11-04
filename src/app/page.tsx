@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import PortfolioNavbar from "@/components/PortfolioNavbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import CopyButton from "@/components/CopyButton";
@@ -44,6 +45,7 @@ import {
   Cpu,
   Lock,
   Boxes,
+  Bot,
   FileCode,
   Check,
 } from "lucide-react";
@@ -311,6 +313,15 @@ export default function PortfolioPage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Link
+                  href="/bot-order"
+                  onClick={() => playCyberClick()}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-black bg-lime-400 hover:bg-lime-300 shadow-lg shadow-lime-500/25 transition-all active:scale-95 cursor-pointer"
+                >
+                  <Bot className="w-4 h-4" />
+                  <span>Build Custom Bot &rarr;</span>
+                </Link>
+
                 <a
                   href="#projects"
                   onClick={() => playCyberClick()}
