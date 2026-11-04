@@ -133,12 +133,12 @@ export default function PortfolioFooter() {
         </div>
 
         {/* Massive NOTIXNODE Typographic Brand Watermark at End */}
-        <div className="pt-16 pb-4 relative flex flex-col items-center justify-center overflow-hidden">
+        <div className="pt-16 pb-4 relative flex flex-col items-center justify-center w-full overflow-hidden">
           <a
             href="https://dsc.gg/notixnode"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 mb-3 px-4 py-1.5 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/20 transition-all shadow-md group"
+            className="flex items-center gap-2.5 mb-4 px-4 py-1.5 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/20 transition-all shadow-md group"
           >
             <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
             <span className="text-[11px] font-mono text-[#8ea1e1] group-hover:text-white font-bold uppercase tracking-wider">
@@ -146,10 +146,12 @@ export default function PortfolioFooter() {
             </span>
           </a>
 
-          {/* Big Text NOTIXNODE */}
-          <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[13rem] font-black tracking-tighter uppercase select-none text-center bg-gradient-to-b from-white/20 via-purple-500/10 to-transparent bg-clip-text text-transparent leading-none pointer-events-none transition-all duration-700">
-            NOTIXNODE
-          </h1>
+          {/* Big Text NOTIXNODE - Fluid responsive sizing: NEVER cut off */}
+          <div className="w-full flex items-center justify-center my-2 px-2">
+            <h1 className="text-[clamp(2.6rem,8.2vw,7.5rem)] font-black tracking-tight uppercase select-none text-center bg-gradient-to-b from-white/30 via-purple-300/15 to-transparent bg-clip-text text-transparent leading-none pointer-events-none transition-all duration-700 whitespace-nowrap drop-shadow-[0_0_35px_rgba(168,85,247,0.15)]">
+              NOTIXNODE
+            </h1>
+          </div>
 
           <p className="text-xs sm:text-sm font-mono text-purple-300/80 text-center mt-3 max-w-lg">
             Best Discord Setups • Custom Discord Bots • High-Performance Web Architecture
