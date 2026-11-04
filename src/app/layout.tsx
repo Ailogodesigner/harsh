@@ -1,68 +1,60 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import SecurityGuard from "@/components/SecurityGuard";
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#10b981",
+  themeColor: "#06b6d4",
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://harshunlimited.fun"),
-  title: "Harsh Unlimited | Premium Minecraft Gaming Network",
+  title: "Aditya Kashyap | Full-Stack Web Developer & Systems Engineer",
   description:
-    "India's premier Minecraft network featuring custom Lifesteal SMP, enhanced Survival economy, BoxPvP, and automated instant rank delivery.",
-  alternates: {
-    canonical: "https://harshunlimited.fun",
-  },
-  verification: {
-    google:
-      process.env.GOOGLE_SITE_VERIFICATION ||
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
-      undefined,
-  },
+    "Portfolio of Aditya Kashyap — Full-Stack Developer specializing in Next.js 16, React 19, TypeScript, scalable cloud backends, e-commerce payment engines, and high-performance web systems.",
   keywords: [
-    "Harsh Unlimited",
-    "Minecraft server",
-    "Lifesteal SMP",
-    "BoxPvP",
-    "Survival SMP",
-    "Minecraft Java Bedrock",
-    "play.harshunlimited.fun",
+    "Aditya Kashyap",
+    "Full-Stack Developer",
+    "Web Developer",
+    "Next.js Developer",
+    "React 19",
+    "TypeScript",
+    "Node.js",
+    "Cloudflare Workers",
+    "Freelance Developer India",
+    "Software Engineer",
   ],
-  authors: [{ name: "Harsh Unlimited Network" }],
+  authors: [{ name: "Aditya Kashyap" }],
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Harsh Unlimited — Premium Minecraft Gaming Network",
-    description: "Your Next Adventure Starts Here. Join on Java and Bedrock at play.harshunlimited.fun",
-    url: "https://harshunlimited.fun",
-    siteName: "Harsh Unlimited",
-    images: [{ url: "/logo.png", width: 512, height: 512, alt: "Harsh Unlimited Mascot Logo" }],
-    locale: "en_IN",
+    title: "Aditya Kashyap | Full-Stack Web Developer",
+    description:
+      "Crafting high-performance web applications, scalable backends, and digital systems with clean code.",
+    siteName: "Aditya Kashyap Portfolio",
+    locale: "en_US",
     type: "website",
   },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "Harsh Unlimited",
-  url: "https://harshunlimited.fun",
-  description:
-    "India's premier Minecraft network featuring custom Lifesteal SMP, enhanced Survival economy, BoxPvP, and automated instant rank delivery.",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: "https://harshunlimited.fun/wiki?q={search_term_string}",
-    "query-input": "required name=search_term_string",
-  },
+  "@type": "Person",
+  name: "Aditya Kashyap",
+  jobTitle: "Full-Stack Web Developer",
+  url: "https://github.com/Ailogodesigner",
+  sameAs: ["https://github.com/Ailogodesigner"],
+  knowsAbout: [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Node.js",
+    "PostgreSQL",
+    "Prisma ORM",
+    "Cloudflare Workers",
+    "E-Commerce Payment Gateways",
+  ],
 };
 
 export default function RootLayout({
@@ -79,11 +71,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#08090d] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-300">
-        <SecurityGuard />
-        <Navbar />
-        <main className="flex-1 w-full">{children}</main>
-        <Footer />
+      <body className="min-h-full flex flex-col bg-[#090a0f] text-slate-100 font-sans antialiased overflow-x-hidden">
+        {children}
       </body>
     </html>
   );
