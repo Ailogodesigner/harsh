@@ -11,7 +11,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import GithubIcon from "../GithubIcon";
+import DiscordIcon from "../DiscordIcon";
 import {
   playCyberClick,
   playCyberHover,
@@ -106,6 +106,31 @@ export default function DynamicIslandDock() {
           </a>
           <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-[#05050a] border border-purple-500/40 text-[10px] font-mono font-bold text-lime-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg whitespace-nowrap">
             3D MacBook
+          </div>
+        </div>
+
+        {/* Discord Link */}
+        <div className="relative group">
+          <a
+            href="https://discord.gg/notixnode"
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={() => {
+              setHoveredIdx(12);
+              playCyberHover();
+            }}
+            onMouseLeave={() => setHoveredIdx(null)}
+            onClick={() => playCyberClick()}
+            style={{
+              transform: hoveredIdx === 12 ? "scale(1.28) translateY(-6px)" : "scale(1)",
+            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-[#5865F2]/20 active:bg-[#5865F2] active:text-white transition-all duration-200"
+            aria-label="Join Discord"
+          >
+            <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+          </a>
+          <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-[#05050a] border border-[#5865F2]/40 text-[10px] font-mono font-bold text-[#8ea1e1] opacity-0 group-hover:opacity-100 transition-opacity shadow-lg whitespace-nowrap">
+            Discord: NOTIXNODE
           </div>
         </div>
 

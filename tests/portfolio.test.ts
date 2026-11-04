@@ -5,13 +5,13 @@ describe("Portfolio Platform Verification", () => {
     const developer = {
       name: "Aditya Kashyap",
       email: "dhruve123456789@gmail.com",
-      github: "https://github.com/Ailogodesigner",
+      discord: "https://discord.gg/notixnode",
       role: "Full-Stack Web Developer",
     };
 
     expect(developer.name).toBe("Aditya Kashyap");
     expect(developer.email).toContain("@gmail.com");
-    expect(developer.github).toContain("github.com/Ailogodesigner");
+    expect(developer.discord).toContain("discord.gg/notixnode");
     expect(developer.role).toBe("Full-Stack Web Developer");
   });
 

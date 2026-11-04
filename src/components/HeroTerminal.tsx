@@ -43,7 +43,7 @@ export default function HeroTerminal() {
     } else if (cmd === "projects") {
       output = "1. Gaming E-Commerce & Telemetry Platform\n2. Real-Time Server Console & Log Parser\n3. Dynamic Live Radar Map\n4. Support Desk & Ticket Portal\n5. Cloudflare Edge Microservices";
     } else if (cmd === "contact" || cmd === "email") {
-      output = "Email: dhruve123456789@gmail.com\nGitHub: https://github.com/Ailogodesigner\nStatus: Available immediately for freelance & full-time roles.";
+      output = "Email: dhruve123456789@gmail.com\nDiscord: discord.gg/notixnode\nStatus: Available immediately for freelance & full-time roles.";
     } else if (cmd === "sudo hire" || cmd === "hire") {
       output = "Access Granted! 🎉 Scroll to #contact or email dhruve123456789@gmail.com to start your project.";
     } else if (cmd === "help") {
@@ -81,7 +81,7 @@ export const developer: FullStackEngineer = {
   },
   contact: {
     email: "dhruve123456789@gmail.com",
-    github: "github.com/Ailogodesigner"
+    discord: "discord.gg/notixnode"
   }
 };`;
 
@@ -256,8 +256,8 @@ const systemTopology: CloudArchitecture = {
               <span className="text-slate-400">email:</span>{" "}
               <span className="text-cyan-300">&quot;dhruve123456789@gmail.com&quot;</span>,{"\n"}
               {"    "}
-              <span className="text-slate-400">github:</span>{" "}
-              <span className="text-cyan-300">&quot;github.com/Ailogodesigner&quot;</span>
+              <span className="text-slate-400">discord:</span>{" "}
+              <span className="text-cyan-300">&quot;discord.gg/notixnode&quot;</span>
               {"\n"}
               {"  }"}
               {"\n}"};

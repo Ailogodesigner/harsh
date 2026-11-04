@@ -4,10 +4,10 @@ import { useState } from "react";
 import PortfolioNavbar from "@/components/PortfolioNavbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import CopyButton from "@/components/CopyButton";
-import GithubIcon from "@/components/GithubIcon";
+import DiscordIcon from "@/components/DiscordIcon";
 import HeroTerminal from "@/components/HeroTerminal";
 import ArchitectureDiagram from "@/components/ArchitectureDiagram";
-import GithubCommitHeatmap from "@/components/GithubCommitHeatmap";
+import ActivityHeatmap from "@/components/ActivityHeatmap";
 import CursorAura from "@/components/ui/CursorAura";
 import DynamicIslandDock from "@/components/ui/DynamicIslandDock";
 import TextScramble from "@/components/ui/TextScramble";
@@ -116,7 +116,6 @@ export default function PortfolioPage() {
         "Interactive asset GUI modal with sound effects and detailed tooltips",
         "Sub-150ms TTFB on global edge with zero-layout-shift UI",
       ],
-      github: "https://github.com/Ailogodesigner",
     },
     {
       title: "Real-Time Server Console & Log Parser",
@@ -131,7 +130,6 @@ export default function PortfolioPage() {
         "Strict regex parsing for player chats, broadcasts, join/leave events, and system alerts",
         "Sensitive credential scrubbing and production stack trace masking",
       ],
-      github: "https://github.com/Ailogodesigner",
     },
     {
       title: "Dynamic Live Radar & Landmark Coordinates Map",
@@ -146,7 +144,6 @@ export default function PortfolioPage() {
         "Interactive pan, zoom slider, center-reset controls, and custom pin creator",
         "Responsive, mobile-optimized touch navigation with 60 FPS fluid rendering",
       ],
-      github: "https://github.com/Ailogodesigner",
     },
     {
       title: "Enterprise Support Desk & Live Ticket Workflow",
@@ -161,7 +158,6 @@ export default function PortfolioPage() {
         "Administrative priority triage, status transitions, and quick response shortcuts",
         "Automated audit logging of all administrative status changes and notes",
       ],
-      github: "https://github.com/Ailogodesigner",
     },
     {
       title: "Serverless Cloudflare Edge Worker & Security Gateway",
@@ -176,7 +172,6 @@ export default function PortfolioPage() {
         "Automated Vitest test suite covering payment signatures, token auth, and RBAC",
         "Dynamic sitemap generator and robots.txt for 100% Google Search Console indexing",
       ],
-      github: "https://github.com/Ailogodesigner",
     },
   ];
 
@@ -212,7 +207,7 @@ export default function PortfolioPage() {
         { name: "Cloudflare Workers & Pages", level: "Advanced" },
         { name: "OpenNext & Vercel Deployments", level: "Advanced" },
         { name: "Docker & Containerization", level: "Intermediate" },
-        { name: "Git, GitHub & Version Control", level: "Expert" },
+        { name: "Git & Enterprise Version Control", level: "Expert" },
         { name: "DNS, SSL & Domain Routing", level: "Advanced" },
         { name: "CI/CD & Automated Testing", level: "Advanced" },
       ],
@@ -787,9 +782,9 @@ export default function PortfolioPage() {
             })}
           </div>
 
-          {/* GitHub Activity & Commit Heatmap GFX */}
+          {/* Production Engineering & Velocity Heatmap GFX */}
           <div className="mt-12">
-            <GithubCommitHeatmap />
+            <ActivityHeatmap />
           </div>
         </div>
       </section>
@@ -910,13 +905,21 @@ export default function PortfolioPage() {
                 </SpotlightCard>
 
                 <SpotlightCard
-                  spotlightColor="rgba(163, 230, 53, 0.15)"
-                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
+                  spotlightColor="rgba(88, 101, 242, 0.2)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1 hover:border-[#5865F2]/50 transition-all"
                 >
-                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Developer Profile</span>
+                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Official Discord</span>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-white">@Ailogodesigner</span>
-                    <CopyButton textToCopy="Ailogodesigner" label="Copy Handle" copiedLabel="Copied!" />
+                    <a
+                      href="https://discord.gg/notixnode"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm font-semibold text-white hover:text-[#5865F2] transition-colors"
+                    >
+                      <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                      <span>NOTIXNODE</span>
+                    </a>
+                    <CopyButton textToCopy="https://discord.gg/notixnode" label="Copy Link" copiedLabel="Copied!" />
                   </div>
                 </SpotlightCard>
 

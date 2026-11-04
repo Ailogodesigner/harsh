@@ -17,7 +17,7 @@ High-velocity, interactive developer portfolio engineered with **Next.js 16 (App
   - `expandable-cards`: Fullscreen architectural modal inspector.
   - `Skiper52`: Responsive multi-panel horizontal expander accordion.
 - **Offline-Ready SVG Assets**: Zero external CDN dependency; all icons and illustrations render locally from `/public/images/`.
-- **Zero External GitHub Redirects**: All project actions inspect architecture directly on-site.
+- **Self-Contained Architecture Inspection**: All project actions inspect architecture directly on-site.
 - **Test-Driven Verification**: 100% passing test suite running on Vitest.
 
 ---

@@ -2,7 +2,7 @@
 
 import { ArrowUp, Mail, Globe, Heart } from "lucide-react";
 import CopyButton from "./CopyButton";
-import GithubIcon from "./GithubIcon";
+import DiscordIcon from "./DiscordIcon";
 
 export default function PortfolioFooter() {
   const scrollToTop = () => {
@@ -10,7 +10,7 @@ export default function PortfolioFooter() {
   };
 
   return (
-    <footer className="relative bg-[#05050a] border-t border-purple-500/20 pt-16 pb-28 overflow-hidden text-slate-400">
+    <footer className="relative bg-[#05050a] border-t border-purple-500/20 pt-16 pb-32 overflow-hidden text-slate-400">
       {/* Subtle top atmospheric glow in violet & lime */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
 
@@ -21,15 +21,15 @@ export default function PortfolioFooter() {
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 via-fuchsia-500 to-lime-400 p-[1px]">
                 <div className="w-full h-full bg-[#0a0914] rounded-[11px] flex items-center justify-center font-black text-sm text-lime-400 font-mono">
-                  AK
+                  NN
                 </div>
               </div>
               <span className="font-black text-white text-lg tracking-tight">
-                Aditya Kashyap
+                NOTIXNODE <span className="text-purple-400 font-normal text-sm font-mono">// Dev Studio</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Full-Stack Web Developer &amp; Systems Engineer specialized in building
+              Full-Stack Web Architect specialized in building
               resilient web apps, modern e-commerce stores, real-time telemetry systems,
               and low-latency edge architectures.
             </p>
@@ -76,16 +76,30 @@ export default function PortfolioFooter() {
           {/* Connect & Socials */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300">
-              Online Profiles
+              Official Channels
             </h4>
             <div className="flex flex-col space-y-2.5 text-xs">
-              <div className="flex items-center gap-2 text-purple-300/90 font-mono">
-                <GithubIcon className="w-4 h-4 text-purple-400" />
-                <span>@Ailogodesigner (Verified Lead)</span>
-              </div>
+              {/* Discord Dedicated Pill */}
+              <a
+                href="https://discord.gg/notixnode"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#0d0b1e] border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/10 text-white transition-all group shadow-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                  <span className="font-mono text-xs font-bold text-slate-200 group-hover:text-white">
+                    NOTIXNODE
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#5865F2]/20 text-[#8ea1e1] border border-[#5865F2]/40">
+                  Join Discord
+                </span>
+              </a>
+
               <a
                 href="mailto:dhruve123456789@gmail.com"
-                className="flex items-center gap-2 hover:text-lime-400 transition-colors"
+                className="flex items-center gap-2 hover:text-lime-400 transition-colors pt-1"
               >
                 <Mail className="w-4 h-4 text-lime-400" />
                 <span>dhruve123456789@gmail.com</span>
@@ -101,7 +115,7 @@ export default function PortfolioFooter() {
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-1.5 text-slate-500">
-            <span>© {new Date().getFullYear()} Aditya Kashyap. Built with Next.js 16, React 19 &amp; Tailwind CSS.</span>
+            <span>© {new Date().getFullYear()} NOTIXNODE. Built with Next.js 16, React 19 &amp; Tailwind CSS.</span>
           </div>
 
           <button
@@ -111,6 +125,23 @@ export default function PortfolioFooter() {
             <span>Back to top</span>
             <ArrowUp className="w-3.5 h-3.5" />
           </button>
+        </div>
+
+        {/* Massive NOTIXNODE Typographic Brand Watermark at End */}
+        <div className="pt-16 pb-4 relative flex flex-col items-center justify-center overflow-hidden">
+          <div className="flex items-center gap-2.5 mb-3 px-3.5 py-1 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 shadow-md">
+            <DiscordIcon className="w-3.5 h-3.5 text-[#5865F2]" />
+            <span className="text-[11px] font-mono text-[#8ea1e1] font-bold uppercase tracking-wider">
+              discord.gg/notixnode
+            </span>
+          </div>
+
+          {/* Big Text NOTIXNODE */}
+          <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[13rem] font-black tracking-tighter uppercase select-none text-center bg-gradient-to-b from-white/20 via-purple-500/10 to-transparent bg-clip-text text-transparent leading-none pointer-events-none transition-all duration-700">
+            NOTIXNODE
+          </h1>
+
+          <div className="w-full max-w-md h-[1px] bg-gradient-to-r from-transparent via-[#5865F2]/50 to-transparent mt-3" />
         </div>
       </div>
     </footer>

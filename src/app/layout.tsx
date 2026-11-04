@@ -43,8 +43,8 @@ const jsonLd = {
   "@type": "Person",
   name: "Aditya Kashyap",
   jobTitle: "Full-Stack Web Developer",
-  url: "https://github.com/Ailogodesigner",
-  sameAs: ["https://github.com/Ailogodesigner"],
+  url: "https://notixnode.dev",
+  sameAs: ["https://discord.gg/notixnode"],
   knowsAbout: [
     "Next.js",
     "React",
