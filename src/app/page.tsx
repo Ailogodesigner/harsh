@@ -22,6 +22,7 @@ import { ContainerTextFlip } from "@/components/ui/container-text-flip";
 import { FocusCards } from "@/components/ui/focus-cards";
 import { ExpandableCards } from "@/components/ui/expandable-card";
 import { Skiper52 } from "@/components/ui/Skiper52";
+import BotHostingPlans from "@/components/BotHostingPlans";
 import { playCyberClick, playCyberHover, playCyberSuccess } from "@/components/ui/SoundEffects";
 import {
   Briefcase,
@@ -875,6 +876,23 @@ export default function PortfolioPage() {
       </section>
 
       {/* ========================================================================= */}
+      {/* 5.5 BOT HOSTING PLANS SECTION                                             */}
+      {/* ========================================================================= */}
+      <BotHostingPlans
+        onSelectPlan={(planName, price) => {
+          setFormState({
+            ...formState,
+            projectType: `Bot Hosting: ${planName} (${price}/mo)`,
+            budget: `Bot Hosting (${price}/mo)`,
+          });
+          const contactSection = document.getElementById("contact");
+          if (contactSection) {
+            contactSection.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+      />
+
+      {/* ========================================================================= */}
       {/* 6. CONTACT & HIRE ME SECTION                                             */}
       {/* ========================================================================= */}
       <section id="contact" className="py-24 border-t border-purple-500/20 relative">
@@ -1012,6 +1030,12 @@ export default function PortfolioPage() {
                         onChange={(e) => setFormState({ ...formState, projectType: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-slate-200 transition-colors"
                       >
+                        <option value="Bot Hosting: Basic Plan (₹69/mo)">Bot Hosting: Basic Plan (₹69/mo)</option>
+                        <option value="Bot Hosting: Standard Plan (₹149/mo)">Bot Hosting: Standard Plan (₹149/mo)</option>
+                        <option value="Bot Hosting: Premium Plan (₹249/mo)">Bot Hosting: Premium Plan (₹249/mo)</option>
+                        <option value="Bot Hosting: Ultimate Plan (₹399/mo)">Bot Hosting: Ultimate Plan (₹399/mo)</option>
+                        <option value="Custom Discord Bot Development">Custom Discord Bot Development</option>
+                        <option value="Discord Server Setup & Automation">Discord Server Setup &amp; Automation</option>
                         <option value="Full-Stack Web App">Full-Stack Web App</option>
                         <option value="E-Commerce & Store">E-Commerce Store &amp; Payments</option>
                         <option value="Gaming & Server Integrations">Gaming &amp; Server Integrations</option>
@@ -1027,6 +1051,7 @@ export default function PortfolioPage() {
                         onChange={(e) => setFormState({ ...formState, budget: e.target.value })}
                         className="w-full px-4 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-slate-200 transition-colors"
                       >
+                        <option value="Bot Hosting (₹69 - ₹399/mo)">Bot Hosting (₹69 - ₹399/mo)</option>
                         <option value="< $500 (Under ₹40,000)">&lt; $500 (Under ₹40,000)</option>
                         <option value="$500 - $1,500 (₹40,000 - ₹1,20,000)">$500 - $1,500 (₹40k - ₹1.2L)</option>
                         <option value="$1,500 - $5,000 (₹1.2L - ₹4L)">$1,500 - $5,000 (₹1.2L - ₹4L)</option>

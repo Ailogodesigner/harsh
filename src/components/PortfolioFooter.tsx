@@ -66,6 +66,12 @@ export default function PortfolioFooter() {
                 </a>
               </li>
               <li>
+                <a href="#hosting" className="hover:text-lime-400 text-purple-300 font-semibold transition-colors flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse" />
+                  <span>Bot Hosting Plans</span>
+                </a>
+              </li>
+              <li>
                 <a href="#contact" className="hover:text-lime-400 transition-colors">
                   Hire Me / Contact
                 </a>

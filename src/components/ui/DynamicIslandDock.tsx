@@ -8,6 +8,7 @@ import {
   Layers,
   Cpu,
   Mail,
+  Server,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -41,6 +42,7 @@ export default function DynamicIslandDock() {
     { label: "Architecture", href: "#architecture", icon: Cpu },
     { label: "Projects", href: "#projects", icon: Briefcase },
     { label: "Skills", href: "#skills", icon: Layers },
+    { label: "Plans", href: "#hosting", icon: Server },
     { label: "Contact", href: "#contact", icon: Mail },
   ];
 
