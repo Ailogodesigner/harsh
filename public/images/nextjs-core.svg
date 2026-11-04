@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070512"/>
+      <stop offset="50%" stop-color="#0f0b24"/>
+      <stop offset="100%" stop-color="#05040a"/>
+    </linearGradient>
+    <linearGradient id="neonPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#d946ef"/>
+    </linearGradient>
+    <linearGradient id="acidLime" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a3e635"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#a855f7" stroke-width="0.75" stroke-opacity="0.12"/>
+    </pattern>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bgGrad)"/>
+  <rect width="1200" height="800" fill="url(#grid)"/>
+
+  <!-- Tech Geometric Hexagon / Matrix -->
+  <g transform="translate(600, 360)">
+    <!-- Outer Orbit Ring -->
+    <circle r="220" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="10 15" stroke-opacity="0.4"/>
+    <circle r="160" fill="none" stroke="#a3e635" stroke-width="1" stroke-opacity="0.3"/>
+    
+    <!-- Central Next.js Monogram Badge -->
+    <polygon points="0,-120 104,-60 104,60 0,120 -104,60 -104,-60" fill="#0d0a21" stroke="url(#neonPurple)" stroke-width="3" filter="url(#glow)"/>
+    <text x="0" y="25" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="80" fill="#ffffff">N</text>
+    <circle cx="55" cy="45" r="12" fill="#a3e635" filter="url(#glow)"/>
+  </g>
+
+  <!-- Code Snippet Cards -->
+  <g transform="translate(100, 180)">
+    <rect width="320" height="180" rx="16" fill="#0b081c" stroke="#8b5cf6" stroke-width="1.5" stroke-opacity="0.4"/>
+    <circle cx="25" cy="25" r="5" fill="#ef4444"/>
+    <circle cx="45" cy="25" r="5" fill="#f59e0b"/>
+    <circle cx="65" cy="25" r="5" fill="#10b981"/>
+    <text x="25" y="70" font-family="monospace" font-size="14" fill="#a855f7">app/page.tsx</text>
+    <text x="25" y="105" font-family="monospace" font-size="13" fill="#a3e635">export default async</text>
+    <text x="25" y="130" font-family="monospace" font-size="13" fill="#e2e8f0">function ServerApp()</text>
+    <text x="25" y="155" font-family="monospace" font-size="13" fill="#94a3b8">{ return &lt;SSR /&gt;; }</text>
+  </g>
+
+  <g transform="translate(780, 480)">
+    <rect width="320" height="180" rx="16" fill="#0b081c" stroke="#a3e635" stroke-width="1.5" stroke-opacity="0.4"/>
+    <text x="25" y="45" font-family="monospace" font-size="14" fill="#a3e635">TURBOPACK // ENGINE</text>
+    <text x="25" y="85" font-family="monospace" font-size="13" fill="#cbd5e1">Build Time: 420ms</text>
+    <text x="25" y="115" font-family="monospace" font-size="13" fill="#94a3b8">HMR Socket: CONNECTED</text>
+    <text x="25" y="145" font-family="monospace" font-size="13" fill="#8b5cf6">Zero Client Runtime Bloat</text>
+  </g>
+
+  <!-- Big Futuristic Title at bottom -->
+  <text x="600" y="720" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="42" fill="#ffffff" letter-spacing="4">
+    NEXT.JS 16 APP ROUTER
+  </text>
+  <text x="600" y="755" text-anchor="middle" font-family="monospace" font-size="16" fill="#a3e635" letter-spacing="3">
+    [ SYSTEM ARCHITECTURE // TURBOPACK SSR CORE ]
+  </text>
+</svg>

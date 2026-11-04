@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gameBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05030f"/>
+      <stop offset="50%" stop-color="#140a2a"/>
+      <stop offset="100%" stop-color="#06020c"/>
+    </linearGradient>
+    <linearGradient id="portalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#9333ea"/>
+      <stop offset="100%" stop-color="#4c1d95"/>
+    </linearGradient>
+    <linearGradient id="limeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a3e635"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <pattern id="pixelGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect width="30" height="30" fill="none" stroke="#7e22ce" stroke-width="0.7" stroke-opacity="0.15"/>
+    </pattern>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#gameBg)"/>
+  <rect width="1200" height="800" fill="url(#pixelGrid)"/>
+
+  <!-- Center Nether / Minecraft Portal Graphic -->
+  <g transform="translate(600, 340)">
+    <!-- Obsidian Frame -->
+    <rect x="-130" y="-180" width="260" height="340" rx="6" fill="#181329" stroke="#4c1d95" stroke-width="8"/>
+    <!-- Obsidian Corner Block Accents -->
+    <rect x="-130" y="-180" width="45" height="45" fill="#0f0b1a" stroke="#6b21a8" stroke-width="2"/>
+    <rect x="85" y="-180" width="45" height="45" fill="#0f0b1a" stroke="#6b21a8" stroke-width="2"/>
+    <rect x="-130" y="115" width="45" height="45" fill="#0f0b1a" stroke="#6b21a8" stroke-width="2"/>
+    <rect x="85" y="115" width="45" height="45" fill="#0f0b1a" stroke="#6b21a8" stroke-width="2"/>
+
+    <!-- Glowing Purple Portal Fluid -->
+    <rect x="-85" y="-135" width="170" height="250" fill="url(#portalGrad)" filter="url(#glow)"/>
+    <circle cx="0" cy="-40" r="30" fill="#f472b6" fill-opacity="0.6" filter="url(#glow)"/>
+    <circle cx="-25" cy="40" r="20" fill="#e879f9" fill-opacity="0.5" filter="url(#glow)"/>
+    <circle cx="30" cy="20" r="15" fill="#c084fc" fill-opacity="0.7" filter="url(#glow)"/>
+
+    <!-- Sword Icon Overlay -->
+    <g transform="rotate(45) scale(0.8)">
+      <polygon points="0,-100 12,-70 6,-70 6,40 -6,40 -6,-70 -12,-70" fill="#a3e635" filter="url(#glow)"/>
+      <rect x="-24" y="40" width="48" height="10" rx="3" fill="#65a30d"/>
+      <rect x="-4" y="50" width="8" height="24" rx="2" fill="#3f6212"/>
+      <circle cx="0" cy="78" r="6" fill="#facc15"/>
+    </g>
+  </g>
+
+  <!-- Left Stats Block -->
+  <g transform="translate(110, 200)">
+    <rect width="260" height="140" rx="16" fill="#0d091e" stroke="#c084fc" stroke-width="1.5" stroke-opacity="0.4"/>
+    <text x="20" y="35" font-family="monospace" font-size="11" fill="#c084fc">NETWORK STATUS</text>
+    <text x="20" y="75" font-family="system-ui, sans-serif" font-weight="800" font-size="30" fill="#ffffff">9/100 Peak</text>
+    <text x="20" y="115" font-family="monospace" font-size="11" fill="#a3e635">SMP Survival • Pure 20 TPS</text>
+  </g>
+
+  <!-- Right Auto Delivery Block -->
+  <g transform="translate(830, 430)">
+    <rect width="260" height="140" rx="16" fill="#0d091e" stroke="#a3e635" stroke-width="1.5" stroke-opacity="0.4"/>
+    <text x="20" y="35" font-family="monospace" font-size="11" fill="#a3e635">PTERODACTYL RCON</text>
+    <text x="20" y="75" font-family="system-ui, sans-serif" font-weight="800" font-size="28" fill="#ffffff">Instant Rank</text>
+    <text x="20" y="115" font-family="monospace" font-size="11" fill="#cbd5e1">Sub-second Auto-Dispatch</text>
+  </g>
+
+  <!-- Bottom Title -->
+  <text x="600" y="720" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="42" fill="#ffffff" letter-spacing="4">
+    HARSH UNLIMITED STORE &amp; NETWORK
+  </text>
+  <text x="600" y="755" text-anchor="middle" font-family="monospace" font-size="16" fill="#a855f7" letter-spacing="3">
+    [ MINECRAFT SMP SURVIVAL // REAL-TIME DISPATCH ENGINE ]
+  </text>
+</svg>

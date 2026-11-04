@@ -80,3 +80,4 @@ const SVGComponent = ({ duration = 10 }: { duration?: number }) => {
     </motion.svg>
   );
 };
+

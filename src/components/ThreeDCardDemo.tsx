@@ -23,7 +23,7 @@ export function ThreeDCardDemo() {
         </CardItem>
         <CardItem translateZ="100" className="w-full mt-4">
           <img
-            src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop"
+            src="/images/card-3d.svg"
             height="1000"
             width="1000"
             className="h-60 w-full object-cover rounded-2xl group-hover/card:shadow-xl border border-purple-500/20"
@@ -54,3 +54,4 @@ export function ThreeDCardDemo() {
     </CardContainer>
   );
 }
+

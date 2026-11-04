@@ -11,42 +11,42 @@ export const Skiper52 = () => {
       title: "Next.js 16 App Router",
       category: "Full-Stack Core",
       code: "SYS://NEXT16",
-      src: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/nextjs-core.svg",
       badge: "Turbopack Engine",
     },
     {
       title: "Cloudflare Edge Workers",
       category: "Distributed Edge",
       code: "EDGE://SUB-15MS",
-      src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/cloudflare-edge.svg",
       badge: "A+ HSTS Preload",
     },
     {
       title: "Cashfree Payment Gateway",
       category: "Automated Checkout",
       code: "PG://HMAC-SHA256",
-      src: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/cashfree-gateway.svg",
       badge: "Instant UPI QR",
     },
     {
       title: "Harsh Unlimited Store",
       category: "Gaming Network",
       code: "GAME://SMP-SURVIVAL",
-      src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/harsh-unlimited.svg",
       badge: "9/100 Peak Players",
     },
     {
       title: "PostgreSQL & Prisma 6",
       category: "Serverless Database",
       code: "DB://NEON-POOL",
-      src: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/postgres-neon.svg",
       badge: "ACID Compliant",
     },
     {
       title: "Vitest TDD Test Suite",
       category: "Automated Testing",
       code: "TEST://100-PASS",
-      src: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
+      src: "/images/vitest-tdd.svg",
       badge: "Zero Regression",
     },
   ];
@@ -100,10 +100,14 @@ export const HoverExpand_001 = ({
               }}
             >
               {/* Background Dim & Image */}
+              <div className="absolute inset-0 bg-[#0d0921]" />
               <img
                 src={item.src}
-                className="size-full object-cover brightness-[0.65] hover:brightness-[0.8] transition-all"
+                className="size-full object-cover brightness-[0.75] hover:brightness-[0.9] transition-all relative z-0"
                 alt={item.title}
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = "none";
+                }}
               />
 
               {/* Gradient Overlay */}
@@ -160,3 +164,4 @@ export const HoverExpand_001 = ({
     </motion.div>
   );
 };
+

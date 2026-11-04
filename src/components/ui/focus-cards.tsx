@@ -42,10 +42,14 @@ export const Card = React.memo(
         hovered === index && "border-lime-400 shadow-[0_0_30px_-5px_rgba(163,230,53,0.4)] scale-[1.02]"
       )}
     >
+      <div className="absolute inset-0 bg-[#0c0921]" />
       <img
         src={card.src}
         alt={card.title}
-        className="object-cover absolute inset-0 size-full brightness-75 hover:brightness-90 transition-all"
+        className="object-cover absolute inset-0 size-full brightness-75 hover:brightness-90 transition-all z-0"
+        onError={(e) => {
+          (e.currentTarget as HTMLElement).style.display = "none";
+        }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#06050e] via-[#06050e]/60 to-transparent" />
       <div
@@ -103,3 +107,4 @@ export function FocusCards({
     </div>
   );
 }
+

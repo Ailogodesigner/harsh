@@ -692,21 +692,21 @@ export default function PortfolioPage() {
                   tagline: "Instant Cashfree UPI checkout, live telemetry, and Pterodactyl bridge.",
                   category: "E-Commerce & Gaming",
                   stats: "9/100 Peak Players",
-                  src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop",
+                  src: "/images/harsh-unlimited.svg",
                 },
                 {
                   title: "Real-Time Log Tailer",
                   tagline: "High-volume stream tailer with 3.5s in-memory cache and zero-lag regex parsing.",
                   category: "Systems & Streams",
                   stats: "< 5ms Latency",
-                  src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+                  src: "/images/log-tailer.svg",
                 },
                 {
                   title: "Dynamic Radar & Map",
                   tagline: "Interactive HTML5 canvas radar map with coordinate triangulation and landmark pins.",
                   category: "Frontend & Canvas",
                   stats: "60 FPS Fluid",
-                  src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop",
+                  src: "/images/radar-map.svg",
                 },
               ]}
             />
