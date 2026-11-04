@@ -25,10 +25,10 @@
     <circle cx="-250" cy="-150" r="5" fill="#ef4444"/>
     <circle cx="-230" cy="-150" r="5" fill="#f59e0b"/>
     <circle cx="-210" cy="-150" r="5" fill="#10b981"/>
-    <text x="0" y="-145" text-anchor="middle" font-family="monospace" font-size="12" fill="#a855f7">stream: tail -f /var/log/harsh-engine.log</text>
+    <text x="0" y="-145" text-anchor="middle" font-family="monospace" font-size="12" fill="#a855f7">stream: tail -f /var/log/cloud-engine.log</text>
 
     <!-- Streaming Lines -->
-    <text x="-250" y="-95" font-family="monospace" font-size="13" fill="#a3e635">[11:54:02.102] [INFO] WebSocket tunnel initialized on wss://edge.harsh.dev</text>
+    <text x="-250" y="-95" font-family="monospace" font-size="13" fill="#a3e635">[11:54:02.102] [INFO] WebSocket tunnel initialized on wss://edge.aditya.dev</text>
     <text x="-250" y="-65" font-family="monospace" font-size="13" fill="#93c5fd">[11:54:02.115] [AUTH] Session handshake: token verified in 1.4ms (SHA256)</text>
     <text x="-250" y="-35" font-family="monospace" font-size="13" fill="#cbd5e1">[11:54:02.130] [STREAM] 1,420 pkts/sec ingested into ring buffer</text>
     <text x="-250" y="-5" font-family="monospace" font-size="13" fill="#facc15">[11:54:02.148] [CACHE] In-memory cache hit ratio: 99.4% (TTL: 3500ms)</text>

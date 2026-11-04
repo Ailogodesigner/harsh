@@ -29,11 +29,11 @@ export const Skiper52 = () => {
       badge: "Instant UPI QR",
     },
     {
-      title: "Harsh Unlimited Store",
+      title: "Cloud Gaming & E-Commerce",
       category: "Gaming Network",
-      code: "GAME://SMP-SURVIVAL",
-      src: "/images/harsh-unlimited.svg",
-      badge: "9/100 Peak Players",
+      code: "SYS://STREAM-CORE",
+      src: "/images/cloud-gaming.svg",
+      badge: "Real-Time Telemetry",
     },
     {
       title: "PostgreSQL & Prisma 6",

@@ -128,13 +128,13 @@ export const MacbookScroll = ({
                     <div className="flex items-center gap-2.5">
                       <span className="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse shadow-[0_0_10px_#a3e635]" />
                       <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
-                        Harsh Unlimited // Production Telemetry
+                        Cloud Architecture // Production Telemetry
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-lime-500/10 text-lime-400 border border-lime-500/30 flex items-center gap-1.5">
                         <Activity className="w-3 h-3 text-lime-400" />
-                        <span>20.0 TPS</span>
+                        <span>60 FPS</span>
                       </span>
                       <span className="text-[10px] sm:text-xs px-2.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30">
                         LIVE EDGE
@@ -146,13 +146,13 @@ export const MacbookScroll = ({
                   <div className="grid grid-cols-3 gap-2.5 sm:gap-4 my-auto">
                     <div className="p-3 sm:p-4 rounded-xl bg-[#090818]/90 border border-purple-500/25 shadow-lg">
                       <div className="text-[10px] sm:text-xs text-purple-300/80 uppercase">
-                        Concurrent Players
+                        Active Services
                       </div>
                       <div className="text-lg sm:text-2xl font-black text-lime-400 mt-1">
-                        9 / 100
+                        12 / 12
                       </div>
                       <div className="text-[9px] sm:text-[10px] text-slate-500 mt-0.5">
-                        SMP Survival Node #1
+                        Edge Gateway Node #1
                       </div>
                     </div>
 

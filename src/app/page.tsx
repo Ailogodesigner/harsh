@@ -103,17 +103,17 @@ export default function PortfolioPage() {
 
   const projects = [
     {
-      title: "Harsh Unlimited — Gaming E-Commerce & Telemetry Platform",
-      tagline: "High-throughput server store, automated Cashfree payment gateway, live player telemetry (9/100 concurrency), and Pterodactyl console bridge.",
+      title: "OmniFlow — Cloud Gaming & High-Throughput E-Commerce Platform",
+      tagline: "High-throughput distributed store, automated Cashfree payment gateway, live telemetry streaming, and automated daemon command bridge.",
       tech: ["Next.js 16", "React 19", "TypeScript", "PostgreSQL", "Prisma", "Cashfree PG", "REST APIs"],
       category: "Full-Stack & E-Commerce",
       description:
-        "Engineered a production-ready Minecraft network management and store platform for Harsh Unlimited. Built with Next.js App Router, integrating Cashfree DevStudio for automated UPI/card checkout, HMAC-SHA256 signature verification, and automated rank delivery via Pterodactyl console bridge. Features live server status telemetry (player counts, ping metrics) and interactive chest item preview GUIs.",
+        "Engineered a production-ready cloud gaming management and e-commerce platform. Built with Next.js App Router, integrating Cashfree for automated UPI/card checkout, HMAC-SHA256 signature verification, and automated entitlement delivery via remote server daemon bridge. Features live server status telemetry and interactive asset preview GUIs.",
       highlights: [
         "Server-side payment verification & raw webhook deduplication",
-        "Pterodactyl 1.x REST API integration with 3x SSL handshake backoff resilience",
-        "Live server MOTD & player telemetry tracking with sub-second polling",
-        "Interactive Minecraft chest GUI modal with sound effects and enchantment tooltips",
+        "Remote REST daemon integration with 3x SSL handshake backoff resilience",
+        "Live edge telemetry tracking with sub-second polling",
+        "Interactive asset GUI modal with sound effects and detailed tooltips",
         "Sub-150ms TTFB on global edge with zero-layout-shift UI",
       ],
       github: "https://github.com/Ailogodesigner",
@@ -688,11 +688,11 @@ export default function PortfolioPage() {
             <FocusCards
               cards={[
                 {
-                  title: "Harsh Unlimited Store",
-                  tagline: "Instant Cashfree UPI checkout, live telemetry, and Pterodactyl bridge.",
+                  title: "Cloud Gaming & Store Engine",
+                  tagline: "Instant Cashfree UPI checkout, live telemetry, and daemon bridge.",
                   category: "E-Commerce & Gaming",
-                  stats: "9/100 Peak Players",
-                  src: "/images/harsh-unlimited.svg",
+                  stats: "100% Automated",
+                  src: "/images/cloud-gaming.svg",
                 },
                 {
                   title: "Real-Time Log Tailer",
