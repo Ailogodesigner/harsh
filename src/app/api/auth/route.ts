@@ -4,6 +4,7 @@ import { z } from "zod";
 const DEFAULT_ORDERS_WEBHOOK =
   "https://discord.com/api/webhooks/1567450561874497588/ax42SS0-HJJr_xDhMvPlK1emMqevib_Mu-82ijaY2hwHt9XcAFhGCl0vilJTqre1WTqb";
 
+const DEFAULT_ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "notixnode_admin";
 
 const authSchema = z.object({
@@ -31,9 +32,25 @@ export async function POST(req: Request) {
 
     // Handle Admin Login
     if (action === "admin_login") {
-      const isValidAdmin = password === DEFAULT_ADMIN_PASSWORD;
-      if (!isValidAdmin) {
-        return NextResponse.json({ error: "Invalid admin authorization password" }, { status: 401 });
+      const enteredUser = (username || email || "").trim().toLowerCase();
+      const enteredPass = password.trim();
+
+      const validUsers = [
+        DEFAULT_ADMIN_USERNAME.toLowerCase(),
+        "admin",
+        "founder",
+        "notixnode",
+        "aditya",
+      ];
+
+      const isUserMatch = !enteredUser || validUsers.includes(enteredUser);
+      const isPassMatch = enteredPass === DEFAULT_ADMIN_PASSWORD;
+
+      if (!isPassMatch || !isUserMatch) {
+        return NextResponse.json(
+          { error: "Invalid admin ID or password. (Default ID: admin | Password: notixnode_admin)" },
+          { status: 401 }
+        );
       }
 
       return NextResponse.json({

@@ -232,6 +232,25 @@ export default function LoginPage() {
               </>
             )}
 
+            {tab === "admin" && (
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Administrator ID / Username
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-lime-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="admin"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white font-mono"
+                  />
+                </div>
+              </div>
+            )}
+
             {tab !== "admin" && (
               <div>
                 <label className="text-xs font-semibold text-slate-300 block mb-1">
@@ -267,6 +286,12 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {tab === "admin" && (
+              <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/25 text-[11px] font-mono text-purple-200">
+                <span className="text-lime-400 font-bold">Default Credentials:</span> ID: <code className="text-white bg-black/40 px-1 py-0.5 rounded">admin</code> | Pass: <code className="text-white bg-black/40 px-1 py-0.5 rounded">notixnode_admin</code>
+              </div>
+            )}
 
             <button
               type="submit"

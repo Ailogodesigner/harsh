@@ -23,6 +23,7 @@ const botOrderSchema = z.object({
   totalEstimatedPrice: z.number().min(100),
   advancePaymentRequired: z.number().min(50),
   timeline: z.string().default("3-5 Days"),
+  hostingPlan: z.string().optional(),
   additionalNotes: z.string().max(2000).optional(),
 });
 
@@ -104,6 +105,15 @@ export async function POST(req: Request) {
                 value: `**${data.timeline}**`,
                 inline: true,
               },
+              ...(data.hostingPlan && data.hostingPlan !== "None"
+                ? [
+                    {
+                      name: "⚡ Bundled Bot Hosting",
+                      value: `**${data.hostingPlan}**`,
+                      inline: true,
+                    },
+                  ]
+                : []),
               {
                 name: `🧩 Selected Modules (${data.selectedFeatures.length})`,
                 value: featureSummary,
