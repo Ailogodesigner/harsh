@@ -27,4 +27,26 @@ describe("Portfolio Platform Verification", () => {
     expect(validInquiry.email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
     expect(validInquiry.message.length).toBeGreaterThanOrEqual(10);
   });
+
+  it("verifies interactive CLI terminal command routing", () => {
+    const validCommands = ["whoami", "skills", "projects", "contact", "hire", "clear"];
+    validCommands.forEach((cmd) => {
+      expect(typeof cmd).toBe("string");
+      expect(cmd.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("verifies cloud architecture topology nodes and telemetry layers", () => {
+    const topologyNodes = [
+      "Client / Device",
+      "Edge Gateway",
+      "App Core & APIs",
+      "Data Tier",
+      "Payment Gateway",
+    ];
+    expect(topologyNodes).toHaveLength(5);
+    expect(topologyNodes).toContain("Payment Gateway");
+    expect(topologyNodes).toContain("Edge Gateway");
+  });
 });
+

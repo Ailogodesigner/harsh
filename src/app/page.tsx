@@ -5,6 +5,9 @@ import PortfolioNavbar from "@/components/PortfolioNavbar";
 import PortfolioFooter from "@/components/PortfolioFooter";
 import CopyButton from "@/components/CopyButton";
 import GithubIcon from "@/components/GithubIcon";
+import HeroTerminal from "@/components/HeroTerminal";
+import ArchitectureDiagram from "@/components/ArchitectureDiagram";
+import GithubCommitHeatmap from "@/components/GithubCommitHeatmap";
 import {
   Briefcase,
   Code2,
@@ -84,15 +87,16 @@ export default function PortfolioPage() {
 
   const projects = [
     {
-      title: "Gaming E-Commerce & Telemetry Platform",
-      tagline: "High-throughput server store, automated payment gateway, and live server telemetry system.",
+      title: "Harsh Unlimited — Gaming E-Commerce & Telemetry Platform",
+      tagline: "High-throughput server store, automated Cashfree payment gateway, live player telemetry (9/100 concurrency), and Pterodactyl console bridge.",
       tech: ["Next.js 16", "React 19", "TypeScript", "PostgreSQL", "Prisma", "Cashfree PG", "REST APIs"],
       category: "Full-Stack & E-Commerce",
       description:
-        "Engineered a production-ready Minecraft network management and store platform. Built with Next.js App Router, integrating Cashfree DevStudio for automated UPI/card checkout, HMAC-SHA256 signature verification, and automated rank delivery via Pterodactyl console bridge. Features live player telemetry and interactive chest item preview GUIs.",
+        "Engineered a production-ready Minecraft network management and store platform for Harsh Unlimited. Built with Next.js App Router, integrating Cashfree DevStudio for automated UPI/card checkout, HMAC-SHA256 signature verification, and automated rank delivery via Pterodactyl console bridge. Features live server status telemetry (player counts, ping metrics) and interactive chest item preview GUIs.",
       highlights: [
         "Server-side payment verification & raw webhook deduplication",
         "Pterodactyl 1.x REST API integration with 3x SSL handshake backoff resilience",
+        "Live server MOTD & player telemetry tracking with sub-second polling",
         "Interactive Minecraft chest GUI modal with sound effects and enchantment tooltips",
         "Sub-150ms TTFB on global edge with zero-layout-shift UI",
       ],
@@ -315,6 +319,11 @@ export default function PortfolioPage() {
               />
             </div>
 
+            {/* Developer GFX: Interactive Terminal & Code Workstation */}
+            <div className="w-full pt-6 pb-2">
+              <HeroTerminal />
+            </div>
+
             {/* Metric Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full pt-10 border-t border-slate-800/80 mt-6">
               <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 text-left">
@@ -459,6 +468,15 @@ export default function PortfolioPage() {
       </section>
 
       {/* ========================================================================= */}
+      {/* 2.5 CLOUD ARCHITECTURE & SYSTEM TOPOLOGY (GFX)                            */}
+      {/* ========================================================================= */}
+      <section id="architecture" className="py-20 border-t border-slate-800/60 relative cyber-grid">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <ArchitectureDiagram />
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
       {/* 3. FEATURED PROJECTS SHOWCASE                                            */}
       {/* ========================================================================= */}
       <section id="projects" className="py-20 border-t border-slate-800/60 relative">
@@ -480,7 +498,7 @@ export default function PortfolioPage() {
             {projects.map((proj, idx) => (
               <div
                 key={proj.title}
-                className="glass-panel p-6 sm:p-10 rounded-3xl border border-slate-800/90 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-950 via-[#0d1019] to-slate-950 transition-all duration-300 hover:border-cyan-500/30"
+                className="glass-panel hud-bracket p-6 sm:p-10 rounded-3xl border border-slate-800/90 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-950 via-[#0d1019] to-slate-950 transition-all duration-300 hover:border-cyan-500/30"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800">
                   <div className="flex items-center gap-3">
@@ -622,6 +640,11 @@ export default function PortfolioPage() {
               );
             })}
           </div>
+
+          {/* GitHub Activity & Commit Heatmap GFX */}
+          <div className="mt-12">
+            <GithubCommitHeatmap />
+          </div>
         </div>
       </section>
 
@@ -680,6 +703,11 @@ export default function PortfolioPage() {
                 </div>
               );
             })}
+          </div>
+
+          {/* GitHub Activity & Commit Heatmap GFX */}
+          <div className="mt-12">
+            <GithubCommitHeatmap />
           </div>
         </div>
       </section>
