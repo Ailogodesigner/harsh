@@ -7,20 +7,17 @@ import {
   Lock,
   Mail,
   User,
-  Shield,
   ArrowRight,
   CheckCircle2,
-  Sparkles,
   AlertCircle,
-  KeyRound,
-  Layers,
 } from "lucide-react";
 import DiscordIcon from "@/components/DiscordIcon";
 import { playCyberClick, playCyberSuccess } from "@/components/ui/SoundEffects";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [tab, setTab] = useState<"login" | "register" | "admin">("login");
+  const [tab, setTab] = useState<"login" | "register">("login");
+  const [identifier, setIdentifier] = useState("");
   const [username, setUsername] = useState("");
   const [discordTag, setDiscordTag] = useState("");
   const [email, setEmail] = useState("");
@@ -36,16 +33,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      const payload =
+        tab === "login"
+          ? {
+              action: "login",
+              username: identifier.trim(),
+              email: identifier.includes("@") ? identifier.trim() : undefined,
+              password: password.trim(),
+            }
+          : {
+              action: "register",
+              username: username.trim(),
+              discordTag: discordTag.trim(),
+              email: email.trim(),
+              password: password.trim(),
+            };
+
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: tab === "admin" ? "admin_login" : tab,
-          username,
-          discordTag,
-          email,
-          password,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -56,16 +63,18 @@ export default function LoginPage() {
         playCyberSuccess();
         setSuccessMsg(data.message);
 
-        if (tab === "admin") {
+        // Seamless Unified Authentication:
+        // Automatically redirects to /admin if administrator, or /bot-order if client
+        if (data.role === "admin") {
           localStorage.setItem("nn_admin_token", data.token);
           setTimeout(() => {
-            router.push("/admin");
-          }, 1000);
+            router.push(data.redirect || "/admin");
+          }, 800);
         } else {
           localStorage.setItem("nn_client_token", data.token);
           setTimeout(() => {
-            router.push("/bot-order");
-          }, 1200);
+            router.push(data.redirect || "/bot-order");
+          }, 1000);
         }
       }
     } catch {
@@ -111,22 +120,20 @@ export default function LoginPage() {
           {/* Card Title & Description */}
           <div className="text-center space-y-2 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center mx-auto text-lime-400">
-              {tab === "admin" ? <KeyRound className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
+              <Lock className="w-6 h-6" />
             </div>
             <h2 className="text-2xl font-black text-white font-sans tracking-tight">
-              {tab === "login" && "Client Login"}
-              {tab === "register" && "Create Client Account"}
-              {tab === "admin" && "Administrator Deck"}
+              {tab === "login" ? "Sign In to NOTIXNODE" : "Create Client Account"}
             </h2>
             <p className="text-xs text-slate-400 font-sans">
-              {tab === "admin"
-                ? "Enter your secure master password to access system orders."
-                : "Manage your custom bots, active hosting, and project specs."}
+              {tab === "login"
+                ? "Enter your credentials to access your bots, hosting, and services."
+                : "Register to configure custom Discord bots and manage active hosting."}
             </p>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-[#060410] border border-purple-500/20 mb-6 text-xs font-mono">
+          {/* Mode Switcher Tabs (Unified: Sign In & Register) */}
+          <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#060410] border border-purple-500/20 mb-6 text-xs font-mono">
             <button
               type="button"
               onClick={() => {
@@ -135,13 +142,13 @@ export default function LoginPage() {
                 setSuccessMsg(null);
                 playCyberClick();
               }}
-              className={`py-1.5 rounded-lg transition-colors cursor-pointer ${
+              className={`py-2 rounded-lg transition-all cursor-pointer font-semibold ${
                 tab === "login"
-                  ? "bg-purple-500/30 text-white font-bold border border-purple-500/50"
+                  ? "bg-purple-500/30 text-white border border-purple-500/50 shadow-sm"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Login
+              Sign In
             </button>
             <button
               type="button"
@@ -151,29 +158,13 @@ export default function LoginPage() {
                 setSuccessMsg(null);
                 playCyberClick();
               }}
-              className={`py-1.5 rounded-lg transition-colors cursor-pointer ${
+              className={`py-2 rounded-lg transition-all cursor-pointer font-semibold ${
                 tab === "register"
-                  ? "bg-purple-500/30 text-white font-bold border border-purple-500/50"
+                  ? "bg-purple-500/30 text-white border border-purple-500/50 shadow-sm"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Register
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setTab("admin");
-                setError(null);
-                setSuccessMsg(null);
-                playCyberClick();
-              }}
-              className={`py-1.5 rounded-lg transition-colors cursor-pointer ${
-                tab === "admin"
-                  ? "bg-lime-400/20 text-lime-400 font-bold border border-lime-400/40"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Admin
+              Create Account
             </button>
           </div>
 
@@ -194,7 +185,26 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {tab === "register" && (
+            {tab === "login" ? (
+              /* Unified Sign In Fields */
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  Username or Email Address
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-purple-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="Enter your username or email"
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Registration Fields */
               <>
                 <div>
                   <label className="text-xs font-semibold text-slate-300 block mb-1">
@@ -229,50 +239,29 @@ export default function LoginPage() {
                     />
                   </div>
                 </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-purple-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="user@example.com"
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white"
+                    />
+                  </div>
+                </div>
               </>
-            )}
-
-            {tab === "admin" && (
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
-                  Administrator ID / Username
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-lime-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="admin"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white font-mono"
-                  />
-                </div>
-              </div>
-            )}
-
-            {tab !== "admin" && (
-              <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-purple-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="user@example.com"
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 focus:border-lime-400 focus:outline-none text-xs text-white"
-                  />
-                </div>
-              </div>
             )}
 
             <div>
               <label className="text-xs font-semibold text-slate-300 block mb-1">
-                {tab === "admin" ? "Master Administrator Password" : "Password"}
+                Password
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-purple-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -287,12 +276,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {tab === "admin" && (
-              <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/25 text-[11px] font-mono text-purple-200">
-                <span className="text-lime-400 font-bold">Default Credentials:</span> ID: <code className="text-white bg-black/40 px-1 py-0.5 rounded">admin</code> | Pass: <code className="text-white bg-black/40 px-1 py-0.5 rounded">notixnode_admin</code>
-              </div>
-            )}
-
             <button
               type="submit"
               disabled={loading}
@@ -302,11 +285,7 @@ export default function LoginPage() {
                 <span>Authenticating...</span>
               ) : (
                 <>
-                  <span>
-                    {tab === "login" && "Sign In"}
-                    {tab === "register" && "Create Account"}
-                    {tab === "admin" && "Access Admin Deck"}
-                  </span>
+                  <span>{tab === "login" ? "Sign In" : "Create Account"}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -330,4 +309,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

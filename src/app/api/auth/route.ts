@@ -9,9 +9,9 @@ const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "notixnode_admin";
 
 const authSchema = z.object({
   action: z.enum(["login", "register", "admin_login"]),
-  username: z.string().min(2).max(50).optional(),
+  username: z.string().min(1).max(100).optional(),
   discordTag: z.string().min(2).max(60).optional(),
-  email: z.string().email().optional(),
+  email: z.string().max(100).optional(),
   password: z.string().min(4, "Password must be at least 4 characters").max(100),
 });
 
@@ -30,25 +30,27 @@ export async function POST(req: Request) {
     const { action, username, discordTag, email, password } = result.data;
     const webhookUrl = process.env.DISCORD_ORDERS_WEBHOOK_URL || DEFAULT_ORDERS_WEBHOOK;
 
-    // Handle Admin Login
-    if (action === "admin_login") {
-      const enteredUser = (username || email || "").trim().toLowerCase();
-      const enteredPass = password.trim();
+    const enteredUser = (username || email || "").trim().toLowerCase();
+    const enteredPass = password.trim();
 
-      const validUsers = [
-        DEFAULT_ADMIN_USERNAME.toLowerCase(),
-        "admin",
-        "founder",
-        "notixnode",
-        "aditya",
-      ];
+    const validAdminUsers = [
+      DEFAULT_ADMIN_USERNAME.toLowerCase(),
+      "admin",
+      "founder",
+      "notixnode",
+      "aditya",
+    ];
 
-      const isUserMatch = !enteredUser || validUsers.includes(enteredUser);
+    // Seamless Admin Login Detection:
+    // If credentials match an admin username and master password, authenticate as Admin
+    const isAdminAttempt = action === "admin_login" || validAdminUsers.includes(enteredUser);
+
+    if (isAdminAttempt) {
       const isPassMatch = enteredPass === DEFAULT_ADMIN_PASSWORD;
 
-      if (!isPassMatch || !isUserMatch) {
+      if (!isPassMatch) {
         return NextResponse.json(
-          { error: "Invalid admin ID or password. (Default ID: admin | Password: notixnode_admin)" },
+          { error: "Invalid username or password. Please verify your credentials." },
           { status: 401 }
         );
       }
@@ -56,8 +58,9 @@ export async function POST(req: Request) {
       return NextResponse.json({
         success: true,
         role: "admin",
+        redirect: "/admin",
         token: "admin_session_" + Buffer.from(Date.now().toString()).toString("base64"),
-        message: "Welcome to NOTIXNODE Administrator Command Deck!",
+        message: "Welcome, Administrator! Access granted to Command Deck.",
       });
     }
 
@@ -131,9 +134,10 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       role: "client",
+      redirect: "/bot-order",
       username: username || discordTag || email?.split("@")[0] || "Client",
       token: "cli_session_" + Buffer.from(Date.now().toString()).toString("base64"),
-      message: "Logged in successfully!",
+      message: "Logged in successfully! Redirecting to client portal...",
     });
   } catch (error: any) {
     console.error("Auth API error:", error);
