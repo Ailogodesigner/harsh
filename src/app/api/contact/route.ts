@@ -12,6 +12,32 @@ const contactSchema = z.object({
 const DEFAULT_DISCORD_WEBHOOK =
   "https://discord.com/api/webhooks/1567450558669914182/Nfa_NdwtT2NEnlKql_-KtsvJlDT3kPydph3grz-2Ai9vHw0WM0GnLsmzSy7Ho4VqWEV4";
 
+function getDiscordFounderMention(): { mentionString: string; roleId?: string; userId?: string } {
+  // If role ID is provided (e.g. 1368528703184703490)
+  if (process.env.DISCORD_FOUNDER_ROLE_ID) {
+    const rawId = process.env.DISCORD_FOUNDER_ROLE_ID.trim().replace(/[<@&>]/g, "");
+    return { mentionString: `<@&${rawId}>`, roleId: rawId };
+  }
+
+  // If user ID is provided (personal user account ID)
+  if (process.env.DISCORD_FOUNDER_USER_ID) {
+    const rawId = process.env.DISCORD_FOUNDER_USER_ID.trim().replace(/[<@!>]/g, "");
+    return { mentionString: `<@${rawId}>`, userId: rawId };
+  }
+
+  // If custom DISCORD_MENTION is provided
+  if (process.env.DISCORD_MENTION) {
+    const mention = process.env.DISCORD_MENTION.trim();
+    if (/^\d{17,20}$/.test(mention)) {
+      return { mentionString: `<@&${mention}>`, roleId: mention };
+    }
+    return { mentionString: mention };
+  }
+
+  // Default text fallback
+  return { mentionString: "@🤍 ┊ founder" };
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -36,13 +62,28 @@ export async function POST(req: Request) {
     // Dispatch to Discord Webhook
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL || DEFAULT_DISCORD_WEBHOOK;
     if (webhookUrl) {
+      const { mentionString, roleId, userId } = getDiscordFounderMention();
+
+      const allowedMentions: {
+        parse: string[];
+        roles?: string[];
+        users?: string[];
+      } = {
+        parse: ["roles", "users", "everyone"],
+      };
+
+      if (roleId) {
+        allowedMentions.roles = [roleId];
+      }
+      if (userId) {
+        allowedMentions.users = [userId];
+      }
+
       const discordPayload = {
-        content: "@🤍 ┊ founder 📬 **New Client Inquiry Received!**",
+        content: `${mentionString} 📬 **New Client Inquiry Received!**`,
         username: "NOTIXNODE Inquiries",
         avatar_url: "https://api.dicebear.com/7.x/bottts/png?seed=notixnode",
-        allowed_mentions: {
-          parse: ["roles", "users", "everyone"],
-        },
+        allowed_mentions: allowedMentions,
         embeds: [
           {
             title: "📬 New Client Project Inquiry Received!",
@@ -51,7 +92,7 @@ export async function POST(req: Request) {
             fields: [
               {
                 name: "👑 Notification",
-                value: "@🤍 ┊ founder",
+                value: mentionString,
                 inline: true,
               },
               {
