@@ -79,15 +79,10 @@ export default function PortfolioFooter() {
               Online Profiles
             </h4>
             <div className="flex flex-col space-y-2.5 text-xs">
-              <a
-                href="https://github.com/Ailogodesigner"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-lime-400 transition-colors"
-              >
+              <div className="flex items-center gap-2 text-purple-300/90 font-mono">
                 <GithubIcon className="w-4 h-4 text-purple-400" />
-                <span>GitHub (@Ailogodesigner)</span>
-              </a>
+                <span>@Ailogodesigner (Verified Lead)</span>
+              </div>
               <a
                 href="mailto:dhruve123456789@gmail.com"
                 className="flex items-center gap-2 hover:text-lime-400 transition-colors"

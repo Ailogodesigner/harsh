@@ -15,6 +15,13 @@ import InfiniteMarquee from "@/components/ui/InfiniteMarquee";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import TiltCard from "@/components/ui/TiltCard";
 import BorderBeam from "@/components/ui/BorderBeam";
+import { MacbookScroll } from "@/components/ui/macbook-scroll";
+import { ThreeDCardDemo } from "@/components/ThreeDCardDemo";
+import { BackgroundLines } from "@/components/ui/background-lines";
+import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import { FocusCards } from "@/components/ui/focus-cards";
+import { ExpandableCards } from "@/components/ui/expandable-card";
+import { Skiper52 } from "@/components/ui/Skiper52";
 import { playCyberClick, playCyberHover, playCyberSuccess } from "@/components/ui/SoundEffects";
 import {
   Briefcase,
@@ -266,103 +273,94 @@ export default function PortfolioPage() {
       <PortfolioNavbar />
 
       {/* ========================================================================= */}
-      {/* 1. HERO SECTION                                                          */}
+      {/* 1. HERO SECTION WITH ACETERNITY BACKGROUND LINES                         */}
       {/* ========================================================================= */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
-        {/* Glow ambient meshes */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-purple-600/20 via-fuchsia-600/15 to-lime-500/15 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Subtle grid pattern background */}
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, #a855f7 1px, transparent 0)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
-            {/* Top Pill with Skiper Text Scramble */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0c0a1b]/90 border border-purple-500/30 shadow-inner backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
-              <TextScramble
-                text="Full-Stack Web Developer & Systems Architect"
-                className="text-xs font-semibold text-purple-200"
-              />
-            </div>
-
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.1]">
-              Crafting{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-lime-400">
-                High-Performance
-              </span>{" "}
-              Web Apps &amp; Digital Systems.
-            </h1>
-
-            {/* Subheading */}
-            <p className="text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
-              Hi, I&apos;m <span className="text-white font-semibold">Aditya Kashyap</span>. I build scalable full-stack
-              applications, automated payment engines, real-time telemetry systems, and edge infrastructure with clean,
-              battle-tested code.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <a
-                href="#projects"
-                onClick={() => playCyberClick()}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-lime-400 hover:brightness-110 shadow-lg shadow-purple-500/25 transition-all active:scale-95 cursor-pointer"
-              >
-                <span>Explore Featured Work</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-
-              <a
-                href="#contact"
-                onClick={() => playCyberClick()}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-purple-200 bg-[#0c0b1a] hover:bg-[#151228] border border-purple-500/30 hover:border-lime-400/50 transition-all active:scale-95 cursor-pointer"
-              >
-                <Mail className="w-4 h-4 text-lime-400" />
-                <span>Get In Touch</span>
-              </a>
-
-              <CopyButton
-                textToCopy="dhruve123456789@gmail.com"
-                label="Copy Email"
-                copiedLabel="Email Copied!"
-                className="py-3 px-4 text-xs sm:text-sm"
-              />
-            </div>
-
-            {/* Developer GFX: Interactive Terminal & Code Workstation */}
-            <div className="w-full pt-6 pb-2">
-              <HeroTerminal />
-            </div>
-
-            {/* Metric Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full pt-8 border-t border-purple-500/20 mt-6">
-              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-purple-300 font-mono">3+</div>
-                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Years Developing</div>
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+        <BackgroundLines className="py-6">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+            <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">
+              {/* Top Pill with Skiper Text Scramble */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0c0a1b]/90 border border-purple-500/30 shadow-inner backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+                <TextScramble
+                  text="Full-Stack Web Developer & Systems Architect"
+                  className="text-xs font-semibold text-purple-200"
+                />
               </div>
-              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-lime-400 font-mono">20+</div>
-                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Projects Delivered</div>
+
+              {/* Main Headline with Aceternity ContainerTextFlip */}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-[1.15] flex flex-wrap items-center justify-center gap-3">
+                <span>Architecting</span>
+                <ContainerTextFlip
+                  words={["High-Performance", "Zero-Cold-Start", "Battle-Tested", "Ultra-Scalable"]}
+                />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-lime-400">
+                  Digital Systems.
+                </span>
+              </h1>
+
+              {/* Subheading */}
+              <p className="text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
+                Hi, I&apos;m <span className="text-white font-semibold">Aditya Kashyap</span>. I build scalable full-stack
+                applications, automated payment engines, real-time telemetry systems, and edge infrastructure with clean,
+                battle-tested code.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <a
+                  href="#projects"
+                  onClick={() => playCyberClick()}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-lime-400 hover:brightness-110 shadow-lg shadow-purple-500/25 transition-all active:scale-95 cursor-pointer"
+                >
+                  <span>Explore Featured Work</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+
+                <a
+                  href="#macbook"
+                  onClick={() => playCyberClick()}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm text-purple-200 bg-[#0c0b1a] hover:bg-[#151228] border border-purple-500/30 hover:border-lime-400/50 transition-all active:scale-95 cursor-pointer"
+                >
+                  <Cpu className="w-4 h-4 text-lime-400" />
+                  <span>3D MacBook Live View</span>
+                </a>
+
+                <CopyButton
+                  textToCopy="dhruve123456789@gmail.com"
+                  label="Copy Email"
+                  copiedLabel="Email Copied!"
+                  className="py-3 px-4 text-xs sm:text-sm"
+                />
               </div>
-              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">100%</div>
-                <div className="text-xs text-purple-200/70 font-medium mt-0.5">A+ Security &amp; SEO</div>
+
+              {/* Developer GFX: Interactive Terminal & Code Workstation */}
+              <div className="w-full pt-6 pb-2">
+                <HeroTerminal />
               </div>
-              <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
-                <div className="text-2xl sm:text-3xl font-black text-fuchsia-400 font-mono">&lt;150ms</div>
-                <div className="text-xs text-purple-200/70 font-medium mt-0.5">Global Edge TTFB</div>
+
+              {/* Metric Strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full pt-8 border-t border-purple-500/20 mt-6">
+                <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                  <div className="text-2xl sm:text-3xl font-black text-purple-300 font-mono">3+</div>
+                  <div className="text-xs text-purple-200/70 font-medium mt-0.5">Years Developing</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                  <div className="text-2xl sm:text-3xl font-black text-lime-400 font-mono">20+</div>
+                  <div className="text-xs text-purple-200/70 font-medium mt-0.5">Projects Delivered</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                  <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono">100%</div>
+                  <div className="text-xs text-purple-200/70 font-medium mt-0.5">A+ Security &amp; SEO</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 text-left">
+                  <div className="text-2xl sm:text-3xl font-black text-fuchsia-400 font-mono">&lt;150ms</div>
+                  <div className="text-xs text-purple-200/70 font-medium mt-0.5">Global Edge TTFB</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </BackgroundLines>
       </section>
 
       {/* Skiper UI Infinite Tech Marquee Ticker */}
@@ -527,7 +525,42 @@ export default function PortfolioPage() {
       </section>
 
       {/* ========================================================================= */}
+      {/* 2.8 FEY.COM STYLE 3D MACBOOK SCROLL (HARDWARE ENGINE)                     */}
+      {/* ========================================================================= */}
+      <section id="macbook" className="border-t border-purple-500/20 bg-[#06050e] relative overflow-hidden py-16">
+        <MacbookScroll
+          badge={
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-500/10 border border-lime-500/30 text-xs font-mono text-lime-400">
+              <span className="w-2 h-2 rounded-full bg-lime-400 animate-pulse" />
+              <span>Fey.com 3D Hardware Telemetry</span>
+            </div>
+          }
+          title="Hardware-Accelerated Engineering Across Every Display"
+        />
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 2.9 SKIPER 52 HOVER-EXPAND SYSTEM GALLERY                                */}
+      {/* ========================================================================= */}
+      <section className="py-16 border-t border-purple-500/20 bg-[#070611] relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-3 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
+            <Sparkles className="w-3.5 h-3.5 text-lime-400" />
+            <span>Skiper UI • Interactive Stack Showcase</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            Hover to Expand Core Architecture Pillars
+          </h2>
+          <p className="text-xs sm:text-sm text-purple-200/70 font-mono">
+            Interactive multi-panel accordions with dynamic spring physics.
+          </p>
+        </div>
+        <Skiper52 />
+      </section>
+
+      {/* ========================================================================= */}
       {/* 3. FEATURED PROJECTS SHOWCASE                                            */}
+      {/* ========================================================================= */}
       {/* ========================================================================= */}
       <section id="projects" className="py-20 border-t border-purple-500/20 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -572,14 +605,12 @@ export default function PortfolioPage() {
 
                     <div className="flex items-center gap-3">
                       <a
-                        href={proj.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="#architecture"
                         onClick={() => playCyberClick()}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 hover:border-lime-400/40 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e0c1f] border border-purple-500/30 hover:border-lime-400/40 text-xs font-medium text-lime-400 hover:text-white transition-colors"
                       >
-                        <GithubIcon className="w-3.5 h-3.5 text-purple-400" />
-                        <span>Codebase</span>
+                        <span>Inspect Architecture</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </a>
                     </div>
                   </div>
@@ -639,6 +670,62 @@ export default function PortfolioPage() {
                 </div>
               </TiltCard>
             ))}
+          </div>
+
+          {/* Aceternity UI Focus Cards */}
+          <div className="pt-16">
+            <div className="text-center space-y-2 mb-8">
+              <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-lime-500/10 border border-lime-500/30 text-lime-400 font-bold uppercase">
+                Aceternity Focus Cards
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Interactive Multi-Product Focus Matrix
+              </h3>
+              <p className="text-xs text-purple-300/80 font-mono">
+                Hover over a card to focus details while siblings blur dynamically.
+              </p>
+            </div>
+            <FocusCards
+              cards={[
+                {
+                  title: "Harsh Unlimited Store",
+                  tagline: "Instant Cashfree UPI checkout, live telemetry, and Pterodactyl bridge.",
+                  category: "E-Commerce & Gaming",
+                  stats: "9/100 Peak Players",
+                  src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop",
+                },
+                {
+                  title: "Real-Time Log Tailer",
+                  tagline: "High-volume stream tailer with 3.5s in-memory cache and zero-lag regex parsing.",
+                  category: "Systems & Streams",
+                  stats: "< 5ms Latency",
+                  src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop",
+                },
+                {
+                  title: "Dynamic Radar & Map",
+                  tagline: "Interactive HTML5 canvas radar map with coordinate triangulation and landmark pins.",
+                  category: "Frontend & Canvas",
+                  stats: "60 FPS Fluid",
+                  src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop",
+                },
+              ]}
+            />
+          </div>
+
+          {/* Aceternity UI Expandable Cards Specification Inspector */}
+          <div className="pt-16 border-t border-purple-500/20 mt-16">
+            <div className="text-center space-y-2 mb-8">
+              <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold uppercase">
+                Aceternity Expandable Cards
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Detailed Technical Specifications Inspector
+              </h3>
+              <p className="text-xs text-purple-300/80 font-mono">
+                Click any architecture card to expand comprehensive benchmarks on-site with zero external redirects.
+              </p>
+            </div>
+            <ExpandableCards items={projects} />
           </div>
         </div>
       </section>
@@ -766,6 +853,22 @@ export default function PortfolioPage() {
               );
             })}
           </div>
+
+          {/* Aceternity UI 3D Card Interactive Lab */}
+          <div className="pt-20 flex flex-col items-center justify-center">
+            <div className="text-center space-y-2 mb-4">
+              <span className="text-[11px] font-mono px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold uppercase">
+                Aceternity 3D Card Experience
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                CSS Perspective &amp; 3D Parallax Depth
+              </h3>
+              <p className="text-xs text-purple-200/70 font-mono">
+                Physical depth tracking cursor motion with multi-layer Z-index transformations.
+              </p>
+            </div>
+            <ThreeDCardDemo />
+          </div>
         </div>
       </section>
 
@@ -810,17 +913,10 @@ export default function PortfolioPage() {
                   spotlightColor="rgba(163, 230, 53, 0.15)"
                   className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
                 >
-                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">GitHub Profile</span>
+                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Developer Profile</span>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-white">github.com/Ailogodesigner</span>
-                    <a
-                      href="https://github.com/Ailogodesigner"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-xl bg-[#141029] hover:bg-purple-600/30 border border-purple-500/30 text-xs font-medium text-white transition-colors"
-                    >
-                      Visit
-                    </a>
+                    <span className="text-sm font-semibold text-white">@Ailogodesigner</span>
+                    <CopyButton textToCopy="Ailogodesigner" label="Copy Handle" copiedLabel="Copied!" />
                   </div>
                 </SpotlightCard>
 

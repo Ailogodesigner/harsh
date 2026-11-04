@@ -86,12 +86,10 @@ export default function DynamicIslandDock() {
         {/* Divider */}
         <div className="w-[1px] h-6 bg-purple-500/30 mx-1" />
 
-        {/* GitHub Shortcut */}
+        {/* MacBook 3D Showcase Shortcut (In-Site, No External Redirect) */}
         <div className="relative group">
           <a
-            href="https://github.com/Ailogodesigner"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#macbook"
             onMouseEnter={() => {
               setHoveredIdx(10);
               playCyberHover();
@@ -102,12 +100,12 @@ export default function DynamicIslandDock() {
               transform: hoveredIdx === 10 ? "scale(1.28) translateY(-6px)" : "scale(1)",
             }}
             className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-purple-500/20 active:bg-lime-400 active:text-black transition-all duration-200"
-            aria-label="GitHub Profile"
+            aria-label="3D MacBook Showcase"
           >
-            <GithubIcon className="w-4 h-4" />
+            <Cpu className="w-4 h-4 text-purple-400" />
           </a>
           <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-[#05050a] border border-purple-500/40 text-[10px] font-mono font-bold text-lime-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg whitespace-nowrap">
-            GitHub
+            3D MacBook
           </div>
         </div>
 
