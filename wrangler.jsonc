@@ -18,5 +18,11 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "notixnode"
     }
+  ],
+  "routes": [
+    {
+      "pattern": "bot.notixnode.online",
+      "custom_domain": true
+    }
   ]
 }
