@@ -112,7 +112,7 @@ export default function DynamicIslandDock() {
         {/* Discord Link */}
         <div className="relative group">
           <a
-            href="https://discord.gg/notixnode"
+            href="https://dsc.gg/notixnode"
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => {
@@ -130,7 +130,7 @@ export default function DynamicIslandDock() {
             <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
           </a>
           <div className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-md bg-[#05050a] border border-[#5865F2]/40 text-[10px] font-mono font-bold text-[#8ea1e1] opacity-0 group-hover:opacity-100 transition-opacity shadow-lg whitespace-nowrap">
-            Discord: NOTIXNODE
+            dsc.gg/notixnode
           </div>
         </div>
 

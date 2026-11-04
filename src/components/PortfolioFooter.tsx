@@ -81,19 +81,24 @@ export default function PortfolioFooter() {
             <div className="flex flex-col space-y-2.5 text-xs">
               {/* Discord Dedicated Pill */}
               <a
-                href="https://discord.gg/notixnode"
+                href="https://dsc.gg/notixnode"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-2.5 rounded-xl bg-[#0d0b1e] border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/10 text-white transition-all group shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
-                  <span className="font-mono text-xs font-bold text-slate-200 group-hover:text-white">
-                    NOTIXNODE
-                  </span>
+                  <div>
+                    <span className="font-mono text-xs font-bold text-slate-200 group-hover:text-white block">
+                      NOTIXNODE
+                    </span>
+                    <span className="text-[10px] text-purple-300/70 font-mono block">
+                      Best Discord Setups &amp; Custom Bots
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#5865F2]/20 text-[#8ea1e1] border border-[#5865F2]/40">
-                  Join Discord
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#5865F2]/20 text-[#8ea1e1] border border-[#5865F2]/40 whitespace-nowrap">
+                  dsc.gg/notixnode
                 </span>
               </a>
 
@@ -129,19 +134,28 @@ export default function PortfolioFooter() {
 
         {/* Massive NOTIXNODE Typographic Brand Watermark at End */}
         <div className="pt-16 pb-4 relative flex flex-col items-center justify-center overflow-hidden">
-          <div className="flex items-center gap-2.5 mb-3 px-3.5 py-1 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 shadow-md">
-            <DiscordIcon className="w-3.5 h-3.5 text-[#5865F2]" />
-            <span className="text-[11px] font-mono text-[#8ea1e1] font-bold uppercase tracking-wider">
-              discord.gg/notixnode
+          <a
+            href="https://dsc.gg/notixnode"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 mb-3 px-4 py-1.5 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/20 transition-all shadow-md group"
+          >
+            <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+            <span className="text-[11px] font-mono text-[#8ea1e1] group-hover:text-white font-bold uppercase tracking-wider">
+              dsc.gg/notixnode • Best Discord Setups &amp; Custom Bot Development
             </span>
-          </div>
+          </a>
 
           {/* Big Text NOTIXNODE */}
           <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[13rem] font-black tracking-tighter uppercase select-none text-center bg-gradient-to-b from-white/20 via-purple-500/10 to-transparent bg-clip-text text-transparent leading-none pointer-events-none transition-all duration-700">
             NOTIXNODE
           </h1>
 
-          <div className="w-full max-w-md h-[1px] bg-gradient-to-r from-transparent via-[#5865F2]/50 to-transparent mt-3" />
+          <p className="text-xs sm:text-sm font-mono text-purple-300/80 text-center mt-3 max-w-lg">
+            Best Discord Setups • Custom Discord Bots • High-Performance Web Architecture
+          </p>
+
+          <div className="w-full max-w-md h-[1px] bg-gradient-to-r from-transparent via-[#5865F2]/50 to-transparent mt-4" />
         </div>
       </div>
     </footer>

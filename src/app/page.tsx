@@ -228,6 +228,13 @@ export default function PortfolioPage() {
 
   const services = [
     {
+      title: "Best Discord Setups & Custom Bot Development",
+      description:
+        "Bespoke Discord community servers, automated moderation, custom slash-command bots, database integrations, role automation, and VIP webhooks via NOTIXNODE.",
+      icon: DiscordIcon,
+      badge: "dsc.gg/notixnode",
+    },
+    {
       title: "Full-Stack Web App Development",
       description:
         "Building responsive, blazing-fast web applications from architecture to deployment using Next.js, React 19, TypeScript, and modern styling.",
@@ -244,7 +251,7 @@ export default function PortfolioPage() {
     {
       title: "API Design, Integrations & Real-Time Telemetry",
       description:
-        "Connecting web platforms to remote servers, databases, and third-party APIs (Pterodactyl, Discord bots, analytics) with real-time log tailing and telemetry.",
+        "Connecting web platforms to remote servers, databases, and third-party APIs with real-time log tailing, automated webhooks, and telemetry.",
       icon: Terminal,
       badge: "Specialized",
     },
@@ -905,21 +912,28 @@ export default function PortfolioPage() {
                 </SpotlightCard>
 
                 <SpotlightCard
-                  spotlightColor="rgba(88, 101, 242, 0.2)"
-                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1 hover:border-[#5865F2]/50 transition-all"
+                  spotlightColor="rgba(88, 101, 242, 0.25)"
+                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1.5 hover:border-[#5865F2]/50 transition-all"
                 >
-                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Official Discord</span>
                   <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-[#8ea1e1] font-bold block uppercase tracking-wider">
+                      Official Discord • NOTIXNODE
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#5865F2]/20 text-[#8ea1e1] border border-[#5865F2]/40">
+                      Best Setups &amp; Custom Bots
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
                     <a
-                      href="https://discord.gg/notixnode"
+                      href="https://dsc.gg/notixnode"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-sm font-semibold text-white hover:text-[#5865F2] transition-colors"
                     >
                       <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
-                      <span>NOTIXNODE</span>
+                      <span>dsc.gg/notixnode</span>
                     </a>
-                    <CopyButton textToCopy="https://discord.gg/notixnode" label="Copy Link" copiedLabel="Copied!" />
+                    <CopyButton textToCopy="https://dsc.gg/notixnode" label="Copy Link" copiedLabel="Copied!" />
                   </div>
                 </SpotlightCard>
 

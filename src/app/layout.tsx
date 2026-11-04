@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   description:
     "Portfolio of Aditya Kashyap — Full-Stack Developer specializing in Next.js 16, React 19, TypeScript, scalable cloud backends, e-commerce payment engines, and high-performance web systems.",
   keywords: [
+    "NOTIXNODE",
+    "Best Discord Setups",
+    "Custom Bot Development",
     "Aditya Kashyap",
     "Full-Stack Developer",
     "Web Developer",
@@ -44,7 +47,7 @@ const jsonLd = {
   name: "Aditya Kashyap",
   jobTitle: "Full-Stack Web Developer",
   url: "https://notixnode.dev",
-  sameAs: ["https://discord.gg/notixnode"],
+  sameAs: ["https://dsc.gg/notixnode"],
   knowsAbout: [
     "Next.js",
     "React",

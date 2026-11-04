@@ -42,8 +42,8 @@ export default function HeroTerminal() {
       output = "Frontend: React 19, Next.js 16, TypeScript, Tailwind 4\nBackend: Node.js, PostgreSQL, Prisma, WebSockets\nCloud: Cloudflare Workers, Edge Caching, OpenNext, Docker";
     } else if (cmd === "projects") {
       output = "1. Gaming E-Commerce & Telemetry Platform\n2. Real-Time Server Console & Log Parser\n3. Dynamic Live Radar Map\n4. Support Desk & Ticket Portal\n5. Cloudflare Edge Microservices";
-    } else if (cmd === "contact" || cmd === "email") {
-      output = "Email: dhruve123456789@gmail.com\nDiscord: discord.gg/notixnode\nStatus: Available immediately for freelance & full-time roles.";
+    } else if (cmd === "contact" || cmd === "email" || cmd === "discord") {
+      output = "Email: dhruve123456789@gmail.com\nDiscord: dsc.gg/notixnode (Best Discord Setups & Custom Bot Dev)\nStatus: Available immediately for freelance & full-time roles.";
     } else if (cmd === "sudo hire" || cmd === "hire") {
       output = "Access Granted! 🎉 Scroll to #contact or email dhruve123456789@gmail.com to start your project.";
     } else if (cmd === "help") {
@@ -81,7 +81,8 @@ export const developer: FullStackEngineer = {
   },
   contact: {
     email: "dhruve123456789@gmail.com",
-    discord: "discord.gg/notixnode"
+    discord: "dsc.gg/notixnode",
+    services: "Best Discord Setups & Custom Bot Dev"
   }
 };`;
 
@@ -257,7 +258,7 @@ const systemTopology: CloudArchitecture = {
               <span className="text-cyan-300">&quot;dhruve123456789@gmail.com&quot;</span>,{"\n"}
               {"    "}
               <span className="text-slate-400">discord:</span>{" "}
-              <span className="text-cyan-300">&quot;discord.gg/notixnode&quot;</span>
+              <span className="text-cyan-300">&quot;dsc.gg/notixnode&quot;</span>
               {"\n"}
               {"  }"}
               {"\n}"};
