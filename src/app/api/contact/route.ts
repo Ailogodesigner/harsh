@@ -37,14 +37,23 @@ export async function POST(req: Request) {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL || DEFAULT_DISCORD_WEBHOOK;
     if (webhookUrl) {
       const discordPayload = {
+        content: "@🤍 ┊ founder 📬 **New Client Inquiry Received!**",
         username: "NOTIXNODE Inquiries",
         avatar_url: "https://api.dicebear.com/7.x/bottts/png?seed=notixnode",
+        allowed_mentions: {
+          parse: ["roles", "users", "everyone"],
+        },
         embeds: [
           {
             title: "📬 New Client Project Inquiry Received!",
             description: "A new inquiry was submitted via the website contact form.",
             color: 0x5865f2, // Discord Blurple
             fields: [
+              {
+                name: "👑 Notification",
+                value: "@🤍 ┊ founder",
+                inline: true,
+              },
               {
                 name: "👤 Client Name",
                 value: `**${name}**`,
