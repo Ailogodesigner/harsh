@@ -45,9 +45,15 @@ export async function POST(req: Request) {
     const featureNames = data.selectedFeatures.map((f) => `• **${f.name}**${f.category ? ` (${f.category})` : ""}`).join("\n");
     const featureSummary = featureNames.length > 1000 ? featureNames.substring(0, 995) + "\n...and more" : featureNames;
 
-    // Resolve Founder Mention
-    const roleId = process.env.DISCORD_FOUNDER_ROLE_ID?.trim() || DEFAULT_FOUNDER_ROLE_ID;
-    const mentionString = `<@&${roleId.replace(/[<@&>]/g, "")}>`;
+    // Resolve Founder Mention & Allowed Mentions
+    const roleId = (process.env.DISCORD_FOUNDER_ROLE_ID?.trim() || DEFAULT_FOUNDER_ROLE_ID).replace(/[<@&>]/g, "");
+    const mentionString = `<@&${roleId}>`;
+
+    const parseList: string[] = ["everyone", "users"];
+    const allowedMentions: { parse: string[]; roles?: string[]; users?: string[] } = {
+      parse: parseList,
+      roles: [roleId],
+    };
 
     const webhookUrl = process.env.DISCORD_ORDERS_WEBHOOK_URL || DEFAULT_ORDERS_WEBHOOK;
 
@@ -56,10 +62,7 @@ export async function POST(req: Request) {
         content: `${mentionString} 🤖 **NEW CUSTOM BOT ORDER RECEIVED!** [Order \`${orderId}\`]`,
         username: "NOTIXNODE Bot Orders",
         avatar_url: "https://cdn.discordapp.com/emojis/1516074375491878943.webp?size=64&quality=lossless",
-        allowed_mentions: {
-          parse: ["roles", "users", "everyone"],
-          roles: [roleId.replace(/[<@&>]/g, "")],
-        },
+        allowed_mentions: allowedMentions,
         embeds: [
           {
             title: `🛠️ New Custom Bot Order: ${data.botName}`,
@@ -163,3 +166,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

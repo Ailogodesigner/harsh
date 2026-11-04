@@ -67,19 +67,25 @@ export async function POST(req: Request) {
     if (webhookUrl) {
       const { mentionString, roleId, userId } = getDiscordFounderMention();
 
+      const parseList: string[] = ["everyone"];
       const allowedMentions: {
         parse: string[];
         roles?: string[];
         users?: string[];
       } = {
-        parse: ["roles", "users", "everyone"],
+        parse: parseList,
       };
 
       if (roleId) {
         allowedMentions.roles = [roleId];
+      } else {
+        parseList.push("roles");
       }
+
       if (userId) {
         allowedMentions.users = [userId];
+      } else {
+        parseList.push("users");
       }
 
       const discordPayload = {
