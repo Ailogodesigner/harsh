@@ -22,6 +22,14 @@
   ],
   "routes": [
     {
+      "pattern": "notixnode.online",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.notixnode.online",
+      "custom_domain": true
+    },
+    {
       "pattern": "bot.notixnode.online",
       "custom_domain": true
     }
