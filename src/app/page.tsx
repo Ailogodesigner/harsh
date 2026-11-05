@@ -24,6 +24,7 @@ import { FocusCards } from "@/components/ui/focus-cards";
 import { ExpandableCards } from "@/components/ui/expandable-card";
 import { Skiper52 } from "@/components/ui/Skiper52";
 import BotHostingPlans from "@/components/BotHostingPlans";
+import ClockDialBackground from "@/components/ClockDialBackground";
 import { playCyberClick, playCyberHover, playCyberSuccess } from "@/components/ui/SoundEffects";
 import {
   Briefcase,
@@ -281,6 +282,12 @@ export default function PortfolioPage() {
       {/* 1. HERO SECTION WITH ACETERNITY BACKGROUND LINES                         */}
       {/* ========================================================================= */}
       <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
+        {/* Subtle Cyber Clock Dial Rotating in Cosmic Hero Backdrop */}
+        <ClockDialBackground
+          opacity="opacity-15 md:opacity-20 hover:opacity-30 transition-opacity duration-700"
+          size="w-[600px] h-[600px] sm:w-[900px] sm:h-[900px] lg:w-[1100px] lg:h-[1100px]"
+          align="hero"
+        />
         <BackgroundLines className="py-6">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
             <div className="flex flex-col items-center text-center space-y-6 max-w-3xl mx-auto">

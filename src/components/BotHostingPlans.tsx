@@ -3,6 +3,7 @@
 import React from "react";
 import { Cpu, HardDrive, ShieldCheck, Zap, Server, RotateCcw, Check, ArrowRight } from "lucide-react";
 import DiscordIcon from "./DiscordIcon";
+import ClockDialBackground from "./ClockDialBackground";
 import { playCyberClick, playCyberHover } from "./ui/SoundEffects";
 
 export interface PlanItem {
@@ -163,6 +164,14 @@ export default function BotHostingPlans({
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-purple-600/10 blur-[130px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-10 w-[400px] h-[300px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+      {/* Atmospheric 24/7 Clock Dial Background Loop */}
+      <ClockDialBackground
+        opacity="opacity-20 hover:opacity-30 transition-opacity duration-700"
+        blendMode="mix-blend-screen"
+        size="w-[700px] h-[700px] md:w-[950px] md:h-[950px]"
+        align="center"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         

@@ -19,6 +19,19 @@ export default function ActivityHeatmap() {
 
   return (
     <div className="w-full rounded-3xl border border-purple-500/25 bg-[#070611] p-6 sm:p-8 shadow-2xl shadow-purple-950/40 relative overflow-hidden font-mono text-left">
+      {/* Subtle Clock Dial Loop for 24/7 Continuous Velocity */}
+      <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full overflow-hidden opacity-15 pointer-events-none mix-blend-screen filter contrast-125 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover scale-110"
+        >
+          <source src="/videos/clock-dial.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_25%,#070611_85%)]" />
+      </div>
       <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-purple-500/20">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#0f0d22] border border-purple-500/30 flex items-center justify-center text-lime-400">
