@@ -1,43 +1,31 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://notixnode.dev";
+  const baseUrl = "https://notixnode.online";
 
   return [
     {
       url: `${baseUrl}`,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/#about`,
+      url: `${baseUrl}/bot-order`,
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#projects`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/#skills`,
+      url: `${baseUrl}/login`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.8,
+      priority: 0.6,
     },
     {
-      url: `${baseUrl}/#services`,
+      url: "https://bot.notixnode.online",
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/#contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
+      changeFrequency: "daily",
       priority: 0.9,
     },
   ];

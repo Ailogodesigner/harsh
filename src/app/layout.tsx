@@ -9,6 +9,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://notixnode.online"),
+  alternates: {
+    canonical: "https://notixnode.online",
+  },
   title: "Aditya Kashyap | Full-Stack Web Developer & Systems Engineer",
   description:
     "Portfolio of Aditya Kashyap — Full-Stack Developer specializing in Next.js 16, React 19, TypeScript, scalable cloud backends, e-commerce payment engines, and high-performance web systems.",
@@ -46,7 +50,7 @@ const jsonLd = {
   "@type": "Person",
   name: "Aditya Kashyap",
   jobTitle: "Full-Stack Web Developer",
-  url: "https://notixnode.dev",
+  url: "https://notixnode.online",
   sameAs: ["https://dsc.gg/notixnode"],
   knowsAbout: [
     "Next.js",
