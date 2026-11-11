@@ -25,6 +25,7 @@ import { ExpandableCards } from "@/components/ui/expandable-card";
 import { Skiper52 } from "@/components/ui/Skiper52";
 import BotHostingPlans from "@/components/BotHostingPlans";
 import ClockDialBackground from "@/components/ClockDialBackground";
+import AdBanner from "@/components/AdBanner";
 import { playCyberClick, playCyberHover, playCyberSuccess } from "@/components/ui/SoundEffects";
 import {
   Briefcase,
@@ -415,6 +416,9 @@ export default function PortfolioPage() {
           speed={26}
         />
       </div>
+
+      {/* Leaderboard Ad Banner (728x90) */}
+      <AdBanner label="Sponsored Partner" />
 
       {/* ========================================================================= */}
       {/* 2. ABOUT ME SECTION                                                      */}
@@ -1123,6 +1127,9 @@ export default function PortfolioPage() {
           </div>
         </div>
       </section>
+
+      {/* Bottom Leaderboard Ad Banner (728x90) */}
+      <AdBanner label="Featured Sponsor" />
 
       <PortfolioFooter />
     </div>
