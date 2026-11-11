@@ -1,14 +1,14 @@
 import type { NextConfig } from "next";
 
 const cspHeader = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://adservice.google.com",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' blob: data: https: https://pagead2.googlesyndication.com",
-  "media-src 'self' blob: data:",
-  "connect-src 'self' https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net",
-  "frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com",
+  "default-src 'self' https: data: blob:",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:",
+  "font-src 'self' https://fonts.gstatic.com data: https:",
+  "img-src 'self' blob: data: https:",
+  "media-src 'self' blob: data: https:",
+  "connect-src 'self' https: wss:",
+  "frame-src 'self' https: data:",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

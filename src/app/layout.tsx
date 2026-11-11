@@ -73,10 +73,17 @@ export default function RootLayout({
     <html lang="en" className="dark h-full antialiased scroll-smooth">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* Google AdSense Script */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6426115653237480"
           crossOrigin="anonymous"
+        />
+        {/* Adsterra High-Yield Social Bar Ad Script */}
+        <script
+          type="text/javascript"
+          data-cfasync="false"
+          src="https://bauval.org/14/56acb501b5e9fd741ef5650f8edd95f5"
         />
         <script
           type="application/ld+json"
