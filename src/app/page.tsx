@@ -39,6 +39,7 @@ import {
   CheckCircle2,
   Sparkles,
   ArrowRight,
+  Gift,
   Send,
   Database,
   Globe,
@@ -336,6 +337,17 @@ export default function PortfolioPage() {
                 >
                   <span>Explore Featured Work</span>
                   <ArrowRight className="w-4 h-4" />
+                </a>
+
+                <a
+                  href="https://seraphicpawn.com/4/32206002"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => playCyberClick()}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-xs sm:text-sm text-lime-300 bg-lime-400/10 hover:bg-lime-400/20 border border-lime-400/40 hover:border-lime-400 shadow-lg shadow-lime-500/15 transition-all active:scale-95 cursor-pointer group"
+                >
+                  <Gift className="w-4 h-4 text-lime-400 group-hover:rotate-12 transition-transform" />
+                  <span>Free Bot Pack 🎁</span>
                 </a>
 
                 <a

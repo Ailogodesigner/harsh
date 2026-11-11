@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Cpu, HardDrive, ShieldCheck, Zap, Server, RotateCcw, Check, ArrowRight } from "lucide-react";
+import { Cpu, HardDrive, ShieldCheck, Zap, Server, RotateCcw, Check, ArrowRight, Gift } from "lucide-react";
 import DiscordIcon from "./DiscordIcon";
 import ClockDialBackground from "./ClockDialBackground";
 import { playCyberClick, playCyberHover } from "./ui/SoundEffects";
@@ -206,6 +206,33 @@ export default function BotHostingPlans({
           <p className="text-sm text-slate-300 leading-relaxed font-sans max-w-xl mx-auto">
             Ultra-fast NVMe storage, unmetered bandwidth, and instant setup. Choose a plan tailored to your Discord bot's RAM and CPU needs.
           </p>
+        </div>
+
+        {/* Free Starter Kit Promo Box (Adsterra Direct Monetization) */}
+        <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-900/40 via-purple-950/60 to-lime-950/30 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-lg">
+          <div className="flex flex-col sm:flex-row items-center gap-3.5">
+            <div className="p-3 rounded-xl bg-lime-400/20 text-lime-400 border border-lime-400/30 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
+              <Gift className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white flex items-center gap-2 justify-center sm:justify-start">
+                <span>Free 2026 Discord Bot Starter Kit & Source Code</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-lime-400 text-black">FREE</span>
+              </h4>
+              <p className="text-xs text-slate-300 font-sans mt-0.5">
+                Download pre-configured Ticket, Moderation & Economy templates before starting your hosting cluster.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://seraphicpawn.com/4/32206002"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => playCyberClick()}
+            className="whitespace-nowrap px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-black bg-lime-400 hover:bg-lime-300 transition-all shadow-md shadow-lime-500/20 flex items-center gap-1.5 cursor-pointer active:scale-95"
+          >
+            <span>Download Kit &rarr;</span>
+          </a>
         </div>
 
         {/* 4-Column Pricing Grid */}
