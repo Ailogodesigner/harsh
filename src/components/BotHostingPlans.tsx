@@ -208,7 +208,7 @@ export default function BotHostingPlans({
           </p>
         </div>
 
-        {/* Free Starter Kit Promo Box (Adsterra Direct Monetization) */}
+        {/* Free Starter Kit Promo Box (Discord Community Funnel) */}
         <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-purple-900/40 via-purple-950/60 to-lime-950/30 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-lg">
           <div className="flex flex-col sm:flex-row items-center gap-3.5">
             <div className="p-3 rounded-xl bg-lime-400/20 text-lime-400 border border-lime-400/30 shadow-[0_0_15px_rgba(163,230,53,0.2)]">
@@ -225,7 +225,7 @@ export default function BotHostingPlans({
             </div>
           </div>
           <a
-            href="https://asiafilm.org/4/e898dc7c9b609ea7b9c61add0f016c40"
+            href="https://dsc.gg/notixnode"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => playCyberClick()}

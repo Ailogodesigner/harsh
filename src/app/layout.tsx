@@ -86,12 +86,6 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#090a0f] text-slate-100 font-sans antialiased overflow-x-hidden">
         {children}
-        {/* Adsterra High-Yield Social Bar Ad Script (Placed before closing body for full DOM access) */}
-        <script
-          type="text/javascript"
-          data-cfasync="false"
-          src="https://bauval.org/14/56acb501b5e9fd741ef5650f8edd95f5"
-        />
       </body>
     </html>
   );
