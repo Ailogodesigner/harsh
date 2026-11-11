@@ -38,9 +38,9 @@ interface AdminOrder {
 const INITIAL_ORDERS: AdminOrder[] = [
   {
     id: "NN-BOT-Z386Z2",
-    clientName: "Aditya Test",
+    clientName: "Marcel Test",
     discordTag: "notix#0001",
-    email: "aditya@notixnode.dev",
+    email: "marcel@notixnode.dev",
     botName: "Aegis Sentinel Bot",
     botConcept: "Automated moderation, ticket transcripts, and custom leveling rank cards with SQLite persistence.",
     featuresCount: 3,

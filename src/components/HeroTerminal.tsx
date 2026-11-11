@@ -14,7 +14,7 @@ export default function HeroTerminal() {
   const [cliHistory, setCliHistory] = useState<Array<{ command: string; output: string }>>([
     {
       command: "whoami",
-      output: "Aditya Kashyap — Full-Stack Web Developer & Systems Engineer",
+      output: "Marcel — Full-Stack Web Developer & Systems Engineer",
     },
     {
       command: "stack --list",
@@ -37,15 +37,15 @@ export default function HeroTerminal() {
       setCliInput("");
       return;
     } else if (cmd === "whoami") {
-      output = "Aditya Kashyap — Full-Stack Web Developer & Systems Architect (India / Remote).";
+      output = "Marcel — Full-Stack Web Developer & Systems Architect (Remote).";
     } else if (cmd === "skills" || cmd === "stack") {
       output = "Frontend: React 19, Next.js 16, TypeScript, Tailwind 4\nBackend: Node.js, PostgreSQL, Prisma, WebSockets\nCloud: Cloudflare Workers, Edge Caching, OpenNext, Docker";
     } else if (cmd === "projects") {
       output = "1. Gaming E-Commerce & Telemetry Platform\n2. Real-Time Server Console & Log Parser\n3. Dynamic Live Radar Map\n4. Support Desk & Ticket Portal\n5. Cloudflare Edge Microservices";
     } else if (cmd === "contact" || cmd === "email" || cmd === "discord") {
-      output = "Email: dhruve123456789@gmail.com\nDiscord: dsc.gg/notixnode (Best Discord Setups & Custom Bot Dev)\nStatus: Available immediately for freelance & full-time roles.";
+      output = "Discord: dsc.gg/notixnode (Best Discord Setups & Custom Bot Dev)\nStatus: Available immediately for freelance & full-time roles.";
     } else if (cmd === "sudo hire" || cmd === "hire") {
-      output = "Access Granted! 🎉 Scroll to #contact or email dhruve123456789@gmail.com to start your project.";
+      output = "Access Granted! 🎉 Scroll to #contact or connect on Discord dsc.gg/notixnode to start your project.";
     } else if (cmd === "help") {
       output = "Commands: whoami, skills, projects, contact, hire, clear";
     } else {
@@ -58,13 +58,13 @@ export default function HeroTerminal() {
   };
 
   const codeSnippet = `/**
- * @file AdityaKashyap.ts
+ * @file Marcel.ts
  * @description Senior Full-Stack Engineer Profile
  */
 export const developer: FullStackEngineer = {
-  name: "Aditya Kashyap",
+  name: "Marcel",
   title: "Full-Stack Web Developer & Systems Architect",
-  location: "India (Available Worldwide Remote)",
+  location: "Worldwide Remote",
   status: "🟢 Available for Hire",
   specialties: [
     "Next.js 16 App Router & Server Components",
@@ -80,7 +80,6 @@ export const developer: FullStackEngineer = {
     testCoverage: "Vitest Tested"
   },
   contact: {
-    email: "dhruve123456789@gmail.com",
     discord: "dsc.gg/notixnode",
     services: "Best Discord Setups & Custom Bot Dev"
   }
@@ -138,7 +137,7 @@ const systemTopology: CloudArchitecture = {
           <div className="w-3 h-3 rounded-full bg-amber-500/90 shadow-sm" />
           <div className="w-3 h-3 rounded-full bg-lime-400 shadow-[0_0_8px_rgba(163,230,53,0.6)]" />
           <span className="text-xs text-purple-300/60 ml-2 font-mono hidden sm:inline">
-            aditya@workstation: ~/portfolio
+            marcel@workstation: ~/portfolio
           </span>
         </div>
 
@@ -222,7 +221,7 @@ const systemTopology: CloudArchitecture = {
               <span className="text-amber-300">FullStackEngineer</span> = {"{\n"}
               {"  "}
               <span className="text-slate-400">name:</span>{" "}
-              <span className="text-emerald-300">&quot;Aditya Kashyap&quot;</span>,{"\n"}
+              <span className="text-emerald-300">&quot;Marcel&quot;</span>,{"\n"}
               {"  "}
               <span className="text-slate-400">role:</span>{" "}
               <span className="text-emerald-300">&quot;Full-Stack Web Developer &amp; Systems Architect&quot;</span>,{"\n"}
@@ -254,11 +253,11 @@ const systemTopology: CloudArchitecture = {
               {"  "}
               <span className="text-slate-400">contact:</span> {"{\n"}
               {"    "}
-              <span className="text-slate-400">email:</span>{" "}
-              <span className="text-cyan-300">&quot;dhruve123456789@gmail.com&quot;</span>,{"\n"}
-              {"    "}
               <span className="text-slate-400">discord:</span>{" "}
-              <span className="text-cyan-300">&quot;dsc.gg/notixnode&quot;</span>
+              <span className="text-cyan-300">&quot;dsc.gg/notixnode&quot;</span>,{"\n"}
+              {"    "}
+              <span className="text-slate-400">community:</span>{" "}
+              <span className="text-lime-300">&quot;NOTIXNODE Dev Studio&quot;</span>
               {"\n"}
               {"  }"}
               {"\n}"};

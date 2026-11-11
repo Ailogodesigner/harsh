@@ -13,14 +13,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://notixnode.online",
   },
-  title: "Aditya Kashyap | Full-Stack Web Developer & Systems Engineer",
+  title: "Marcel | Full-Stack Web Developer & Systems Engineer",
   description:
-    "Portfolio of Aditya Kashyap — Full-Stack Developer specializing in Next.js 16, React 19, TypeScript, scalable cloud backends, e-commerce payment engines, and high-performance web systems.",
+    "Portfolio of Marcel — Full-Stack Developer specializing in Next.js 16, React 19, TypeScript, scalable cloud backends, e-commerce payment engines, and high-performance web systems.",
   keywords: [
     "NOTIXNODE",
     "Best Discord Setups",
     "Custom Bot Development",
-    "Aditya Kashyap",
+    "Marcel",
     "Full-Stack Developer",
     "Web Developer",
     "Next.js Developer",
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
     "Freelance Developer India",
     "Software Engineer",
   ],
-  authors: [{ name: "Aditya Kashyap" }],
+  authors: [{ name: "Marcel" }],
   icons: {
     icon: "/favicon.ico",
   },
   openGraph: {
-    title: "Aditya Kashyap | Full-Stack Web Developer",
+    title: "Marcel | Full-Stack Web Developer",
     description:
       "Crafting high-performance web applications, scalable backends, and digital systems with clean code.",
-    siteName: "Aditya Kashyap Portfolio",
+    siteName: "Marcel Portfolio",
     locale: "en_US",
     type: "website",
   },
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Aditya Kashyap",
+  name: "Marcel",
   jobTitle: "Full-Stack Web Developer",
   url: "https://notixnode.online",
   sameAs: ["https://dsc.gg/notixnode"],

@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       "admin",
       "founder",
       "notixnode",
+      "marcel",
       "aditya",
     ];
 

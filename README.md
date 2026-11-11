@@ -1,4 +1,4 @@
-# ADITYA KASHYAP — FULL-STACK DEVELOPER PORTFOLIO
+# MARCEL — FULL-STACK DEVELOPER PORTFOLIO
 
 High-velocity, interactive developer portfolio engineered with **Next.js 16 (App Router)**, **React 19**, **Tailwind CSS v4**, **Framer Motion**, and hardware-accelerated 3D components.
 

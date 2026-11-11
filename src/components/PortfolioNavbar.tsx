@@ -52,13 +52,13 @@ export default function PortfolioNavbar() {
           <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-fuchsia-500 to-lime-400 p-[1.5px] shadow-lg shadow-purple-500/25 group-hover:shadow-lime-400/30 transition-all">
             <div className="w-full h-full bg-[#07060f] rounded-[10px] flex items-center justify-center">
               <span className="font-black text-sm text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-lime-400 font-mono">
-                AK
+                M
               </span>
             </div>
           </div>
           <div className="text-left">
             <div className="font-black text-white text-base tracking-tight flex items-center gap-1.5 group-hover:text-lime-400 transition-colors">
-              <span>Aditya Kashyap</span>
+              <span>Marcel</span>
             </div>
             <p className="text-[11px] text-purple-300/80 font-mono tracking-wider">
               Full-Stack Developer

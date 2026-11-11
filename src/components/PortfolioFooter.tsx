@@ -34,8 +34,15 @@ export default function PortfolioFooter() {
               and low-latency edge architectures.
             </p>
             <div className="pt-2 flex items-center gap-2">
-              <span className="text-xs text-purple-300/70 font-mono">Direct Contact:</span>
-              <CopyButton textToCopy="dhruve123456789@gmail.com" label="dhruve123456789@gmail.com" />
+              <span className="text-xs text-purple-300/70 font-mono">Official Hub:</span>
+              <a
+                href="https://dsc.gg/notixnode"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-lime-400 hover:underline font-mono"
+              >
+                dsc.gg/notixnode
+              </a>
             </div>
           </div>
 
@@ -119,16 +126,9 @@ export default function PortfolioFooter() {
                 </span>
               </a>
 
-              <a
-                href="mailto:dhruve123456789@gmail.com"
-                className="flex items-center gap-2 hover:text-lime-400 transition-colors pt-1"
-              >
-                <Mail className="w-4 h-4 text-lime-400" />
-                <span>dhruve123456789@gmail.com</span>
-              </a>
-              <div className="flex items-center gap-2 text-slate-400">
+              <div className="flex items-center gap-2 text-slate-400 pt-1">
                 <Globe className="w-4 h-4 text-amber-400" />
-                <span>India (Available Worldwide)</span>
+                <span>Worldwide Remote</span>
               </div>
             </div>
           </div>

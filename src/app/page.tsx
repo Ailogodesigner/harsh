@@ -100,7 +100,7 @@ export default function PortfolioPage() {
     } catch {
       setSubmitStatus({
         success: false,
-        message: "Failed to dispatch message. You can also email directly at dhruve123456789@gmail.com",
+        message: "Failed to dispatch message. Please join our Discord at dsc.gg/notixnode for instant assistance.",
       });
     } finally {
       setSubmitting(false);
@@ -315,7 +315,7 @@ export default function PortfolioPage() {
 
               {/* Subheading */}
               <p className="text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl font-normal">
-                Hi, I&apos;m <span className="text-white font-semibold">Aditya Kashyap</span>. I build scalable full-stack
+                Hi, I&apos;m <span className="text-white font-semibold">Marcel</span>. I build scalable full-stack
                 applications, automated payment engines, real-time telemetry systems, and edge infrastructure with clean,
                 battle-tested code.
               </p>
@@ -360,12 +360,16 @@ export default function PortfolioPage() {
                   <span>3D MacBook Live View</span>
                 </a>
 
-                <CopyButton
-                  textToCopy="dhruve123456789@gmail.com"
-                  label="Copy Email"
-                  copiedLabel="Email Copied!"
-                  className="py-3 px-4 text-xs sm:text-sm"
-                />
+                <a
+                  href="https://dsc.gg/notixnode"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => playCyberClick()}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-xs sm:text-sm text-[#8ea1e1] bg-[#0c0b1e] hover:bg-[#14122d] border border-[#5865F2]/40 hover:border-[#5865F2] shadow-lg shadow-[#5865F2]/15 transition-all active:scale-95 cursor-pointer"
+                >
+                  <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                  <span>Join Discord</span>
+                </a>
               </div>
 
               {/* Developer GFX: Interactive Terminal & Code Workstation */}
@@ -430,7 +434,7 @@ export default function PortfolioPage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-xs font-semibold text-purple-300">
                 <Sparkles className="w-3.5 h-3.5 text-lime-400" />
-                <span>About Aditya</span>
+                <span>About Marcel</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
@@ -952,17 +956,6 @@ export default function PortfolioPage() {
               </p>
 
               <div className="space-y-3 pt-2">
-                <SpotlightCard
-                  spotlightColor="rgba(168, 85, 247, 0.15)"
-                  className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1"
-                >
-                  <span className="text-[11px] font-mono text-purple-300/80 block uppercase">Direct Email</span>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-white">dhruve123456789@gmail.com</span>
-                    <CopyButton textToCopy="dhruve123456789@gmail.com" label="Copy" />
-                  </div>
-                </SpotlightCard>
-
                 <SpotlightCard
                   spotlightColor="rgba(88, 101, 242, 0.25)"
                   className="p-4 rounded-2xl bg-[#090815] border border-purple-500/20 space-y-1.5 hover:border-[#5865F2]/50 transition-all"

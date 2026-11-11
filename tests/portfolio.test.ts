@@ -3,14 +3,12 @@ import { describe, it, expect } from "vitest";
 describe("Portfolio Platform Verification", () => {
   it("verifies developer profile metadata and contact information", () => {
     const developer = {
-      name: "Aditya Kashyap",
-      email: "dhruve123456789@gmail.com",
+      name: "Marcel",
       discord: "https://dsc.gg/notixnode",
       role: "Full-Stack Web Developer",
     };
 
-    expect(developer.name).toBe("Aditya Kashyap");
-    expect(developer.email).toContain("@gmail.com");
+    expect(developer.name).toBe("Marcel");
     expect(developer.discord).toContain("dsc.gg/notixnode");
     expect(developer.role).toBe("Full-Stack Web Developer");
   });
