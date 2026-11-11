@@ -225,7 +225,7 @@ export default function BotHostingPlans({
             </div>
           </div>
           <a
-            href="https://seraphicpawn.com/4/32206602"
+            href="https://asiafilm.org/4/e898dc7c9b609ea7b9c61add0f016c40"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => playCyberClick()}
