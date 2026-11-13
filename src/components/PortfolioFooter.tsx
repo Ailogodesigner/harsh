@@ -85,6 +85,12 @@ export default function PortfolioFooter() {
                 </a>
               </li>
               <li>
+                <a href="/excel" className="hover:text-emerald-400 text-emerald-400 font-semibold transition-colors flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>Excel Online Editor</span>
+                </a>
+              </li>
+              <li>
                 <a href="/login" className="hover:text-lime-400 transition-colors">
                   Client &amp; Admin Login
                 </a>

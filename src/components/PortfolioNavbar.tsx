@@ -12,6 +12,7 @@ import {
   X,
   ExternalLink,
   Sparkles,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export default function PortfolioNavbar() {
@@ -31,6 +32,7 @@ export default function PortfolioNavbar() {
     { href: "#projects", label: "Projects", icon: Briefcase },
     { href: "#hosting", label: "Bot Hosting", icon: Layers },
     { href: "/bot-order", label: "Bot Builder", icon: Sparkles },
+    { href: "/excel", label: "Excel Online", icon: FileSpreadsheet },
     { href: "#services", label: "Services", icon: Wrench },
     { href: "#contact", label: "Contact", icon: Mail },
   ];
