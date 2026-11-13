@@ -29,7 +29,15 @@ describe("Excel Engine Verification", () => {
 
   it("verifies complete NotixNode Cluster infrastructure dataset calculations", () => {
     const clusterGrid: SheetGrid = {
-      // Row 4 (index 3)
+      // Row 3 (index 2) - Headers
+      "2:0": { raw: "Server Node" },
+      "2:1": { raw: "RAM (GB)" },
+      "2:2": { raw: "CPU Cores" },
+      "2:3": { raw: "Monthly Cost (₹)" },
+      "2:4": { raw: "Active Clients" },
+      "2:5": { raw: "Monthly Revenue (₹)" },
+
+      // Row 4 (index 3): Basic Node Tier-1 | 1 | 1 | 69 | 24
       "3:0": { raw: "Basic Node Tier-1" },
       "3:1": { raw: "1" },
       "3:2": { raw: "1" },
@@ -37,23 +45,23 @@ describe("Excel Engine Verification", () => {
       "3:4": { raw: "24" },
       "3:5": { raw: "=D4*E4", format: "currency" },
 
-      // Row 5 (index 4)
+      // Row 5 (index 4): Standard Node Tier-2 | 1 | 2 | 149 | 15
       "4:0": { raw: "Standard Node Tier-2" },
-      "4:1": { raw: "2" },
+      "4:1": { raw: "1" },
       "4:2": { raw: "2" },
       "4:3": { raw: "149", format: "currency" },
       "4:4": { raw: "15" },
       "4:5": { raw: "=D5*E5", format: "currency" },
 
-      // Row 6 (index 5)
+      // Row 6 (index 5): Premium Node Tier-3 | 1 | 3 | 249 | 8
       "5:0": { raw: "Premium Node Tier-3" },
-      "5:1": { raw: "4" },
-      "5:2": { raw: "4" },
+      "5:1": { raw: "1" },
+      "5:2": { raw: "3" },
       "5:3": { raw: "249", format: "currency" },
       "5:4": { raw: "8" },
       "5:5": { raw: "=D6*E6", format: "currency" },
 
-      // Row 7 (index 6): Formulas
+      // Row 7 (index 6): Total Infrastructure | Sum/Average formulas | 47
       "6:0": { raw: "Total Infrastructure" },
       "6:1": { raw: "=SUM(B4:B6)" },
       "6:2": { raw: "=SUM(C4:C6)" },
@@ -62,23 +70,25 @@ describe("Excel Engine Verification", () => {
       "6:5": { raw: "=SUM(F4:F6)", format: "currency" },
     };
 
-    // Row 4 Revenue: 69 * 24 = 1656
+    // Range formulas with text headers gracefully ignoring non-numeric cells:
+    // =SUM(C3:C5) -> C3 is header "CPU Cores", C4 is 1, C5 is 2 -> Sum is 3
+    expect(evaluateFormula("=SUM(C3:C5)", clusterGrid)).toBe(3);
+
+    // Row 4-6 Revenue calculations:
     expect(evaluateFormula("=D4*E4", clusterGrid)).toBe("1656");
-    // Row 5 Revenue: 149 * 15 = 2235
     expect(evaluateFormula("=D5*E5", clusterGrid)).toBe("2235");
-    // Row 6 Revenue: 249 * 8 = 1992
     expect(evaluateFormula("=D6*E6", clusterGrid)).toBe("1992");
 
     // Row 7 Totals:
-    // B7 (RAM Total): =SUM(B4:B6) = 1 + 2 + 4 = 7
-    expect(evaluateFormula("=SUM(B4:B6)", clusterGrid)).toBe(7);
-    // C7 (CPU Total): =SUM(C4:C6) = 1 + 2 + 4 = 7
-    expect(evaluateFormula("=SUM(C4:C6)", clusterGrid)).toBe(7);
-    // D7 (Average Cost): =AVERAGE(D4:D6) = (69 + 149 + 249)/3 = 155.67
+    // RAM Total: 1 + 1 + 1 = 3
+    expect(evaluateFormula("=SUM(B4:B6)", clusterGrid)).toBe(3);
+    // CPU Total: 1 + 2 + 3 = 6
+    expect(evaluateFormula("=SUM(C4:C6)", clusterGrid)).toBe(6);
+    // Average Cost: (69 + 149 + 249) / 3 = 155.67
     expect(evaluateFormula("=AVERAGE(D4:D6)", clusterGrid)).toBe(155.67);
-    // E7 (Clients Total): =SUM(E4:E6) = 24 + 15 + 8 = 47
+    // Active Clients Total: 24 + 15 + 8 = 47
     expect(evaluateFormula("=SUM(E4:E6)", clusterGrid)).toBe(47);
-    // F7 (Revenue Total): =SUM(F4:F6) = 1656 + 2235 + 1992 = 5883
+    // Total Revenue: 1656 + 2235 + 1992 = 5883
     expect(evaluateFormula("=SUM(F4:F6)", clusterGrid)).toBe(5883);
 
     // Verify cell formatting

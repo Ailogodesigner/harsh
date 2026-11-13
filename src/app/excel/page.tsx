@@ -615,7 +615,7 @@ export default function ExcelEditorPage() {
       setSaveStatus("Saving...");
       try {
         localStorage.setItem(
-          "notixnode_excel_365_data_v2",
+          "notixnode_excel_365_data_v3",
           JSON.stringify({ sheets: newSheets, fileName: name })
         );
         setTimeout(() => setSaveStatus("Saved"), 300);
@@ -647,7 +647,7 @@ export default function ExcelEditorPage() {
       "2:4": { raw: "Active Clients", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
       "2:5": { raw: "Monthly Revenue (₹)", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
 
-      // Row 4 (index 3) - Basic Node Tier-1
+      // Row 4 (index 3) - Basic Node Tier-1 | 1 | 1 | 69 | 24
       "3:0": { raw: "Basic Node Tier-1", border: true, align: "left" },
       "3:1": { raw: "1", align: "right", border: true, format: "number" },
       "3:2": { raw: "1", align: "right", border: true, format: "number" },
@@ -655,18 +655,18 @@ export default function ExcelEditorPage() {
       "3:4": { raw: "24", align: "right", border: true, format: "number" },
       "3:5": { raw: "=D4*E4", align: "right", border: true, format: "currency" },
 
-      // Row 5 (index 4) - Standard Node Tier-2
+      // Row 5 (index 4) - Standard Node Tier-2 | 1 | 2 | 149 | 15
       "4:0": { raw: "Standard Node Tier-2", border: true, align: "left" },
-      "4:1": { raw: "2", align: "right", border: true, format: "number" },
+      "4:1": { raw: "1", align: "right", border: true, format: "number" },
       "4:2": { raw: "2", align: "right", border: true, format: "number" },
       "4:3": { raw: "149", align: "right", border: true, format: "currency" },
       "4:4": { raw: "15", align: "right", border: true, format: "number" },
       "4:5": { raw: "=D5*E5", align: "right", border: true, format: "currency" },
 
-      // Row 6 (index 5) - Premium Node Tier-3
+      // Row 6 (index 5) - Premium Node Tier-3 | 1 | 3 | 249 | 8
       "5:0": { raw: "Premium Node Tier-3", border: true, align: "left" },
-      "5:1": { raw: "4", align: "right", border: true, format: "number" },
-      "5:2": { raw: "4", align: "right", border: true, format: "number" },
+      "5:1": { raw: "1", align: "right", border: true, format: "number" },
+      "5:2": { raw: "3", align: "right", border: true, format: "number" },
       "5:3": { raw: "249", align: "right", border: true, format: "currency" },
       "5:4": { raw: "8", align: "right", border: true, format: "number" },
       "5:5": { raw: "=D6*E6", align: "right", border: true, format: "currency" },
@@ -698,7 +698,7 @@ export default function ExcelEditorPage() {
 
   // Initial load
   useEffect(() => {
-    const saved = localStorage.getItem("notixnode_excel_365_data_v2");
+    const saved = localStorage.getItem("notixnode_excel_365_data_v3");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
