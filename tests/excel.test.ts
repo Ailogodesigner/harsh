@@ -118,4 +118,123 @@ describe("Excel Engine Verification", () => {
     if (historyIndex < history.length - 1) historyIndex++;
     expect(history[historyIndex]["0:0"].raw).toBe("Edited 1");
   });
+
+  it("verifies extended mathematical formulas", () => {
+    const grid: SheetGrid = {
+      "0:0": { raw: 10 },
+      "0:1": { raw: 20 },
+      "0:2": { raw: -15 },
+      "0:3": { raw: 5.678 },
+    };
+
+    expect(evaluateFormula("=PRODUCT(A1, B1)", grid)).toBe(200);
+    expect(evaluateFormula("=ABS(C1)", grid)).toBe(15);
+    expect(evaluateFormula("=ROUND(D1, 2)", grid)).toBe(5.68);
+    expect(evaluateFormula("=ROUNDUP(D1, 1)", grid)).toBe(5.7);
+    expect(evaluateFormula("=ROUNDDOWN(D1, 1)", grid)).toBe(5.6);
+    expect(evaluateFormula("=MOD(B1, 3)", grid)).toBe(2);
+    expect(evaluateFormula("=POWER(2, 3)", grid)).toBe(8);
+    expect(evaluateFormula("=SQRT(144)", grid)).toBe(12);
+  });
+
+  it("verifies statistical formulas", () => {
+    const grid: SheetGrid = {
+      "0:0": { raw: 10 },
+      "1:0": { raw: 20 },
+      "2:0": { raw: 30 },
+      "3:0": { raw: 40 },
+      "4:0": { raw: 50 },
+      "5:0": { raw: "" },
+    };
+
+    expect(evaluateFormula("=COUNT(A1:A5)", grid)).toBe(5);
+    expect(evaluateFormula("=COUNTA(A1:A5)", grid)).toBe(5);
+    expect(evaluateFormula("=COUNTBLANK(A1:A6)", grid)).toBe(1);
+    expect(evaluateFormula("=MAX(A1:A5)", grid)).toBe(50);
+    expect(evaluateFormula("=MIN(A1:A5)", grid)).toBe(10);
+    expect(evaluateFormula("=MEDIAN(A1:A5)", grid)).toBe(30);
+    expect(evaluateFormula("=LARGE(A1:A5, 2)", grid)).toBe(40);
+    expect(evaluateFormula("=SMALL(A1:A5, 1)", grid)).toBe(10);
+  });
+
+  it("verifies logical and error handling formulas", () => {
+    const grid: SheetGrid = {
+      "0:0": { raw: 100 },
+    };
+
+    expect(evaluateFormula('=IF(A1>50, "Pass", "Fail")', grid)).toBe("Pass");
+    expect(evaluateFormula('=IF(A1<50, "Pass", "Fail")', grid)).toBe("Fail");
+    expect(evaluateFormula('=IFS(A1<50, "Low", A1=100, "Perfect")', grid)).toBe("Perfect");
+    expect(evaluateFormula("=AND(1, 1, 1)", grid)).toBe(true);
+    expect(evaluateFormula("=AND(1, 0)", grid)).toBe(false);
+    expect(evaluateFormula("=OR(0, 1)", grid)).toBe(true);
+    expect(evaluateFormula("=NOT(1)", grid)).toBe(false);
+    expect(evaluateFormula('=IFERROR(10/0, "DivError")', grid)).toBe("DivError");
+  });
+
+  it("verifies lookup and reference formulas", () => {
+    const grid: SheetGrid = {
+      // Table: Code | Name | Price
+      "0:0": { raw: "P1" },
+      "0:1": { raw: "Server Basic" },
+      "0:2": { raw: 69 },
+      "1:0": { raw: "P2" },
+      "1:1": { raw: "Server Standard" },
+      "1:2": { raw: 149 },
+      "2:0": { raw: "P3" },
+      "2:1": { raw: "Server Premium" },
+      "2:2": { raw: 249 },
+    };
+
+    expect(evaluateFormula('=VLOOKUP("P2", A1:C3, 2, FALSE)', grid)).toBe("Server Standard");
+    expect(evaluateFormula('=VLOOKUP("P3", A1:C3, 3, FALSE)', grid)).toBe(249);
+    expect(evaluateFormula('=VLOOKUP("P99", A1:C3, 2, FALSE)', grid)).toBe("#N/A!");
+    expect(evaluateFormula("=INDEX(A1:C3, 2, 2)", grid)).toBe("Server Standard");
+  });
+
+  it("verifies text manipulation formulas", () => {
+    const grid: SheetGrid = {
+      "0:0": { raw: "NotixNode" },
+      "0:1": { raw: "Cloud" },
+    };
+
+    expect(evaluateFormula('=CONCAT(A1, " ", B1)', grid)).toBe("NotixNode Cloud");
+    expect(evaluateFormula("=LEFT(A1, 5)", grid)).toBe("Notix");
+    expect(evaluateFormula("=RIGHT(A1, 4)", grid)).toBe("Node");
+    expect(evaluateFormula("=MID(A1, 6, 4)", grid)).toBe("Node");
+    expect(evaluateFormula("=LEN(A1)", grid)).toBe(9);
+    expect(evaluateFormula('=TRIM("   hello   world   ")', grid)).toBe("hello world");
+    expect(evaluateFormula("=UPPER(B1)", grid)).toBe("CLOUD");
+    expect(evaluateFormula("=LOWER(B1)", grid)).toBe("cloud");
+    expect(evaluateFormula('=PROPER("notixnode cloud")', grid)).toBe("Notixnode Cloud");
+    expect(evaluateFormula('=SUBSTITUTE(A1, "Node", "Core")', grid)).toBe("NotixCore");
+  });
+
+  it("verifies date and conditional aggregation formulas", () => {
+    const grid: SheetGrid = {
+      "0:0": { raw: 10 },
+      "1:0": { raw: 20 },
+      "2:0": { raw: 30 },
+      "0:1": { raw: 100 },
+      "1:1": { raw: 200 },
+      "2:1": { raw: 300 },
+    };
+
+    expect(evaluateFormula('=SUMIF(A1:A3, ">15", B1:B3)', grid)).toBe(500);
+    expect(evaluateFormula('=COUNTIF(A1:A3, ">=20")', grid)).toBe(2);
+    expect(evaluateFormula('=AVERAGEIF(A1:A3, ">10", B1:B3)', grid)).toBe(250);
+    expect(evaluateFormula("=DATE(2026, 11, 13)", grid)).toBe("2026-11-13");
+    expect(evaluateFormula('=YEAR("2026-11-13")', grid)).toBe(2026);
+    expect(evaluateFormula('=MONTH("2026-11-13")', grid)).toBe(11);
+    expect(evaluateFormula('=DAY("2026-11-13")', grid)).toBe(13);
+  });
+
+  it("verifies circular reference detection", () => {
+    const circularGrid: SheetGrid = {
+      "0:0": { raw: "=B1" },
+      "0:1": { raw: "=A1" },
+    };
+
+    expect(evaluateFormula("=A1", circularGrid)).toBe("#CIRCULAR!");
+  });
 });
