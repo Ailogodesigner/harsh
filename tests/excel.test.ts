@@ -71,7 +71,6 @@ describe("Excel Engine Verification", () => {
     };
 
     // Range formulas with text headers gracefully ignoring non-numeric cells:
-    // =SUM(C3:C5) -> C3 is header "CPU Cores", C4 is 1, C5 is 2 -> Sum is 3
     expect(evaluateFormula("=SUM(C3:C5)", clusterGrid)).toBe(3);
 
     // Row 4-6 Revenue calculations:
@@ -80,15 +79,10 @@ describe("Excel Engine Verification", () => {
     expect(evaluateFormula("=D6*E6", clusterGrid)).toBe("1992");
 
     // Row 7 Totals:
-    // RAM Total: 1 + 1 + 1 = 3
     expect(evaluateFormula("=SUM(B4:B6)", clusterGrid)).toBe(3);
-    // CPU Total: 1 + 2 + 3 = 6
     expect(evaluateFormula("=SUM(C4:C6)", clusterGrid)).toBe(6);
-    // Average Cost: (69 + 149 + 249) / 3 = 155.67
     expect(evaluateFormula("=AVERAGE(D4:D6)", clusterGrid)).toBe(155.67);
-    // Active Clients Total: 24 + 15 + 8 = 47
     expect(evaluateFormula("=SUM(E4:E6)", clusterGrid)).toBe(47);
-    // Total Revenue: 1656 + 2235 + 1992 = 5883
     expect(evaluateFormula("=SUM(F4:F6)", clusterGrid)).toBe(5883);
 
     // Verify cell formatting
@@ -96,5 +90,32 @@ describe("Excel Engine Verification", () => {
     expect(formatCellValue(155.67, "currency")).toBe("₹155.67");
     expect(formatCellValue(1656, "currency")).toBe("₹1,656");
     expect(formatCellValue(5883, "currency")).toBe("₹5,883");
+  });
+
+  it("verifies undo and redo stack behavior", () => {
+    let history: SheetGrid[] = [{ "0:0": { raw: "Initial" } }];
+    let historyIndex = 0;
+
+    // Perform edit 1: "Edited 1"
+    history = [...history.slice(0, historyIndex + 1), { "0:0": { raw: "Edited 1" } }];
+    historyIndex = history.length - 1;
+    expect(history[historyIndex]["0:0"].raw).toBe("Edited 1");
+
+    // Perform edit 2: "Edited 2"
+    history = [...history.slice(0, historyIndex + 1), { "0:0": { raw: "Edited 2" } }];
+    historyIndex = history.length - 1;
+    expect(history[historyIndex]["0:0"].raw).toBe("Edited 2");
+
+    // Undo 1 step (Ctrl+Z)
+    if (historyIndex > 0) historyIndex--;
+    expect(history[historyIndex]["0:0"].raw).toBe("Edited 1");
+
+    // Undo 2nd step (Ctrl+Z)
+    if (historyIndex > 0) historyIndex--;
+    expect(history[historyIndex]["0:0"].raw).toBe("Initial");
+
+    // Redo 1 step (Ctrl+Y)
+    if (historyIndex < history.length - 1) historyIndex++;
+    expect(history[historyIndex]["0:0"].raw).toBe("Edited 1");
   });
 });

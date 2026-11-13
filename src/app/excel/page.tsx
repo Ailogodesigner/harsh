@@ -492,6 +492,8 @@ export default function ExcelEditorPage() {
   const [activeSheetId, setActiveSheetId] = useState("sheet-1");
   const [history, setHistory] = useState<SheetGrid[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const historyRef = useRef<SheetGrid[]>([]);
+  const historyIndexRef = useRef<number>(-1);
 
   // Modals & Popups
   const [showFileBackstage, setShowFileBackstage] = useState(false);
@@ -574,41 +576,6 @@ export default function ExcelEditorPage() {
     }
   }, [editingCell]);
 
-  // Push to history helper
-  const pushHistory = useCallback(
-    (newGrid: SheetGrid) => {
-      setHistory((prev) => {
-        const upToCurrent = prev.slice(0, historyIndex + 1);
-        const next = [...upToCurrent, newGrid];
-        if (next.length > 35) next.shift();
-        return next;
-      });
-      setHistoryIndex((prev) => Math.min(prev + 1, 34));
-    },
-    [historyIndex]
-  );
-
-  // Undo / Redo handlers
-  const handleUndo = useCallback(() => {
-    if (historyIndex > 0) {
-      const prevGrid = history[historyIndex - 1];
-      setSheets((prev) =>
-        prev.map((s) => (s.id === activeSheetId ? { ...s, grid: prevGrid } : s))
-      );
-      setHistoryIndex((i) => i - 1);
-    }
-  }, [history, historyIndex, activeSheetId]);
-
-  const handleRedo = useCallback(() => {
-    if (historyIndex < history.length - 1) {
-      const nextGrid = history[historyIndex + 1];
-      setSheets((prev) =>
-        prev.map((s) => (s.id === activeSheetId ? { ...s, grid: nextGrid } : s))
-      );
-      setHistoryIndex((i) => i + 1);
-    }
-  }, [history, historyIndex, activeSheetId]);
-
   // Save to localStorage helper
   const saveToLocalStorage = useCallback(
     (newSheets: SheetTab[], name = fileName) => {
@@ -625,6 +592,89 @@ export default function ExcelEditorPage() {
     },
     [fileName]
   );
+
+  // Push to history helper
+  const pushHistory = useCallback((newGrid: SheetGrid) => {
+    const currentIndex = historyIndexRef.current;
+    const upToCurrent = historyRef.current.slice(0, currentIndex + 1);
+    const nextHistory = [...upToCurrent, newGrid];
+    if (nextHistory.length > 50) nextHistory.shift();
+    historyRef.current = nextHistory;
+    historyIndexRef.current = nextHistory.length - 1;
+    setHistory(nextHistory);
+    setHistoryIndex(nextHistory.length - 1);
+  }, []);
+
+  // Undo / Redo handlers
+  const handleUndo = useCallback(() => {
+    const currentIndex = historyIndexRef.current;
+    const historyList = historyRef.current;
+    if (currentIndex > 0) {
+      const targetIndex = currentIndex - 1;
+      const prevGrid = historyList[targetIndex];
+      historyIndexRef.current = targetIndex;
+      setHistoryIndex(targetIndex);
+      setSheets((prev) => {
+        const nextSheets = prev.map((s) =>
+          s.id === activeSheetId ? { ...s, grid: { ...prevGrid } } : s
+        );
+        if (autoSaveOn) {
+          saveToLocalStorage(nextSheets);
+        }
+        return nextSheets;
+      });
+    }
+  }, [activeSheetId, autoSaveOn, saveToLocalStorage]);
+
+  const handleRedo = useCallback(() => {
+    const currentIndex = historyIndexRef.current;
+    const historyList = historyRef.current;
+    if (currentIndex < historyList.length - 1) {
+      const targetIndex = currentIndex + 1;
+      const nextGrid = historyList[targetIndex];
+      historyIndexRef.current = targetIndex;
+      setHistoryIndex(targetIndex);
+      setSheets((prev) => {
+        const nextSheets = prev.map((s) =>
+          s.id === activeSheetId ? { ...s, grid: { ...nextGrid } } : s
+        );
+        if (autoSaveOn) {
+          saveToLocalStorage(nextSheets);
+        }
+        return nextSheets;
+      });
+    }
+  }, [activeSheetId, autoSaveOn, saveToLocalStorage]);
+
+  // Global Keyboard Listener for Ctrl+Z (Undo) and Ctrl+Y (Redo)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        const key = e.key.toLowerCase();
+        if (key === "z") {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.shiftKey) {
+            handleRedo();
+          } else {
+            handleUndo();
+          }
+          return;
+        }
+        if (key === "y") {
+          e.preventDefault();
+          e.stopPropagation();
+          handleRedo();
+          return;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown, true);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown, true);
+    };
+  }, [handleUndo, handleRedo]);
 
   // Standard NotixNode Cluster Infrastructure Manager starter template
   const loadStarterTemplate = useCallback(() => {
@@ -693,6 +743,8 @@ export default function ExcelEditorPage() {
     setSheets(initialSheets);
     setHistory([clusterGrid]);
     setHistoryIndex(0);
+    historyRef.current = [clusterGrid];
+    historyIndexRef.current = 0;
     saveToLocalStorage(initialSheets, "Book4.xlsx");
   }, [saveToLocalStorage]);
 
@@ -708,6 +760,8 @@ export default function ExcelEditorPage() {
           const initGrid = parsed.sheets[0].grid || {};
           setHistory([initGrid]);
           setHistoryIndex(0);
+          historyRef.current = [initGrid];
+          historyIndexRef.current = 0;
           return;
         }
       } catch (e) {
@@ -748,6 +802,7 @@ export default function ExcelEditorPage() {
             }
           });
 
+          // Push to history
           pushHistory(updatedGrid);
 
           return {
