@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useUIStore } from "../store/ui-store";
 import { useWorkbookStore } from "../store/workbook-store";
 import { useSelectionStore } from "../store/selection-store";
+import { ColorPickerDropdown } from "./ColorPickerDropdown";
 import { exportWorkbookToXLSX, exportSheetToCSV, importFileToWorkbook, triggerPrint } from "../services/file-service";
 import { FormatType, RibbonTab } from "../types";
 import { expandRange } from "../engine/range-manager";
@@ -103,6 +104,8 @@ export function Ribbon() {
   const [fontSize, setFontSize] = useState(11);
   const [formatType, setFormatType] = useState<FormatType>("general");
   const [copiedData, setCopiedData] = useState<{ raw: any; format?: FormatType }[][] | null>(null);
+  const [showFillColorPicker, setShowFillColorPicker] = useState(false);
+  const [showFontColorPicker, setShowFontColorPicker] = useState(false);
 
   const activeSheet = workbook.sheets.find((s) => s.id === workbook.activeSheetId);
   const activeCellData = activeSheet?.grid[`${activeCell.row}:${activeCell.col}`] || { raw: "" };
@@ -504,27 +507,47 @@ export function Ribbon() {
                 {/* Fill Color (Paint Bucket with Yellow Indicator) */}
                 <div className="relative flex items-center">
                   <button
-                    onClick={() => formatSelection({ bgColor: activeCellData.bgColor ? undefined : "#ffff00" })}
+                    onClick={() => setShowFillColorPicker(!showFillColorPicker)}
                     className="p-1 hover:bg-[#252525] rounded flex flex-col items-center"
                     title="Fill Color"
                   >
                     <div className="w-3.5 h-3.5 border border-slate-500 rounded-sm bg-yellow-400" />
                     <span className="w-3.5 h-0.5 bg-yellow-400 mt-0.5" />
                   </button>
-                  <ChevronDown className="w-2.5 h-2.5 text-slate-500 cursor-pointer" />
+                  <ChevronDown
+                    onClick={() => setShowFillColorPicker(!showFillColorPicker)}
+                    className="w-2.5 h-2.5 text-slate-500 cursor-pointer"
+                  />
+                  <ColorPickerDropdown
+                    isOpen={showFillColorPicker}
+                    onClose={() => setShowFillColorPicker(false)}
+                    onSelectColor={(color) => formatSelection({ bgColor: color })}
+                    onNoColor={() => formatSelection({ bgColor: undefined })}
+                    title="No Fill"
+                  />
                 </div>
 
                 {/* Font Color (Capital A with Red Indicator) */}
                 <div className="relative flex items-center">
                   <button
-                    onClick={() => formatSelection({ textColor: activeCellData.textColor ? undefined : "#ef4444" })}
+                    onClick={() => setShowFontColorPicker(!showFontColorPicker)}
                     className="p-1 hover:bg-[#252525] rounded flex flex-col items-center"
                     title="Font Color"
                   >
                     <span className="font-bold text-xs leading-none">A</span>
                     <span className="w-3.5 h-0.5 bg-red-500 mt-0.5" />
                   </button>
-                  <ChevronDown className="w-2.5 h-2.5 text-slate-500 cursor-pointer" />
+                  <ChevronDown
+                    onClick={() => setShowFontColorPicker(!showFontColorPicker)}
+                    className="w-2.5 h-2.5 text-slate-500 cursor-pointer"
+                  />
+                  <ColorPickerDropdown
+                    isOpen={showFontColorPicker}
+                    onClose={() => setShowFontColorPicker(false)}
+                    onSelectColor={(color) => formatSelection({ textColor: color })}
+                    onNoColor={() => formatSelection({ textColor: undefined })}
+                    title="Automatic"
+                  />
                 </div>
               </div>
             </div>
