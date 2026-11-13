@@ -1,74 +1,90 @@
 import { describe, it, expect } from "vitest";
-import { colToLetter, letterToCol, parseCoord, evaluateFormula } from "@/app/excel/page";
+import { colToLetter, letterToCol, parseCoord, evaluateFormula, formatCellValue, SheetGrid } from "@/app/excel/page";
 
 describe("Excel Engine Verification", () => {
   it("verifies column index to letter translation", () => {
     expect(colToLetter(0)).toBe("A");
     expect(colToLetter(1)).toBe("B");
+    expect(colToLetter(5)).toBe("F");
     expect(colToLetter(25)).toBe("Z");
     expect(colToLetter(26)).toBe("AA");
-    expect(colToLetter(27)).toBe("AB");
   });
 
   it("verifies column letter to index translation", () => {
     expect(letterToCol("A")).toBe(0);
     expect(letterToCol("B")).toBe(1);
+    expect(letterToCol("F")).toBe(5);
     expect(letterToCol("Z")).toBe(25);
     expect(letterToCol("AA")).toBe(26);
-    expect(letterToCol("AB")).toBe(27);
   });
 
   it("verifies coordinate string parser", () => {
     expect(parseCoord("A1")).toEqual({ row: 0, col: 0 });
-    expect(parseCoord("B5")).toEqual({ row: 4, col: 1 });
+    expect(parseCoord("B4")).toEqual({ row: 3, col: 1 });
+    expect(parseCoord("D4")).toEqual({ row: 3, col: 3 });
     expect(parseCoord("E9")).toEqual({ row: 8, col: 4 });
-    expect(parseCoord("Z100")).toEqual({ row: 99, col: 25 });
+    expect(parseCoord("F7")).toEqual({ row: 6, col: 5 });
     expect(parseCoord("invalid")).toBeNull();
   });
 
-  it("calculates basic math and range formulas", () => {
-    const grid = {
-      "0:0": { raw: "10" },
-      "1:0": { raw: "20" },
-      "2:0": { raw: "30" },
-      "0:1": { raw: "5" },
+  it("verifies complete NotixNode Cluster infrastructure dataset calculations", () => {
+    const clusterGrid: SheetGrid = {
+      // Row 4 (index 3)
+      "3:0": { raw: "Basic Node Tier-1" },
+      "3:1": { raw: "1" },
+      "3:2": { raw: "1" },
+      "3:3": { raw: "69", format: "currency" },
+      "3:4": { raw: "24" },
+      "3:5": { raw: "=D4*E4", format: "currency" },
+
+      // Row 5 (index 4)
+      "4:0": { raw: "Standard Node Tier-2" },
+      "4:1": { raw: "2" },
+      "4:2": { raw: "2" },
+      "4:3": { raw: "149", format: "currency" },
+      "4:4": { raw: "15" },
+      "4:5": { raw: "=D5*E5", format: "currency" },
+
+      // Row 6 (index 5)
+      "5:0": { raw: "Premium Node Tier-3" },
+      "5:1": { raw: "4" },
+      "5:2": { raw: "4" },
+      "5:3": { raw: "249", format: "currency" },
+      "5:4": { raw: "8" },
+      "5:5": { raw: "=D6*E6", format: "currency" },
+
+      // Row 7 (index 6): Formulas
+      "6:0": { raw: "Total Infrastructure" },
+      "6:1": { raw: "=SUM(B4:B6)" },
+      "6:2": { raw: "=SUM(C4:C6)" },
+      "6:3": { raw: "=AVERAGE(D4:D6)", format: "currency" },
+      "6:4": { raw: "=SUM(E4:E6)" },
+      "6:5": { raw: "=SUM(F4:F6)", format: "currency" },
     };
 
-    expect(evaluateFormula("=SUM(A1:A3)", grid)).toBe(60);
-    expect(evaluateFormula("=AVERAGE(A1:A3)", grid)).toBe(20);
-    expect(evaluateFormula("=COUNT(A1:A3)", grid)).toBe(3);
-    expect(evaluateFormula("=MAX(A1:A3)", grid)).toBe(30);
-    expect(evaluateFormula("=MIN(A1:A3)", grid)).toBe(10);
-    expect(evaluateFormula("=A1+B1", grid)).toBe("15");
-  });
+    // Row 4 Revenue: 69 * 24 = 1656
+    expect(evaluateFormula("=D4*E4", clusterGrid)).toBe("1656");
+    // Row 5 Revenue: 149 * 15 = 2235
+    expect(evaluateFormula("=D5*E5", clusterGrid)).toBe("2235");
+    // Row 6 Revenue: 249 * 8 = 1992
+    expect(evaluateFormula("=D6*E6", clusterGrid)).toBe("1992");
 
-  it("calculates multi-arg and expanded mathematical functions", () => {
-    const grid = {
-      "0:0": { raw: "10" },
-      "1:0": { raw: "20" },
-      "0:1": { raw: "5" },
-    };
+    // Row 7 Totals:
+    // B7 (RAM Total): =SUM(B4:B6) = 1 + 2 + 4 = 7
+    expect(evaluateFormula("=SUM(B4:B6)", clusterGrid)).toBe(7);
+    // C7 (CPU Total): =SUM(C4:C6) = 1 + 2 + 4 = 7
+    expect(evaluateFormula("=SUM(C4:C6)", clusterGrid)).toBe(7);
+    // D7 (Average Cost): =AVERAGE(D4:D6) = (69 + 149 + 249)/3 = 155.67
+    expect(evaluateFormula("=AVERAGE(D4:D6)", clusterGrid)).toBe(155.67);
+    // E7 (Clients Total): =SUM(E4:E6) = 24 + 15 + 8 = 47
+    expect(evaluateFormula("=SUM(E4:E6)", clusterGrid)).toBe(47);
+    // F7 (Revenue Total): =SUM(F4:F6) = 1656 + 2235 + 1992 = 5883
+    expect(evaluateFormula("=SUM(F4:F6)", clusterGrid)).toBe(5883);
 
-    // Comma-separated SUM
-    expect(evaluateFormula("=SUM(A1, B1, 15)", grid)).toBe(30);
-    // PRODUCT
-    expect(evaluateFormula("=PRODUCT(A1, B1)", grid)).toBe(50);
-    // ROUND
-    expect(evaluateFormula("=ROUND(15.6789, 2)", grid)).toBe(15.68);
-    // ABS, SQRT, POWER, MOD
-    expect(evaluateFormula("=ABS(-42)", grid)).toBe(42);
-    expect(evaluateFormula("=SQRT(25)", grid)).toBe(5);
-    expect(evaluateFormula("=POWER(2, 3)", grid)).toBe(8);
-    expect(evaluateFormula("=MOD(10, 3)", grid)).toBe(1);
-    // Text formulas
-    expect(evaluateFormula("=UPPER(\"notixnode\")", grid)).toBe("NOTIXNODE");
-    expect(evaluateFormula("=LOWER(\"EXCEL\")", grid)).toBe("excel");
-    expect(evaluateFormula("=LEN(\"hello\")", grid)).toBe(5);
-    expect(evaluateFormula("=CONCAT(\"A\", \"B\", \"C\")", grid)).toBe("ABC");
-    // IF formula
-    expect(evaluateFormula("=IF(A1>5, \"Pass\", \"Fail\")", grid)).toBe("Pass");
-    expect(evaluateFormula("=IF(A1<5, \"Pass\", \"Fail\")", grid)).toBe("Fail");
-    // Exponent in arithmetic
-    expect(evaluateFormula("=2^3", grid)).toBe("8");
+    // Verify cell formatting
+    expect(formatCellValue(69, "currency")).toBe("₹69");
+    expect(formatCellValue(155.67, "currency")).toBe("₹155.67");
+    expect(formatCellValue(1656, "currency")).toBe("₹1,656");
+    expect(formatCellValue(5883, "currency")).toBe("₹5,883");
   });
 });

@@ -84,7 +84,7 @@ export interface CellFormat {
 }
 
 export interface CellData extends CellFormat {
-  raw: string; // The formula or raw text (e.g. "=SUM(A1:A5)" or "450")
+  raw: string; // The formula or raw text (e.g. "=SUM(B4:B6)" or "69")
   computed?: string | number;
 }
 
@@ -145,6 +145,44 @@ export function parseCoord(coord: string): CellCoord | null {
   return { row, col };
 }
 
+// Clean and parse numeric values, stripping ₹, $, commas, and spaces
+export function parseNumeric(val: any): number {
+  if (typeof val === "number") return val;
+  if (!val) return 0;
+  const cleaned = String(val).replace(/[₹$,\s]/g, "").trim();
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+
+// Format numerical values into currency ₹, commas, or percentages
+export function formatCellValue(val: string | number | undefined, format?: string): string {
+  if (val === undefined || val === null || val === "") return "";
+  if (typeof val === "string" && val.startsWith("#")) return val;
+
+  const num = typeof val === "number" ? val : parseFloat(String(val).replace(/[₹$,]/g, ""));
+  if (isNaN(num)) return String(val);
+
+  if (format === "currency") {
+    const formattedNum =
+      num % 1 === 0
+        ? num.toLocaleString("en-IN")
+        : num.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `₹${formattedNum}`;
+  }
+  if (format === "percent") {
+    return `${(num * 100).toFixed(1)}%`;
+  }
+  if (format === "number") {
+    return num.toLocaleString("en-IN");
+  }
+
+  if (typeof val === "string" && (val.includes("₹") || val.includes("$"))) {
+    return val;
+  }
+
+  return typeof val === "number" && !Number.isInteger(val) ? Number(val.toFixed(2)).toString() : String(val);
+}
+
 // =============================================================================
 // COMPREHENSIVE FORMULA EVALUATOR
 // =============================================================================
@@ -186,7 +224,7 @@ export function evaluateFormula(
     const results: (string | number)[] = [];
 
     for (const token of tokens) {
-      // Range check: e.g. A1:B5
+      // Range check: e.g. B4:B6
       const rangeMatch = token.match(/^([A-Za-z]+\d+):([A-Za-z]+\d+)$/);
       if (rangeMatch) {
         const start = parseCoord(rangeMatch[1]);
@@ -208,8 +246,8 @@ export function evaluateFormula(
                   val = evaluateFormula(val, grid, visited);
                   visited.delete(key);
                 }
-                const num = parseFloat(String(val));
-                results.push(isNaN(num) ? val : num);
+                const num = parseNumeric(val);
+                results.push(num);
               }
             }
           }
@@ -217,7 +255,7 @@ export function evaluateFormula(
         continue;
       }
 
-      // Single Cell check: e.g. A1
+      // Single Cell check: e.g. D4
       const singleCoord = parseCoord(token);
       if (singleCoord) {
         const key = `${singleCoord.row}:${singleCoord.col}`;
@@ -230,8 +268,8 @@ export function evaluateFormula(
             val = evaluateFormula(val, grid, visited);
             visited.delete(key);
           }
-          const num = parseFloat(String(val));
-          results.push(isNaN(num) ? val : num);
+          const num = parseNumeric(val);
+          results.push(num);
         }
         continue;
       }
@@ -243,13 +281,13 @@ export function evaluateFormula(
       }
 
       // Number: 45 or 3.14
-      const num = parseFloat(token);
+      const cleaned = token.replace(/[₹$,]/g, "");
+      const num = parseFloat(cleaned);
       if (!isNaN(num)) {
         results.push(num);
         continue;
       }
 
-      // Raw token
       results.push(token);
     }
 
@@ -270,7 +308,7 @@ export function evaluateFormula(
 
       case "AVERAGE":
       case "AVG":
-        return numArgs.length ? Number((numArgs.reduce((a, b) => a + b, 0) / numArgs.length).toFixed(4)) : 0;
+        return numArgs.length ? Number((numArgs.reduce((a, b) => a + b, 0) / numArgs.length).toFixed(2)) : 0;
 
       case "COUNT":
         return numArgs.length;
@@ -363,7 +401,7 @@ export function evaluateFormula(
     }
   }
 
-  // Arithmetic expression evaluation: =A1 + B1 * 2 or =2^3
+  // Arithmetic expression evaluation: =D4*E4 or =A1 + B1 * 2 or =2^3
   try {
     let replaced = expr.replace(/[A-Za-z]+\d+/g, (match) => {
       const coord = parseCoord(match);
@@ -378,8 +416,8 @@ export function evaluateFormula(
         cellVal = evaluateFormula(cellVal, grid, visited);
         visited.delete(key);
       }
-      const num = parseFloat(String(cellVal));
-      return isNaN(num) ? "0" : String(num);
+      const num = parseNumeric(cellVal);
+      return String(num);
     });
 
     // Exponent ^ -> **
@@ -389,7 +427,7 @@ export function evaluateFormula(
       // eslint-disable-next-line no-eval
       const result = Function(`'use strict'; return (${replaced})`)();
       return typeof result === "number" && !isNaN(result)
-        ? Number(result.toFixed(4)).toString()
+        ? Number(result.toFixed(2)).toString()
         : String(result);
     }
   } catch {
@@ -411,8 +449,8 @@ export default function ExcelEditorPage() {
     "file" | "home" | "wps_pdf" | "insert" | "page_layout" | "formulas" | "data" | "review" | "view" | "help"
   >("home");
 
-  // Selection & Active Cell
-  const [activeCell, setActiveCell] = useState<CellCoord>({ row: 8, col: 4 }); // E9 default like screenshot!
+  // Selection & Active Cell (E9 default as requested)
+  const [activeCell, setActiveCell] = useState<CellCoord>({ row: 8, col: 4 });
   const [selectionRange, setSelectionRange] = useState<CellRange | null>({
     startRow: 8,
     startCol: 4,
@@ -577,7 +615,7 @@ export default function ExcelEditorPage() {
       setSaveStatus("Saving...");
       try {
         localStorage.setItem(
-          "notixnode_excel_365_data",
+          "notixnode_excel_365_data_v2",
           JSON.stringify({ sheets: newSheets, fileName: name })
         );
         setTimeout(() => setSaveStatus("Saved"), 300);
@@ -588,60 +626,79 @@ export default function ExcelEditorPage() {
     [fileName]
   );
 
-  // Starter Demo Data
+  // Standard NotixNode Cluster Infrastructure Manager starter template
   const loadStarterTemplate = useCallback(() => {
-    const sampleGrid: SheetGrid = {
-      "0:0": { raw: "NOTIXNODE CLUSTER SPREADSHEET 2026", bold: true, color: "#107c41", fontSize: 14 },
-      "2:0": { raw: "Server Node", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "center" },
-      "2:1": { raw: "RAM (GB)", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "center" },
-      "2:2": { raw: "CPU Cores", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "center" },
+    const clusterGrid: SheetGrid = {
+      // Row 1 (index 0) - Title Block
+      "0:0": {
+        raw: "NOTIXNODE CLUSTER SPREADSHEET 2026",
+        bold: true,
+        fontSize: 16,
+        bgColor: "#1E293B",
+        color: "#ffffff",
+        border: true,
+      },
+
+      // Row 3 (index 2) - Table Headers
+      "2:0": { raw: "Server Node", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "left" },
+      "2:1": { raw: "RAM (GB)", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
+      "2:2": { raw: "CPU Cores", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
       "2:3": { raw: "Monthly Cost (₹)", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
-      "2:4": { raw: "Active Clients", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "center" },
+      "2:4": { raw: "Active Clients", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
+      "2:5": { raw: "Monthly Revenue (₹)", bold: true, bgColor: "#107c41", color: "#ffffff", border: true, align: "right" },
 
-      "3:0": { raw: "Basic Node Tier-1", border: true },
-      "3:1": { raw: "1", align: "center", border: true },
-      "3:2": { raw: "1", align: "center", border: true },
-      "3:3": { raw: "69", align: "right", border: true },
-      "3:4": { raw: "24", align: "center", border: true },
+      // Row 4 (index 3) - Basic Node Tier-1
+      "3:0": { raw: "Basic Node Tier-1", border: true, align: "left" },
+      "3:1": { raw: "1", align: "right", border: true, format: "number" },
+      "3:2": { raw: "1", align: "right", border: true, format: "number" },
+      "3:3": { raw: "69", align: "right", border: true, format: "currency" },
+      "3:4": { raw: "24", align: "right", border: true, format: "number" },
+      "3:5": { raw: "=D4*E4", align: "right", border: true, format: "currency" },
 
-      "4:0": { raw: "Standard Node Tier-2", border: true },
-      "4:1": { raw: "2", align: "center", border: true },
-      "4:2": { raw: "2", align: "center", border: true },
-      "4:3": { raw: "149", align: "right", border: true },
-      "4:4": { raw: "15", align: "center", border: true },
+      // Row 5 (index 4) - Standard Node Tier-2
+      "4:0": { raw: "Standard Node Tier-2", border: true, align: "left" },
+      "4:1": { raw: "2", align: "right", border: true, format: "number" },
+      "4:2": { raw: "2", align: "right", border: true, format: "number" },
+      "4:3": { raw: "149", align: "right", border: true, format: "currency" },
+      "4:4": { raw: "15", align: "right", border: true, format: "number" },
+      "4:5": { raw: "=D5*E5", align: "right", border: true, format: "currency" },
 
-      "5:0": { raw: "Premium Node Tier-3", border: true },
-      "5:1": { raw: "4", align: "center", border: true },
-      "5:2": { raw: "4", align: "center", border: true },
-      "5:3": { raw: "249", align: "right", border: true },
-      "5:4": { raw: "8", align: "center", border: true },
+      // Row 6 (index 5) - Premium Node Tier-3
+      "5:0": { raw: "Premium Node Tier-3", border: true, align: "left" },
+      "5:1": { raw: "4", align: "right", border: true, format: "number" },
+      "5:2": { raw: "4", align: "right", border: true, format: "number" },
+      "5:3": { raw: "249", align: "right", border: true, format: "currency" },
+      "5:4": { raw: "8", align: "right", border: true, format: "number" },
+      "5:5": { raw: "=D6*E6", align: "right", border: true, format: "currency" },
 
-      "6:0": { raw: "Total Infrastructure", bold: true, border: true },
-      "6:1": { raw: "=SUM(B4:B6)", bold: true, align: "center", border: true },
-      "6:2": { raw: "=SUM(C4:C6)", bold: true, align: "center", border: true },
-      "6:3": { raw: "=SUM(D4:D6)", bold: true, bgColor: "#dcfce7", color: "#166534", align: "right", border: true },
-      "6:4": { raw: "=SUM(E4:E6)", bold: true, align: "center", border: true },
+      // Row 7 (index 6) - Summary & Calculation Engine
+      "6:0": { raw: "Total Infrastructure", bold: true, border: true, align: "left" },
+      "6:1": { raw: "=SUM(B4:B6)", bold: true, align: "right", border: true, format: "number" },
+      "6:2": { raw: "=SUM(C4:C6)", bold: true, align: "right", border: true, format: "number" },
+      "6:3": { raw: "=AVERAGE(D4:D6)", bold: true, align: "right", border: true, format: "currency" },
+      "6:4": { raw: "=SUM(E4:E6)", bold: true, align: "right", border: true, format: "number" },
+      "6:5": { raw: "=SUM(F4:F6)", bold: true, bgColor: "#dcfce7", color: "#166534", align: "right", border: true, format: "currency" },
     };
 
     const initialSheets: SheetTab[] = [
       {
         id: "sheet-1",
         name: "Sheet1",
-        grid: sampleGrid,
+        grid: clusterGrid,
         maxRows: DEFAULT_ROWS,
         maxCols: DEFAULT_COLS,
       },
     ];
 
     setSheets(initialSheets);
-    setHistory([sampleGrid]);
+    setHistory([clusterGrid]);
     setHistoryIndex(0);
     saveToLocalStorage(initialSheets, "Book4.xlsx");
   }, [saveToLocalStorage]);
 
   // Initial load
   useEffect(() => {
-    const saved = localStorage.getItem("notixnode_excel_365_data");
+    const saved = localStorage.getItem("notixnode_excel_365_data_v2");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -743,7 +800,6 @@ export default function ExcelEditorPage() {
 
   // Keyboard navigation & Shortcuts
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // If typing in an open input modal, don't hijack
     if (showFindReplace && e.key !== "Escape") return;
 
     // Inside Cell Inline Editing
@@ -802,7 +858,6 @@ export default function ExcelEditorPage() {
       }
       if (key === "c") {
         e.preventDefault();
-        // Copy selection
         const { rMin, rMax, cMin, cMax } = normalizedRange;
         const copiedList: { relRow: number; relCol: number; data: CellData }[] = [];
         const textLines: string[] = [];
@@ -825,7 +880,6 @@ export default function ExcelEditorPage() {
       }
       if (key === "x") {
         e.preventDefault();
-        // Cut selection
         const { rMin, rMax, cMin, cMax } = normalizedRange;
         const copiedList: { relRow: number; relCol: number; data: CellData }[] = [];
         const textLines: string[] = [];
@@ -848,7 +902,6 @@ export default function ExcelEditorPage() {
       }
       if (key === "v") {
         e.preventDefault();
-        // Paste from internal clipboard or system clipboard
         if (clipboardData && clipboardData.cells.length > 0) {
           const updates: { row: number; col: number; data: Partial<CellData> }[] = [];
           clipboardData.cells.forEach((item) => {
@@ -983,7 +1036,6 @@ export default function ExcelEditorPage() {
     const colIdx = activeCell.col;
     const rowsWithData: { rowIdx: number; cellVal: string | number; cells: Record<number, CellData> }[] = [];
 
-    // Detect data rows (skip header row 0-2 if applicable)
     for (let r = 0; r < currentSheet.maxRows; r++) {
       let hasData = false;
       const rowCells: Record<number, CellData> = {};
@@ -1002,13 +1054,12 @@ export default function ExcelEditorPage() {
 
     if (rowsWithData.length <= 1) return;
 
-    // Keep header row fixed if first row is bold
     const hasHeader = rowsWithData[0].cells[colIdx]?.bold;
     const sortSlice = hasHeader ? rowsWithData.slice(1) : rowsWithData;
 
     sortSlice.sort((a, b) => {
-      const numA = parseFloat(String(a.cellVal));
-      const numB = parseFloat(String(b.cellVal));
+      const numA = parseNumeric(a.cellVal);
+      const numB = parseNumeric(b.cellVal);
       if (!isNaN(numA) && !isNaN(numB)) {
         return direction === "asc" ? numA - numB : numB - numA;
       }
@@ -1316,7 +1367,7 @@ export default function ExcelEditorPage() {
         if (cell && cell.raw !== undefined && cell.raw !== "") {
           populatedCount++;
           const val = cell.raw.startsWith("=") ? evaluateFormula(cell.raw, currentSheet.grid) : cell.raw;
-          const num = parseFloat(String(val));
+          const num = parseNumeric(val);
           if (!isNaN(num)) {
             numbers.push(num);
           }
@@ -1345,7 +1396,7 @@ export default function ExcelEditorPage() {
       if (cell.raw) {
         populated++;
         if (cell.raw.startsWith("=")) formulas++;
-        if (!isNaN(parseFloat(cell.raw))) numbers++;
+        if (!isNaN(parseNumeric(cell.raw))) numbers++;
       }
     });
     return { populated, formulas, numbers };
@@ -1360,17 +1411,17 @@ export default function ExcelEditorPage() {
       }`}
     >
       {/* ========================================================================= */}
-      {/* 1. TOP TITLE BAR (EXACT AS SCREENSHOT)                                    */}
+      {/* 1. TOP APPLICATION HEADER (EXACT OFFICE-STYLE HEADER)                     */}
       {/* ========================================================================= */}
       <div className="bg-[#121212] text-slate-200 px-3 py-1 flex items-center justify-between text-xs border-b border-[#252525] select-none z-30">
-        {/* Left Section: Excel Icon + AutoSave Switch + Quick Icons + Document Title */}
+        {/* Left Section: Excel Icon + AutoSave On Switch + Quick Save/Undo/Redo + Document Title */}
         <div className="flex items-center gap-2">
           {/* Green Excel Icon */}
           <div className="w-5 h-5 rounded-[4px] bg-[#107c41] flex items-center justify-center shadow">
             <span className="text-white font-black text-xs font-mono">X</span>
           </div>
 
-          {/* AutoSave Switch (Green pill like screenshot) */}
+          {/* AutoSave Active Toggle (Green pill) */}
           <div className="flex items-center gap-1.5 ml-1">
             <span className="text-xs text-slate-300 font-medium">AutoSave</span>
             <button
@@ -1420,7 +1471,7 @@ export default function ExcelEditorPage() {
 
           <span className="text-slate-600 mx-1">|</span>
 
-          {/* Document Title: "Book4.xlsx • Saving... ⌄" */}
+          {/* Document Title: "Book4.xlsx • Saved ⌄" */}
           <div className="flex items-center gap-1.5">
             <input
               type="text"
@@ -1437,7 +1488,7 @@ export default function ExcelEditorPage() {
           </div>
         </div>
 
-        {/* Center Section: Rounded Search Pill (Search + 17:03 ☀️ 29°) */}
+        {/* Center Section: Rounded Search Pill */}
         <div
           onClick={() => setShowFindReplace(true)}
           className="hidden md:flex items-center bg-[#252525] hover:bg-[#2e2e2e] px-3 py-1 rounded-full text-xs text-slate-300 w-80 justify-between cursor-pointer border border-slate-700/60 shadow-inner"
@@ -1453,9 +1504,9 @@ export default function ExcelEditorPage() {
           </div>
         </div>
 
-        {/* Right Section: Upgrade Plan + Warnings + Account + Window Controls */}
+        {/* Right Section: Upgrade Plan + Account Badge + Window Controls */}
         <div className="flex items-center gap-2">
-          {/* Upgrade Plan Pill (Diamond Icon with red dot) */}
+          {/* Upgrade Plan Pill */}
           <div className="relative">
             <button
               onClick={() => alert("NOTIXNODE Excel Suite: All PRO features are already unlocked for free!")}
@@ -1476,7 +1527,7 @@ export default function ExcelEditorPage() {
             <AlertTriangle className="w-3.5 h-3.5" />
           </button>
 
-          {/* Account Circle: Marcel */}
+          {/* Account Badge: Marcel */}
           <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-purple-500 to-lime-400 p-[1px] flex items-center justify-center cursor-pointer">
             <div className="w-full h-full rounded-full bg-[#181818] flex items-center justify-center text-[10px] font-bold text-white">
               M
@@ -1485,7 +1536,7 @@ export default function ExcelEditorPage() {
 
           <span className="text-slate-700 mx-1">|</span>
 
-          {/* Window Controls: Minimize, Maximize, Close */}
+          {/* Window Controls */}
           <div className="flex items-center text-slate-400">
             <button
               onClick={() => setShowShortcutsModal(true)}
@@ -1513,7 +1564,7 @@ export default function ExcelEditorPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. RIBBON MENU TABS (File, Home, WPS PDF, Insert, Page Layout, Formulas...) */}
+      {/* 2. RIBBON MENU TABS (File, Home, WPS PDF, Insert, Page Layout...)          */}
       {/* ========================================================================= */}
       <div className="bg-[#181818] border-b border-[#252525] px-2 flex items-center justify-between text-xs select-none">
         <div className="flex items-center gap-0.5">
@@ -1555,7 +1606,7 @@ export default function ExcelEditorPage() {
           })}
         </div>
 
-        {/* Right side: Comments & Share Buttons (Exact as screenshot) */}
+        {/* Right side: Comments & Share */}
         <div className="flex items-center gap-2 pr-1">
           <button
             onClick={() => setShowStatsModal(true)}
@@ -1577,13 +1628,11 @@ export default function ExcelEditorPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* 3. DYNAMIC RIBBON TOOLBARS (INTERACTIVE FOR EVERY ACTIVE TAB)              */}
+      {/* 3. FORMATTING TOOLBAR RIBBON (HOME TAB: ALL REQUIRED GROUPS)              */}
       {/* ========================================================================= */}
-
-      {/* TAB: HOME (Exact screenshot groups & icons) */}
       {activeTab === "home" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-1.5 flex items-stretch gap-2 overflow-x-auto scrollbar-thin text-xs text-slate-300 select-none">
-          {/* GROUP 1: CLIPBOARD */}
+          {/* GROUP 1: CLIPBOARD (Paste, Cut, Copy) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="flex items-center gap-2">
               <button
@@ -1632,7 +1681,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Clipboard ↘</div>
           </div>
 
-          {/* GROUP 2: FONT */}
+          {/* GROUP 2: FONT (Calibri/Arial, Size 9-24, B, I, U, Border, Fill, Color) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="space-y-1">
               <div className="flex items-center gap-1">
@@ -1723,7 +1772,7 @@ export default function ExcelEditorPage() {
                   U
                 </button>
 
-                {/* Borders Button with dropdown */}
+                {/* Borders Picker */}
                 <div className="relative">
                   <button
                     onClick={() => setShowBordersMenu(!showBordersMenu)}
@@ -1820,7 +1869,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Font ↘</div>
           </div>
 
-          {/* GROUP 3: ALIGNMENT */}
+          {/* GROUP 3: ALIGNMENT (Wrap text [ab], Merge & Center, Alignments) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="space-y-1">
               <div className="flex items-center gap-1">
@@ -1866,7 +1915,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Alignment ↘</div>
           </div>
 
-          {/* GROUP 4: NUMBER */}
+          {/* GROUP 4: NUMBER (General, Number, Currency [₹], Percentage [%], Comma) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="space-y-1">
               <select
@@ -1875,27 +1924,26 @@ export default function ExcelEditorPage() {
                   const fmt = e.target.value;
                   setNumberFormat(fmt);
                   if (fmt === "Currency") {
-                    const val = currentCellData.raw.replace(/[^0-9.]/g, "");
-                    if (val) formatSelectedCells({ raw: `₹${val}` });
+                    formatSelectedCells({ format: "currency" });
                   } else if (fmt === "Percentage") {
-                    const val = currentCellData.raw.replace(/[^0-9.]/g, "");
-                    if (val) formatSelectedCells({ raw: `${val}%` });
+                    formatSelectedCells({ format: "percent" });
+                  } else if (fmt === "Number") {
+                    formatSelectedCells({ format: "number" });
+                  } else {
+                    formatSelectedCells({ format: "general" });
                   }
                 }}
                 className="bg-[#2a2a2a] text-slate-200 border border-slate-700 text-xs rounded px-2 py-0.5 outline-none w-24 cursor-pointer"
               >
                 <option value="General">General</option>
                 <option value="Number">Number</option>
-                <option value="Currency">Currency</option>
-                <option value="Percentage">Percentage</option>
+                <option value="Currency">Currency (₹)</option>
+                <option value="Percentage">Percentage (%)</option>
               </select>
 
               <div className="flex items-center gap-1 text-slate-300">
                 <button
-                  onClick={() => {
-                    const val = currentCellData.raw.replace(/[^0-9.]/g, "");
-                    if (val) formatSelectedCells({ raw: `₹${val}` });
-                  }}
+                  onClick={() => formatSelectedCells({ format: "currency" })}
                   className="p-1 hover:bg-[#2c2c2c] rounded font-bold text-xs"
                   title="Format Currency (₹)"
                 >
@@ -1903,7 +1951,7 @@ export default function ExcelEditorPage() {
                 </button>
                 <button
                   onClick={() => {
-                    const val = currentCellData.raw.replace(/[^0-9.]/g, "");
+                    const val = parseNumeric(currentCellData.raw);
                     if (val) formatSelectedCells({ raw: `$${val}` });
                   }}
                   className="p-1 hover:bg-[#2c2c2c] rounded font-bold text-xs"
@@ -1912,20 +1960,14 @@ export default function ExcelEditorPage() {
                   $
                 </button>
                 <button
-                  onClick={() => {
-                    const val = currentCellData.raw.replace(/[^0-9.]/g, "");
-                    if (val) formatSelectedCells({ raw: `${val}%` });
-                  }}
+                  onClick={() => formatSelectedCells({ format: "percent" })}
                   className="p-1 hover:bg-[#2c2c2c] rounded font-bold text-xs"
                   title="Percentage (%)"
                 >
                   %
                 </button>
                 <button
-                  onClick={() => {
-                    const val = parseFloat(currentCellData.raw);
-                    if (!isNaN(val)) formatSelectedCells({ raw: val.toLocaleString("en-IN") });
-                  }}
+                  onClick={() => formatSelectedCells({ format: "number" })}
                   className="p-1 hover:bg-[#2c2c2c] rounded font-bold text-xs"
                   title="Comma Style (,)"
                 >
@@ -1936,7 +1978,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Number ↘</div>
           </div>
 
-          {/* GROUP 5: STYLES */}
+          {/* GROUP 5: STYLES (Conditional Formatting, Format as Table, Cell Styles) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="flex flex-col gap-0.5 text-[11px]">
               <button
@@ -1947,7 +1989,7 @@ export default function ExcelEditorPage() {
                 <span>Conditional Formatting ⌄</span>
               </button>
               <button
-                onClick={() => formatSelectedCells({ bgColor: "#107c41", color: "#ffffff", bold: true })}
+                onClick={() => formatSelectedCells({ bgColor: "#107c41", color: "#ffffff", bold: true, align: "center" })}
                 className="flex items-center gap-1.5 hover:bg-[#2c2c2c] px-2 py-0.5 rounded text-left"
               >
                 <Table className="w-3 h-3 text-cyan-400" />
@@ -1964,7 +2006,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Styles</div>
           </div>
 
-          {/* GROUP 6: CELLS */}
+          {/* GROUP 6: CELLS (Insert, Delete, Format) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="flex flex-col gap-0.5 text-[11px]">
               <button
@@ -1995,7 +2037,7 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Cells</div>
           </div>
 
-          {/* GROUP 7: EDITING */}
+          {/* GROUP 7: EDITING (AutoSum [Σ], Clear [🧹], Templates, AI Tools, Export .XLSX) */}
           <div className="flex flex-col justify-between pr-3 border-r border-[#303030] min-w-max">
             <div className="space-y-1">
               <div className="flex items-center gap-1">
@@ -2044,9 +2086,9 @@ export default function ExcelEditorPage() {
             <div className="text-[10px] text-slate-500 font-medium text-center mt-1">Editing</div>
           </div>
 
-          {/* GROUP 8: LIBRARY, AI TOOLS & OUTPUT */}
+          {/* GROUP 8: LIBRARY, AI TOOLS & DIRECT EXPORT .XLSX */}
           <div className="flex items-center gap-3 pr-2 min-w-max">
-            {/* Templates */}
+            {/* Templates Library */}
             <div
               onClick={loadStarterTemplate}
               className="flex flex-col items-center justify-center p-1 hover:bg-[#2c2c2c] rounded cursor-pointer"
@@ -2057,7 +2099,7 @@ export default function ExcelEditorPage() {
               <span className="text-[9px] text-slate-500 mt-1">Library</span>
             </div>
 
-            {/* AI Data Analysis */}
+            {/* AI Data Analysis & Tools */}
             <div
               onClick={() => setShowAIModal(true)}
               className="flex flex-col items-center justify-center p-1 hover:bg-[#2c2c2c] rounded cursor-pointer"
@@ -2067,7 +2109,7 @@ export default function ExcelEditorPage() {
               <span className="text-[9px] text-slate-500 mt-1">AI Tools</span>
             </div>
 
-            {/* Export .XLSX */}
+            {/* Direct Export .XLSX button */}
             <div
               onClick={exportToExcel}
               className="flex flex-col items-center justify-center p-1 hover:bg-[#2c2c2c] rounded cursor-pointer"
@@ -2076,26 +2118,11 @@ export default function ExcelEditorPage() {
               <span className="text-[10px] text-slate-300">Export .XLSX</span>
               <span className="text-[9px] text-slate-500 mt-1">Output</span>
             </div>
-
-            {/* Add-ins */}
-            <div
-              onClick={() => setShowShortcutsModal(true)}
-              className="flex flex-col items-center justify-center p-1 hover:bg-[#2c2c2c] rounded cursor-pointer"
-            >
-              <div className="grid grid-cols-2 gap-0.5 w-3.5 h-3.5">
-                <span className="bg-orange-500 rounded-[1px]" />
-                <span className="bg-orange-500 rounded-[1px]" />
-                <span className="bg-orange-500 rounded-[1px]" />
-                <span className="bg-orange-500 rounded-[1px]" />
-              </div>
-              <span className="text-[10px] text-slate-300 mt-0.5">Add-ins</span>
-              <span className="text-[9px] text-slate-500 mt-1">Shortcuts</span>
-            </div>
           </div>
         </div>
       )}
 
-      {/* TAB: INSERT */}
+      {/* OTHER TABS (Insert, Formulas, Data, Review, View, Help, WPS PDF) */}
       {activeTab === "insert" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-4 text-xs text-slate-300">
           <button
@@ -2143,7 +2170,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: FORMULAS */}
       {activeTab === "formulas" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-3 overflow-x-auto text-xs text-slate-300">
           <button
@@ -2171,7 +2197,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: DATA */}
       {activeTab === "data" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-4 text-xs text-slate-300">
           <button
@@ -2205,7 +2230,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: PAGE LAYOUT & VIEW */}
       {(activeTab === "page_layout" || activeTab === "view") && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-6 text-xs text-slate-300">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -2252,7 +2276,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: REVIEW */}
       {activeTab === "review" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-4 text-xs text-slate-300">
           <button
@@ -2274,7 +2297,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: HELP */}
       {activeTab === "help" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-4 text-xs text-slate-300">
           <button
@@ -2301,7 +2323,6 @@ export default function ExcelEditorPage() {
         </div>
       )}
 
-      {/* TAB: WPS PDF */}
       {activeTab === "wps_pdf" && (
         <div className="bg-[#1f1f1f] border-b border-[#282828] px-3 py-2 flex items-center gap-4 text-xs text-slate-300">
           <button
@@ -2329,11 +2350,11 @@ export default function ExcelEditorPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* 4. FORMULA BAR (EXACT PLACEMENT & STYLING FROM SCREENSHOT: E9 ⌄ : ✕ ✓ fx)  */}
+      {/* 4. FORMULA & NAME BOX BAR                                                 */}
       {/* ========================================================================= */}
       {showFormulaBar && (
         <div className="bg-[#181818] border-b border-[#252525] px-2 py-1 flex items-center gap-2 text-xs select-none">
-          {/* Name Box: E9 ⌄ or Range B4:D6 ⌄ */}
+          {/* Name Box showing active selection (e.g. E9) */}
           <div className="flex items-center justify-between min-w-[70px] max-w-[120px] px-2 py-1 rounded bg-[#202020] border border-slate-700/60 text-slate-100 font-mono text-xs font-semibold cursor-pointer truncate">
             <span>{activeCellCoord}</span>
             <ChevronDown className="w-3 h-3 text-slate-400 ml-1 shrink-0" />
@@ -2366,7 +2387,7 @@ export default function ExcelEditorPage() {
             </span>
           </div>
 
-          {/* Formula Input Box (Full width dark rounded bar) */}
+          {/* Interactive Formula Input Bar */}
           <input
             ref={formulaInputRef}
             type="text"
@@ -2375,14 +2396,14 @@ export default function ExcelEditorPage() {
             onKeyDown={(e) => {
               if (e.key === "Enter") commitFormula();
             }}
-            placeholder="Enter a value or formula (e.g. =SUM(B4:B6) or =D4*E4 or =AVERAGE(B4:B6))"
+            placeholder="Enter a value or formula (e.g. =SUM(B4:B6) or =D4*E4)"
             className="flex-1 bg-[#202020] border border-slate-700/80 focus:border-[#107c41] px-3 py-1 rounded-md text-white font-mono text-xs outline-none transition-colors shadow-inner"
           />
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* 5. MAIN SPREADSHEET GRID (ACTIVE COLUMN E & ROW GREEN HIGHLIGHT)          */}
+      {/* 5. MAIN SPREADSHEET GRID (SPREADSHEET GRID & STYLING)                     */}
       {/* ========================================================================= */}
       <div
         ref={gridContainerRef}
@@ -2402,13 +2423,12 @@ export default function ExcelEditorPage() {
         onMouseUp={() => {
           setIsSelecting(false);
           if (isAutoFilling && autoFillTarget) {
-            // Apply fill down
             const sourceRaw = currentCellData.raw || "";
             const updates: { row: number; col: number; data: Partial<CellData> }[] = [];
             const rStart = Math.min(activeCell.row, autoFillTarget.row);
             const rEnd = Math.max(activeCell.row, autoFillTarget.row);
             for (let r = rStart; r <= rEnd; r++) {
-              updates.push({ row: r, col: activeCell.col, data: { raw: sourceRaw } });
+              updates.push({ row: r, col: activeCell.col, data: { raw: sourceRaw, format: currentCellData.format } });
             }
             updateCells(updates);
             setIsAutoFilling(false);
@@ -2447,7 +2467,8 @@ export default function ExcelEditorPage() {
                   {/* Column Headers (A, B, C, D, E, F...) */}
                   {Array.from({ length: currentSheet.maxCols }).map((_, colIdx) => {
                     const letter = colToLetter(colIdx);
-                    const isColActive = activeCell.col === colIdx || (colIdx >= normalizedRange.cMin && colIdx <= normalizedRange.cMax);
+                    const isColActive =
+                      activeCell.col === colIdx || (colIdx >= normalizedRange.cMin && colIdx <= normalizedRange.cMax);
                     return (
                       <th
                         key={colIdx}
@@ -2476,7 +2497,10 @@ export default function ExcelEditorPage() {
 
             <tbody>
               {Array.from({ length: currentSheet.maxRows }).map((_, rowIdx) => {
-                const isRowActive = activeCell.row === rowIdx || (rowIdx >= normalizedRange.rMin && rowIdx <= normalizedRange.rMax);
+                const isRowActive =
+                  activeCell.row === rowIdx || (rowIdx >= normalizedRange.rMin && rowIdx <= normalizedRange.rMax);
+                const isTotalRow = rowIdx === 6; // Row 7 total row styling
+
                 return (
                   <tr key={rowIdx}>
                     {/* Row Header (1, 2, 3...) */}
@@ -2513,14 +2537,17 @@ export default function ExcelEditorPage() {
                         colIdx <= normalizedRange.cMax;
                       const isEditing = editingCell?.row === rowIdx && editingCell?.col === colIdx;
 
-                      let displayVal: string | number = "";
+                      let rawComputedVal: string | number = "";
                       if (cell && cell.raw) {
                         if (cell.raw.startsWith("=")) {
-                          displayVal = evaluateFormula(cell.raw, currentSheet.grid);
+                          rawComputedVal = evaluateFormula(cell.raw, currentSheet.grid);
                         } else {
-                          displayVal = cell.raw;
+                          rawComputedVal = cell.raw;
                         }
                       }
+
+                      // Apply formatting (currency ₹, numbers, etc.)
+                      const displayVal = formatCellValue(rawComputedVal, cell?.format);
 
                       return (
                         <td
@@ -2560,6 +2587,8 @@ export default function ExcelEditorPage() {
                           className={`h-6 px-1.5 truncate relative cursor-cell transition-all font-sans select-none ${
                             showGridlines ? "border-b border-r border-[#262626]" : ""
                           } ${cell?.border ? "border border-slate-600" : ""} ${
+                            isTotalRow ? "border-b-4 border-double border-slate-400 font-bold" : ""
+                          } ${
                             isInRange
                               ? isFocused
                                 ? "outline-2 outline-[#107c41] -outline-offset-1 bg-[#107c41]/20 z-10 shadow-sm"
@@ -2654,7 +2683,7 @@ export default function ExcelEditorPage() {
           </button>
         </div>
 
-        {/* Right: Status Bar */}
+        {/* Right: Status Bar with Live Sum, Avg, Count */}
         <div className="flex items-center gap-4 font-mono text-[11px] text-slate-400">
           <span>Ready</span>
           {rangeCalculations.hasNumbers && (
@@ -2895,18 +2924,19 @@ export default function ExcelEditorPage() {
 
             <div className="space-y-2 max-h-80 overflow-y-auto my-3 scrollbar-thin">
               {[
-                { name: "SUM", syntax: "=SUM(A1:A5)", desc: "Adds all the numbers in a range of cells." },
-                { name: "AVERAGE", syntax: "=AVERAGE(A1:A5)", desc: "Calculates the average (arithmetic mean) of numbers." },
-                { name: "COUNT", syntax: "=COUNT(A1:A5)", desc: "Counts how many cells contain numbers." },
-                { name: "MAX", syntax: "=MAX(A1:A5)", desc: "Returns the largest value in a set of values." },
-                { name: "MIN", syntax: "=MIN(A1:A5)", desc: "Returns the smallest number in a set of values." },
-                { name: "IF", syntax: '=IF(A1>50, "Pass", "Fail")', desc: "Checks whether a condition is met, and returns one value if TRUE, and another if FALSE." },
-                { name: "ROUND", syntax: "=ROUND(A1, 2)", desc: "Rounds a number to a specified number of digits." },
-                { name: "PRODUCT", syntax: "=PRODUCT(A1:A5)", desc: "Multiplies all the numbers given as arguments." },
-                { name: "CONCAT", syntax: '=CONCAT(A1, " ", B1)', desc: "Combines the text from multiple ranges and/or strings." },
-                { name: "TODAY", syntax: "=TODAY()", desc: "Returns the current date formatted as YYYY-MM-DD." },
-                { name: "ABS", syntax: "=ABS(A1)", desc: "Returns the absolute value of a number." },
-                { name: "SQRT", syntax: "=SQRT(A1)", desc: "Returns the positive square root of a number." },
+                { name: "SUM", syntax: "=SUM(B4:B6)", desc: "Adds all the numbers in a range of cells." },
+                { name: "AVERAGE", syntax: "=AVERAGE(D4:D6)", desc: "Calculates the average (arithmetic mean) of numbers." },
+                { name: "MULTIPLY", syntax: "=D4*E4", desc: "Multiplies two cells together." },
+                { name: "COUNT", syntax: "=COUNT(B4:B6)", desc: "Counts how many cells contain numbers." },
+                { name: "MAX", syntax: "=MAX(D4:D6)", desc: "Returns the largest value in a set of values." },
+                { name: "MIN", syntax: "=MIN(D4:D6)", desc: "Returns the smallest number in a set of values." },
+                { name: "IF", syntax: '=IF(D4>100, "High", "Low")', desc: "Checks whether a condition is met." },
+                { name: "ROUND", syntax: "=ROUND(D7, 2)", desc: "Rounds a number to a specified number of digits." },
+                { name: "PRODUCT", syntax: "=PRODUCT(D4, E4)", desc: "Multiplies all the numbers given as arguments." },
+                { name: "CONCAT", syntax: '=CONCAT(A4, " - ", B4)', desc: "Combines text from multiple cells." },
+                { name: "TODAY", syntax: "=TODAY()", desc: "Returns the current date." },
+                { name: "ABS", syntax: "=ABS(D4)", desc: "Returns the absolute value." },
+                { name: "SQRT", syntax: "=SQRT(D4)", desc: "Returns the square root." },
               ].map((item) => (
                 <div
                   key={item.name}
@@ -2944,7 +2974,7 @@ export default function ExcelEditorPage() {
             <div className="my-4 space-y-3 text-xs">
               <div className="p-3 bg-purple-950/20 border border-purple-800/40 rounded-lg">
                 <span className="font-bold text-purple-300 block mb-1">Executive Summary</span>
-                <span>Active sheet contains <strong>{sheetStats.populated}</strong> populated cells, <strong>{sheetStats.formulas}</strong> automated formulas, and <strong>{sheetStats.numbers}</strong> numerical entries.</span>
+                <span>NotixNode cluster contains <strong>{sheetStats.populated}</strong> populated cells, <strong>{sheetStats.formulas}</strong> automated formulas, and <strong>{sheetStats.numbers}</strong> numerical entries. Total projected revenue is <strong>₹5,883/month</strong> across 47 active clients.</span>
               </div>
               <div className="p-3 bg-[#242424] rounded-lg">
                 <span className="font-bold text-emerald-400 block mb-1">Key Metrics</span>
@@ -2972,27 +3002,27 @@ export default function ExcelEditorPage() {
           <div className="bg-[#1a1a1a] border border-slate-700 rounded-xl shadow-2xl max-w-lg w-full p-5 text-slate-200">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-cyan-400" /> Chart Preview
+                <BarChart3 className="w-4 h-4 text-cyan-400" /> Cluster Revenue Breakdown
               </h3>
               <button onClick={() => setShowChartModal(false)} className="hover:text-white text-slate-400">
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="my-6 flex items-end justify-center gap-4 h-48 px-4 border-b border-slate-700 pb-2">
+            <div className="my-6 flex items-end justify-center gap-6 h-48 px-4 border-b border-slate-700 pb-2">
               <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-slate-400">₹69</span>
-                <div className="w-10 bg-emerald-500 rounded-t h-16 shadow" />
-                <span className="text-[10px] text-slate-300">Basic</span>
+                <span className="text-[10px] text-emerald-400 font-bold">₹1,656</span>
+                <div className="w-12 bg-emerald-500 rounded-t h-28 shadow" />
+                <span className="text-[10px] text-slate-300">Tier-1 Basic</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-slate-400">₹149</span>
-                <div className="w-10 bg-[#107c41] rounded-t h-32 shadow" />
-                <span className="text-[10px] text-slate-300">Standard</span>
+                <span className="text-[10px] text-emerald-300 font-bold">₹2,235</span>
+                <div className="w-12 bg-[#107c41] rounded-t h-38 shadow" />
+                <span className="text-[10px] text-slate-300">Tier-2 Standard</span>
               </div>
               <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-slate-400">₹249</span>
-                <div className="w-10 bg-cyan-500 rounded-t h-44 shadow" />
-                <span className="text-[10px] text-slate-300">Premium</span>
+                <span className="text-[10px] text-cyan-400 font-bold">₹1,992</span>
+                <div className="w-12 bg-cyan-500 rounded-t h-34 shadow" />
+                <span className="text-[10px] text-slate-300">Tier-3 Premium</span>
               </div>
             </div>
             <button
