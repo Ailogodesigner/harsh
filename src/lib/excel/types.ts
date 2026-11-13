@@ -126,6 +126,7 @@ export interface WorkbookData {
 export type RibbonTab =
   | "file"
   | "home"
+  | "wps_pdf"
   | "insert"
   | "page_layout"
   | "formulas"

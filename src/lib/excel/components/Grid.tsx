@@ -182,7 +182,7 @@ export function Grid() {
           setAutoFillTarget(null);
         }
       }}
-      className="flex-1 overflow-auto relative bg-[#121212] select-none outline-none scrollbar-thin"
+      className="flex-1 overflow-auto relative bg-white select-none outline-none scrollbar-thin"
     >
       {/* Overlaid Dynamic Charts */}
       {(workbook.charts || []).map((chart) => (
@@ -190,12 +190,12 @@ export function Grid() {
       ))}
 
       {/* Grid container with Zoom Scale */}
-      <div style={{ transform: `scale(${zoomScale})`, transformOrigin: "top left" }}>
-        <table className="border-collapse table-fixed text-xs font-sans w-max">
+      <div style={{ transform: `scale(${zoomScale})`, transformOrigin: "top left" }} className="bg-white min-h-full">
+        <table className="border-collapse table-fixed text-xs font-sans w-max bg-white">
           {/* Column Headers */}
           {showHeadings && (
             <thead>
-              <tr className="sticky top-0 z-20 bg-[#1e1e1e]">
+              <tr className="sticky top-0 z-20 bg-[#1a1a1a]">
                 {/* Select All Corner Button */}
                 <th
                   onClick={() => {
@@ -206,7 +206,7 @@ export function Grid() {
                       endCol: maxCols - 1,
                     });
                   }}
-                  className="w-12 h-6 border-b border-r border-[#303030] bg-[#1a1a1a] sticky left-0 z-30 text-[10px] text-slate-500 font-mono text-center cursor-pointer hover:bg-[#282828]"
+                  className="w-12 h-6 border-b border-r border-[#333333] bg-[#1a1a1a] sticky left-0 z-30 text-[10px] text-slate-400 font-mono text-center cursor-pointer hover:bg-[#252525]"
                   title="Select All (Ctrl+A)"
                 >
                   ◢
@@ -216,7 +216,7 @@ export function Grid() {
                   const letter = colToLetter(cIdx);
                   const isColActive =
                     activeCell.col === cIdx || (cIdx >= norm.cMin && cIdx <= norm.cMax);
-                  const colWidth = (activeSheet.colWidths && activeSheet.colWidths[cIdx]) || 105;
+                  const colWidth = (activeSheet.colWidths && activeSheet.colWidths[cIdx]) || 110;
 
                   return (
                     <th
@@ -231,10 +231,10 @@ export function Grid() {
                           endCol: cIdx,
                         });
                       }}
-                      className={`relative h-6 border-b border-r border-[#303030] text-center font-mono text-[11px] font-semibold transition-colors cursor-pointer select-none ${
+                      className={`relative h-6 border-b border-r border-[#333333] text-center font-mono text-[11px] transition-colors cursor-pointer select-none ${
                         isColActive
-                          ? "bg-[#107c41] text-white font-bold border-b-2 border-emerald-300"
-                          : "bg-[#1a1a1a] text-slate-300 hover:bg-[#282828]"
+                          ? "bg-[#244b35] text-white font-bold border-b-2 border-emerald-400"
+                          : "bg-[#1c1c1c] text-slate-300 hover:bg-[#252525]"
                       }`}
                     >
                       <span>{letter}</span>
@@ -271,10 +271,10 @@ export function Grid() {
                           endCol: maxCols - 1,
                         });
                       }}
-                      className={`relative w-12 text-center font-mono text-[11px] border-b border-r border-[#303030] sticky left-0 z-10 select-none cursor-pointer transition-colors ${
+                      className={`relative w-12 text-center font-mono text-[11px] border-b border-r border-[#333333] sticky left-0 z-10 select-none cursor-pointer transition-colors ${
                         isRowActive
-                          ? "bg-[#107c41] text-white font-bold border-r-2 border-emerald-300"
-                          : "bg-[#1a1a1a] text-slate-400 hover:bg-[#282828]"
+                          ? "bg-[#244b35] text-white font-bold border-r-2 border-emerald-400"
+                          : "bg-[#1c1c1c] text-slate-400 hover:bg-[#252525]"
                       }`}
                     >
                       <span>{rIdx + 1}</span>
@@ -343,27 +343,27 @@ export function Grid() {
                           setContextMenu({ x: e.clientX, y: e.clientY });
                         }}
                         style={{
-                          backgroundColor: cell?.bgColor,
-                          color: cell?.textColor,
+                          backgroundColor: cell?.bgColor || "#ffffff",
+                          color: cell?.textColor || "#0f172a",
                           fontWeight: cell?.bold ? "bold" : undefined,
                           fontStyle: cell?.italic ? "italic" : undefined,
                           textDecoration: cell?.underline ? "underline" : undefined,
-                          fontSize: cell?.fontSize ? `${cell.fontSize}px` : undefined,
-                          fontFamily: cell?.fontFamily,
+                          fontSize: cell?.fontSize ? `${cell.fontSize}px` : "12px",
+                          fontFamily: cell?.fontFamily || "Calibri, Arial, sans-serif",
                           textAlign: cell?.align || (typeof cell?.raw === "number" ? "right" : "left"),
                           whiteSpace: cell?.wrapText ? "normal" : "nowrap",
                         }}
-                        className={`relative px-2 py-1 text-slate-100 transition-colors ${
-                          showGridlines ? "border-b border-r border-[#262626]" : ""
+                        className={`relative px-2 py-0.5 transition-colors ${
+                          showGridlines ? "border-b border-r border-[#e2e8f0]" : ""
                         } ${
                           hasDoubleBottom
-                            ? "border-b-4 border-double border-slate-400 font-bold"
+                            ? "border-b-4 border-double border-slate-700 font-bold"
                             : ""
                         } ${
-                          isSelected && !isActive ? "bg-emerald-900/20" : ""
+                          isSelected && !isActive ? "bg-emerald-500/10" : ""
                         } ${
                           isActive
-                            ? "outline outline-2 outline-[#107c41] -outline-offset-1 z-10 bg-[#1e2e24]/40"
+                            ? "outline outline-2 outline-[#107c41] -outline-offset-1 z-10"
                             : ""
                         }`}
                       >
@@ -392,10 +392,10 @@ export function Grid() {
                               updateCell(rIdx, cIdx, { raw: e.target.value });
                               setEditingCell(null);
                             }}
-                            className="absolute inset-0 w-full h-full bg-[#1e1e1e] border-2 border-emerald-500 text-white font-mono text-xs px-2 outline-none z-30"
+                            className="absolute inset-0 w-full h-full bg-white border-2 border-[#107c41] text-black font-sans text-xs px-2 outline-none z-30 shadow-md"
                           />
                         ) : (
-                          <span className="block truncate">{displayVal}</span>
+                          <span className="block truncate select-none leading-normal">{displayVal}</span>
                         )}
 
                         {/* Excel Auto-Fill Drag Handle on Active Cell */}
@@ -405,7 +405,7 @@ export function Grid() {
                               e.stopPropagation();
                               setIsAutoFilling(true);
                             }}
-                            className="absolute -right-1 -bottom-1 w-2.5 h-2.5 bg-[#107c41] border border-white cursor-crosshair z-20 hover:scale-125 transition-transform"
+                            className="absolute -right-1 -bottom-1 w-2 h-2 bg-[#107c41] border border-white cursor-crosshair z-20 hover:scale-125 transition-transform"
                             title="Drag to auto-fill cells"
                           />
                         )}

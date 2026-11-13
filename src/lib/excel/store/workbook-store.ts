@@ -3,7 +3,7 @@ import { WorkbookData, SheetTab, SheetGrid, CellData, ChartConfig, SelectionRang
 import { evaluateFormula } from "../engine/formula-engine";
 import { normalizeRange } from "../engine/range-manager";
 
-const STORAGE_KEY = "notixnode_excel_365_data_v4";
+const STORAGE_KEY = "notixnode_excel_365_data_v5";
 
 // Initial NotixNode Cluster Starter Dataset
 export const initialClusterGrid: SheetGrid = {
@@ -94,14 +94,32 @@ export const initialClusterGrid: SheetGrid = {
   },
 };
 
+export const initialSheet2Grid: SheetGrid = {
+  // Row 3: B3 (index 2:1) & F3 (index 2:5)
+  "2:1": { raw: "Bachelor of Business Administration.", bold: true },
+  "2:5": { raw: "3-year" },
+
+  // Row 5: C5 (index 4:2)
+  "4:2": { raw: "Class 11/12 Commerce (preferably with Math / Computer Applications)" },
+
+  // Row 7: B7 (index 6:1)
+  "6:1": { raw: "Undergraduate Degree: BBA in Maritime Logistics / Supply Chain OR BCA" },
+};
+
 const defaultSheets: SheetTab[] = [
   {
     id: "sheet-1",
-    name: "Cluster Nodes",
+    name: "Sheet1",
     grid: initialClusterGrid,
     maxRows: 65,
     maxCols: 26,
-    tabColor: "#107c41",
+  },
+  {
+    id: "sheet-2",
+    name: "Sheet2",
+    grid: initialSheet2Grid,
+    maxRows: 65,
+    maxCols: 26,
   },
 ];
 
@@ -168,10 +186,10 @@ export const useWorkbookStore = create<WorkbookState>((set, get) => ({
     id: "wb-notixnode-2026",
     title: "Book4.xlsx",
     sheets: defaultSheets,
-    activeSheetId: "sheet-1",
+    activeSheetId: "sheet-2",
     charts: [],
   },
-  history: [{ sheetId: "sheet-1", grid: initialClusterGrid }],
+  history: [{ sheetId: "sheet-2", grid: initialSheet2Grid }],
   historyIndex: 0,
   autoSaveOn: true,
   saveStatus: "Saved",

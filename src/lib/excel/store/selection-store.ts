@@ -23,8 +23,8 @@ interface SelectionState {
 }
 
 export const useSelectionStore = create<SelectionState>((set, get) => ({
-  activeCell: { row: 3, col: 0 }, // Defaults to A4
-  selectionRange: { startRow: 3, startCol: 0, endRow: 3, endCol: 0 },
+  activeCell: { row: 8, col: 4 }, // Defaults to E9 (matching Excel screenshot)
+  selectionRange: { startRow: 8, startCol: 4, endRow: 8, endCol: 4 },
   isSelecting: false,
   editingCell: null,
   formulaInput: "",
