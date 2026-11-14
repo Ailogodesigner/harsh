@@ -37,6 +37,18 @@
   }
 }
 
+/* Print styling for Excel PDF creation */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+  }
+  .print-hide {
+    display: none !important;
+  }
+}
+
 /* Background atmospheric gradient & grid */
 .mc-grid-pattern {
   background-size: 40px 40px;

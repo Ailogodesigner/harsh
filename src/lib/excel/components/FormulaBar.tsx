@@ -15,7 +15,7 @@ const FORMULA_SUGGESTIONS = [
 
 export function FormulaBar() {
   const { showFormulaBar, toggleModal } = useUIStore();
-  const { activeCell, formulaInput, setFormulaInput } = useSelectionStore();
+  const { activeCell, formulaInput, setFormulaInput, setActiveCell } = useSelectionStore();
   const { workbook, updateCell } = useWorkbookStore();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -32,8 +32,23 @@ export function FormulaBar() {
   }, [activeCell.row, activeCell.col, activeSheet, setFormulaInput]);
 
   const handleCommit = () => {
-    updateCell(activeCell.row, activeCell.col, { raw: formulaInput });
+    let finalRaw: any = formulaInput.trim();
+    if (
+      finalRaw !== "" &&
+      !finalRaw.startsWith("=") &&
+      !finalRaw.startsWith("'") &&
+      !isNaN(Number(finalRaw))
+    ) {
+      finalRaw = Number(finalRaw);
+    }
+    updateCell(activeCell.row, activeCell.col, { raw: finalRaw });
     setSuggestions([]);
+    if (activeSheet) {
+      setActiveCell({
+        row: Math.min(activeSheet.maxRows - 1, activeCell.row + 1),
+        col: activeCell.col,
+      });
+    }
   };
 
   const handleCancel = () => {

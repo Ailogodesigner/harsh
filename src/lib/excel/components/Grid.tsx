@@ -4,8 +4,10 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useWorkbookStore } from "../store/workbook-store";
 import { useSelectionStore } from "../store/selection-store";
 import { useUIStore } from "../store/ui-store";
-import { colToLetter, normalizeRange } from "../engine/range-manager";
+import { colToLetter, letterToCol, normalizeRange, coordToAddress } from "../engine/range-manager";
 import { formatCellValue } from "../engine/formatting-engine";
+import { computeAutoFillUpdates } from "../engine/autofill-engine";
+import { copyToClipboard, pasteFromClipboard } from "../services/clipboard-service";
 import { CellContextMenu } from "./dialogs/CellContextMenu";
 import { ChartViewer } from "./ChartViewer";
 import { CellData } from "../types";
@@ -17,14 +19,20 @@ export function Grid() {
     selectionRange,
     isSelecting,
     editingCell,
+    editValue,
+    clipboard,
     setActiveCell,
     setSelectionRange,
     setIsSelecting,
     setEditingCell,
-    isAutoFilling,
-    autoFillTarget,
+    setEditValue,
+    setFormulaInput,
     setIsAutoFilling,
     setAutoFillTarget,
+    isAutoFilling,
+    autoFillTarget,
+    setClipboard,
+    clearClipboard,
   } = useSelectionStore();
 
   const { showGridlines, showHeadings, zoomScale, toggleModal } = useUIStore();
@@ -40,24 +48,104 @@ export function Grid() {
   const [resizingCol, setResizingCol] = useState<{ col: number; startX: number; startWidth: number } | null>(null);
   const [resizingRow, setResizingRow] = useState<{ row: number; startY: number; startHeight: number } | null>(null);
 
-  // Auto-focus input when editing starts
+  // Auto-focus input when editing starts and place cursor at end
   useEffect(() => {
     if (editingCell && inputRef.current) {
       inputRef.current.focus();
+      const len = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(len, len);
     }
   }, [editingCell]);
 
   const norm = normalizeRange(selectionRange);
 
+  // Commit in-place editing
+  const commitEdit = useCallback(
+    (deltaRow = 0, deltaCol = 0) => {
+      if (!editingCell) return;
+      const trimmed = editValue.trim();
+      let finalRaw: any = editValue;
+      if (
+        trimmed !== "" &&
+        !trimmed.startsWith("=") &&
+        !trimmed.startsWith("'") &&
+        !isNaN(Number(trimmed))
+      ) {
+        finalRaw = Number(trimmed);
+      }
+      updateCell(editingCell.row, editingCell.col, { raw: finalRaw });
+      setEditingCell(null);
+
+      const maxRows = activeSheet ? activeSheet.maxRows : 65;
+      const maxCols = activeSheet ? activeSheet.maxCols : 26;
+
+      if (deltaRow !== 0 || deltaCol !== 0) {
+        const nextR = Math.max(0, Math.min(maxRows - 1, editingCell.row + deltaRow));
+        const nextC = Math.max(0, Math.min(maxCols - 1, editingCell.col + deltaCol));
+        setActiveCell({ row: nextR, col: nextC });
+      }
+    },
+    [editingCell, editValue, updateCell, setEditingCell, activeSheet, setActiveCell]
+  );
+
+  // Cancel in-place editing
+  const cancelEdit = useCallback(() => {
+    if (!editingCell) return;
+    setEditingCell(null);
+    const cell = activeSheet?.grid[`${editingCell.row}:${editingCell.col}`];
+    setFormulaInput(cell?.raw !== undefined && cell?.raw !== null ? String(cell.raw) : "");
+  }, [editingCell, setEditingCell, activeSheet, setFormulaInput]);
+
+  // Double-click column header boundary to auto-fit width
+  const handleAutoFitCol = useCallback(
+    (cIdx: number) => {
+      if (!activeSheet) return;
+      let maxChars = 4;
+      const maxRows = Math.min(activeSheet.maxRows, 100);
+      for (let r = 0; r < maxRows; r++) {
+        const cell = activeSheet.grid[`${r}:${cIdx}`];
+        if (cell) {
+          const val = cell.computed !== undefined && cell.computed !== null ? cell.computed : cell.raw;
+          const text = formatCellValue(val, cell.format);
+          if (text && text.length > maxChars) {
+            maxChars = text.length;
+          }
+        }
+      }
+      const targetW = Math.max(70, Math.min(380, maxChars * 8 + 36));
+      resizeCol(cIdx, targetW);
+    },
+    [activeSheet, resizeCol]
+  );
+
   // Keyboard navigation & shortcuts
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (editingCell) return; // Allow normal typing in input
+      if (editingCell) return; // Allow normal typing inside input
 
       const { row, col } = activeCell;
       const maxRows = activeSheet ? activeSheet.maxRows : 65;
       const maxCols = activeSheet ? activeSheet.maxCols : 26;
 
+      // 1. Shift + Arrow keys: Range Selection Expansion
+      if (
+        e.shiftKey &&
+        (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight")
+      ) {
+        e.preventDefault();
+        if (e.key === "ArrowDown") {
+          setSelectionRange({ ...selectionRange, endRow: Math.min(maxRows - 1, selectionRange.endRow + 1) });
+        } else if (e.key === "ArrowUp") {
+          setSelectionRange({ ...selectionRange, endRow: Math.max(0, selectionRange.endRow - 1) });
+        } else if (e.key === "ArrowRight") {
+          setSelectionRange({ ...selectionRange, endCol: Math.min(maxCols - 1, selectionRange.endCol + 1) });
+        } else if (e.key === "ArrowLeft") {
+          setSelectionRange({ ...selectionRange, endCol: Math.max(0, selectionRange.endCol - 1) });
+        }
+        return;
+      }
+
+      // 2. Normal Arrow Keys: Active Cell Navigation
       if (e.key === "ArrowUp") {
         e.preventDefault();
         const nextR = Math.max(0, row - 1);
@@ -85,14 +173,28 @@ export function Grid() {
         }
       } else if (e.key === "Enter") {
         e.preventDefault();
-        const nextR = Math.min(maxRows - 1, row + 1);
-        setActiveCell({ row: nextR, col });
+        if (e.shiftKey) {
+          const nextR = Math.max(0, row - 1);
+          setActiveCell({ row: nextR, col });
+        } else {
+          const nextR = Math.min(maxRows - 1, row + 1);
+          setActiveCell({ row: nextR, col });
+        }
       } else if (e.key === "F2") {
         e.preventDefault();
+        const curCell = activeSheet?.grid[`${row}:${col}`];
+        const val = curCell?.raw !== undefined && curCell?.raw !== null ? String(curCell.raw) : "";
         setEditingCell({ row, col });
+        setEditValue(val);
+        setFormulaInput(val);
       } else if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
         clearCells(selectionRange, "contents");
+        setFormulaInput("");
+      } else if (e.key === "Escape") {
+        if (clipboard) {
+          clearClipboard();
+        }
       } else if (e.key === "Home") {
         e.preventDefault();
         if (e.ctrlKey) {
@@ -106,12 +208,41 @@ export function Grid() {
       } else if (e.ctrlKey && e.key.toLowerCase() === "f") {
         e.preventDefault();
         toggleModal("showFindReplace", true);
+      } else if (e.ctrlKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        copyToClipboard(workbook, selectionRange, setClipboard, false);
+      } else if (e.ctrlKey && e.key.toLowerCase() === "x") {
+        e.preventDefault();
+        copyToClipboard(workbook, selectionRange, setClipboard, true);
+      } else if (e.ctrlKey && e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        pasteFromClipboard(workbook, activeCell, clipboard, setClipboard, updateCells, clearCells, false);
       } else if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
-        // Direct typing into cell starts editing
+        // Direct typing into cell starts editing immediately with that character
+        e.preventDefault();
         setEditingCell({ row, col });
+        setEditValue(e.key);
+        setFormulaInput(e.key);
       }
     },
-    [activeCell, activeSheet, clearCells, editingCell, selectionRange, setActiveCell, setEditingCell, toggleModal]
+    [
+      activeCell,
+      activeSheet,
+      clearCells,
+      editingCell,
+      selectionRange,
+      setActiveCell,
+      setEditingCell,
+      setEditValue,
+      setFormulaInput,
+      toggleModal,
+      clipboard,
+      clearClipboard,
+      setClipboard,
+      workbook,
+      updateCells,
+      setSelectionRange,
+    ]
   );
 
   // Column Resizing handlers
@@ -157,6 +288,9 @@ export function Grid() {
   const maxRows = Math.min(activeSheet.maxRows, 100);
   const maxCols = Math.min(activeSheet.maxCols, 26);
 
+  // Clipboard normal range for marching ants
+  const clipNorm = clipboard ? normalizeRange(clipboard.range) : null;
+
   return (
     <div
       ref={containerRef}
@@ -165,19 +299,10 @@ export function Grid() {
       onMouseUp={() => {
         setIsSelecting(false);
         if (isAutoFilling && autoFillTarget) {
-          const sourceCell = activeSheet.grid[`${activeCell.row}:${activeCell.col}`];
-          const sourceRaw = sourceCell?.raw ?? "";
-          const rStart = Math.min(activeCell.row, autoFillTarget.row);
-          const rEnd = Math.max(activeCell.row, autoFillTarget.row);
-          const updates: { row: number; col: number; data: Partial<CellData> }[] = [];
-          for (let r = rStart; r <= rEnd; r++) {
-            updates.push({
-              row: r,
-              col: activeCell.col,
-              data: { raw: sourceRaw, format: sourceCell?.format },
-            });
+          const updates = computeAutoFillUpdates(activeSheet.grid, selectionRange, autoFillTarget);
+          if (updates.length > 0) {
+            updateCells(updates);
           }
-          updateCells(updates);
           setIsAutoFilling(false);
           setAutoFillTarget(null);
         }
@@ -238,10 +363,15 @@ export function Grid() {
                       }`}
                     >
                       <span>{letter}</span>
-                      {/* Resize Handle */}
+                      {/* Resize Handle with double-click auto-fit */}
                       <div
                         onMouseDown={(e) => handleColResizeStart(e, cIdx)}
-                        className="absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-emerald-500"
+                        onDoubleClick={(e) => {
+                          e.stopPropagation();
+                          handleAutoFitCol(cIdx);
+                        }}
+                        className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-emerald-500 z-10"
+                        title="Drag to resize, double-click to AutoFit"
                       />
                     </th>
                   );
@@ -301,7 +431,7 @@ export function Grid() {
                     // Display Value
                     const displayVal = cell
                       ? formatCellValue(
-                          cell.computed !== undefined ? cell.computed : cell.raw,
+                          cell.computed !== undefined && cell.computed !== null ? cell.computed : cell.raw,
                           cell.format
                         )
                       : "";
@@ -309,11 +439,50 @@ export function Grid() {
                     // Accounting Double Underline format check
                     const hasDoubleBottom = cell?.borders?.doubleBottom;
 
+                    // Check if numeric for authentic Excel right alignment
+                    const rawOrComp = cell?.computed !== undefined && cell?.computed !== null ? cell.computed : cell?.raw;
+                    const isNumeric =
+                      rawOrComp !== undefined &&
+                      rawOrComp !== null &&
+                      rawOrComp !== "" &&
+                      !isNaN(Number(rawOrComp)) &&
+                      typeof rawOrComp !== "boolean";
+                    const cellTextAlign = cell?.align || (isNumeric ? "right" : "left");
+
+                    // Marching ants for clipboard range
+                    const isCopied =
+                      clipNorm &&
+                      rIdx >= clipNorm.rMin &&
+                      rIdx <= clipNorm.rMax &&
+                      cIdx >= clipNorm.cMin &&
+                      cIdx <= clipNorm.cMax;
+
                     return (
                       <td
                         key={cIdx}
                         onMouseDown={(e) => {
                           if (e.button === 2) return; // Right click
+
+                          // Point-and-click cell reference insertion when writing formula
+                          if (
+                            editingCell &&
+                            (editingCell.row !== rIdx || editingCell.col !== cIdx) &&
+                            editValue.startsWith("=") &&
+                            /[=+\-*/,(]$/.test(editValue.trim())
+                          ) {
+                            e.preventDefault();
+                            const addr = coordToAddress(rIdx, cIdx);
+                            const updated = editValue + addr;
+                            setEditValue(updated);
+                            setFormulaInput(updated);
+                            return;
+                          }
+
+                          // If another cell was being edited, commit it
+                          if (editingCell && (editingCell.row !== rIdx || editingCell.col !== cIdx)) {
+                            commitEdit(0, 0);
+                          }
+
                           setActiveCell({ row: rIdx, col: cIdx });
                           setIsSelecting(true);
                           setSelectionRange({
@@ -322,7 +491,6 @@ export function Grid() {
                             endRow: rIdx,
                             endCol: cIdx,
                           });
-                          setEditingCell(null);
                         }}
                         onMouseEnter={() => {
                           if (isSelecting) {
@@ -336,7 +504,12 @@ export function Grid() {
                             setAutoFillTarget({ row: rIdx, col: cIdx });
                           }
                         }}
-                        onDoubleClick={() => setEditingCell({ row: rIdx, col: cIdx })}
+                        onDoubleClick={() => {
+                          const curVal = cell?.raw !== undefined && cell?.raw !== null ? String(cell.raw) : "";
+                          setEditingCell({ row: rIdx, col: cIdx });
+                          setEditValue(curVal);
+                          setFormulaInput(curVal);
+                        }}
                         onContextMenu={(e) => {
                           e.preventDefault();
                           setActiveCell({ row: rIdx, col: cIdx });
@@ -350,7 +523,7 @@ export function Grid() {
                           textDecoration: cell?.underline ? "underline" : undefined,
                           fontSize: cell?.fontSize ? `${cell.fontSize}px` : "12px",
                           fontFamily: cell?.fontFamily || "Calibri, Arial, sans-serif",
-                          textAlign: cell?.align || (typeof cell?.raw === "number" ? "right" : "left"),
+                          textAlign: cellTextAlign,
                           whiteSpace: cell?.wrapText ? "normal" : "nowrap",
                         }}
                         className={`relative px-2 py-0.5 transition-colors ${
@@ -365,32 +538,36 @@ export function Grid() {
                           isActive
                             ? "outline outline-2 outline-[#107c41] -outline-offset-1 z-10"
                             : ""
+                        } ${
+                          isCopied ? "outline outline-1 outline-dashed outline-emerald-600 animate-pulse z-10" : ""
                         }`}
                       >
                         {isEditing ? (
                           <input
                             ref={inputRef}
                             type="text"
-                            defaultValue={cell?.raw ? String(cell.raw) : ""}
+                            value={editValue}
+                            onChange={(e) => {
+                              setEditValue(e.target.value);
+                              setFormulaInput(e.target.value);
+                            }}
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
-                                updateCell(rIdx, cIdx, { raw: (e.target as HTMLInputElement).value });
-                                setEditingCell(null);
-                                setActiveCell({ row: Math.min(maxRows - 1, rIdx + 1), col: cIdx });
-                              }
-                              if (e.key === "Tab") {
                                 e.preventDefault();
-                                updateCell(rIdx, cIdx, { raw: (e.target as HTMLInputElement).value });
-                                setEditingCell(null);
-                                setActiveCell({ row: rIdx, col: Math.min(maxCols - 1, cIdx + 1) });
-                              }
-                              if (e.key === "Escape") {
-                                setEditingCell(null);
+                                commitEdit(e.shiftKey ? -1 : 1, 0);
+                              } else if (e.key === "Tab") {
+                                e.preventDefault();
+                                commitEdit(0, e.shiftKey ? -1 : 1);
+                              } else if (e.key === "Escape") {
+                                e.preventDefault();
+                                cancelEdit();
                               }
                             }}
-                            onBlur={(e) => {
-                              updateCell(rIdx, cIdx, { raw: e.target.value });
-                              setEditingCell(null);
+                            onBlur={() => {
+                              // Small timeout so clicking another cell for formula reference doesn't immediately commit
+                              setTimeout(() => {
+                                commitEdit(0, 0);
+                              }, 120);
                             }}
                             className="absolute inset-0 w-full h-full bg-white border-2 border-[#107c41] text-black font-sans text-xs px-2 outline-none z-30 shadow-md"
                           />
@@ -426,33 +603,19 @@ export function Grid() {
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
           onCut={() => {
-            const cell = activeSheet.grid[`${activeCell.row}:${activeCell.col}`];
-            if (cell) {
-              navigator.clipboard?.writeText(String(cell.raw || ""));
-              updateCell(activeCell.row, activeCell.col, { raw: "" });
-            }
+            copyToClipboard(workbook, selectionRange, setClipboard, true);
           }}
           onCopy={() => {
-            const cell = activeSheet.grid[`${activeCell.row}:${activeCell.col}`];
-            if (cell) navigator.clipboard?.writeText(String(cell.raw || ""));
+            copyToClipboard(workbook, selectionRange, setClipboard, false);
           }}
-          onPaste={async () => {
-            try {
-              const text = await navigator.clipboard?.readText();
-              if (text !== undefined) updateCell(activeCell.row, activeCell.col, { raw: text });
-            } catch (e) {
-              console.error(e);
-            }
+          onPaste={() => {
+            pasteFromClipboard(workbook, activeCell, clipboard, setClipboard, updateCells, clearCells, false);
           }}
-          onPasteValues={async () => {
-            try {
-              const text = await navigator.clipboard?.readText();
-              if (text !== undefined) updateCell(activeCell.row, activeCell.col, { raw: text, format: "general" });
-            } catch (e) {}
+          onPasteValues={() => {
+            pasteFromClipboard(workbook, activeCell, clipboard, setClipboard, updateCells, clearCells, true);
           }}
         />
       )}
     </div>
   );
 }
-

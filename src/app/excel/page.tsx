@@ -14,6 +14,7 @@ import { useWorkbookStore } from "@/lib/excel/store/workbook-store";
 import { useSelectionStore } from "@/lib/excel/store/selection-store";
 import { useUIStore } from "@/lib/excel/store/ui-store";
 import { exportWorkbookToXLSX, triggerPrint } from "@/lib/excel/services/file-service";
+import { copyToClipboard, pasteFromClipboard } from "@/lib/excel/services/clipboard-service";
 import { expandRange } from "@/lib/excel/engine/range-manager";
 
 // =========================================================================
@@ -26,7 +27,16 @@ export type { SheetGrid, CellData, SheetTab } from "@/lib/excel/types";
 
 export default function ExcelEditorPage() {
   const { undo, redo, loadFromStorage, workbook, clearCells, updateCells } = useWorkbookStore();
-  const { selectionRange, activeCell, setEditingCell, setActiveCell, setSelectionRange } = useSelectionStore();
+  const {
+    selectionRange,
+    activeCell,
+    clipboard,
+    setEditingCell,
+    setActiveCell,
+    setSelectionRange,
+    setClipboard,
+    clearClipboard,
+  } = useSelectionStore();
   const { toggleModal, setFindMode } = useUIStore();
 
   // Load from local storage on mount
@@ -120,6 +130,30 @@ export default function ExcelEditorPage() {
           return;
         }
 
+        // Copy (Ctrl+C)
+        if (key === "c" && !isInput) {
+          e.preventDefault();
+          e.stopPropagation();
+          copyToClipboard(workbook, selectionRange, setClipboard, false);
+          return;
+        }
+
+        // Cut (Ctrl+X)
+        if (key === "x" && !isInput) {
+          e.preventDefault();
+          e.stopPropagation();
+          copyToClipboard(workbook, selectionRange, setClipboard, true);
+          return;
+        }
+
+        // Paste (Ctrl+V)
+        if (key === "v" && !isInput) {
+          e.preventDefault();
+          e.stopPropagation();
+          pasteFromClipboard(workbook, activeCell, clipboard, setClipboard, updateCells, clearCells, false);
+          return;
+        }
+
         // Bold (Ctrl+B)
         if (key === "b" && !isInput) {
           e.preventDefault();
@@ -150,34 +184,61 @@ export default function ExcelEditorPage() {
           return;
         }
       }
+
+      // Escape key to clear marching ants
+      if (e.key === "Escape") {
+        clearClipboard();
+      }
     };
 
     window.addEventListener("keydown", handleGlobalKeyDown, true);
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown, true);
     };
-  }, [undo, redo, workbook, toggleModal, setFindMode, activeCell, selectionRange, updateCells, setSelectionRange]);
+  }, [
+    undo,
+    redo,
+    workbook,
+    toggleModal,
+    setFindMode,
+    activeCell,
+    selectionRange,
+    updateCells,
+    setSelectionRange,
+    clipboard,
+    setClipboard,
+    clearClipboard,
+    clearCells,
+  ]);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#181818] overflow-hidden font-sans">
       {/* 1. Office Ribbon Toolbar */}
-      <Ribbon />
+      <div className="print-hide">
+        <Ribbon />
+      </div>
 
       {/* 2. Formula Bar & Name Box */}
-      <FormulaBar />
+      <div className="print-hide">
+        <FormulaBar />
+      </div>
 
       {/* 3. Interactive Virtualized Grid */}
       <Grid />
 
       {/* 4. Bottom Sheet Bar & Live Metrics */}
-      <SheetBar />
+      <div className="print-hide">
+        <SheetBar />
+      </div>
 
       {/* 5. Modals & Dialogs */}
-      <FormatCellsModal />
-      <FindReplaceModal />
-      <FunctionWizardModal />
-      <ChartInsertModal />
-      <ProtectSheetModal />
+      <div className="print-hide">
+        <FormatCellsModal />
+        <FindReplaceModal />
+        <FunctionWizardModal />
+        <ChartInsertModal />
+        <ProtectSheetModal />
+      </div>
     </div>
   );
 }

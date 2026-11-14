@@ -6,6 +6,7 @@ import { useWorkbookStore } from "../store/workbook-store";
 import { useSelectionStore } from "../store/selection-store";
 import { ColorPickerDropdown } from "./ColorPickerDropdown";
 import { exportWorkbookToXLSX, exportSheetToCSV, importFileToWorkbook, triggerPrint } from "../services/file-service";
+import { copyToClipboard, pasteFromClipboard } from "../services/clipboard-service";
 import { FormatType, RibbonTab } from "../types";
 import { expandRange } from "../engine/range-manager";
 import {
@@ -97,13 +98,12 @@ export function Ribbon() {
     setWorkbook,
   } = useWorkbookStore();
 
-  const { selectionRange, activeCell, setFormulaInput } = useSelectionStore();
+  const { activeCell, selectionRange, clipboard, setClipboard, setFormulaInput } = useSelectionStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [fontFamily, setFontFamily] = useState("Calibri");
   const [fontSize, setFontSize] = useState(11);
   const [formatType, setFormatType] = useState<FormatType>("general");
-  const [copiedData, setCopiedData] = useState<{ raw: any; format?: FormatType }[][] | null>(null);
   const [showFillColorPicker, setShowFillColorPicker] = useState(false);
   const [showFontColorPicker, setShowFontColorPicker] = useState(false);
 
@@ -116,51 +116,15 @@ export function Ribbon() {
   };
 
   const handleCopy = () => {
-    if (!activeSheet) return;
-    const rMin = Math.min(selectionRange.startRow, selectionRange.endRow);
-    const rMax = Math.max(selectionRange.startRow, selectionRange.endRow);
-    const cMin = Math.min(selectionRange.startCol, selectionRange.endCol);
-    const cMax = Math.max(selectionRange.startCol, selectionRange.endCol);
-
-    const rows: { raw: any; format?: FormatType }[][] = [];
-    const tsvRows: string[] = [];
-
-    for (let r = rMin; r <= rMax; r++) {
-      const rowArr: { raw: any; format?: FormatType }[] = [];
-      const tsvCols: string[] = [];
-      for (let c = cMin; c <= cMax; c++) {
-        const cell = activeSheet.grid[`${r}:${c}`] || { raw: "" };
-        rowArr.push({ raw: cell.raw, format: cell.format });
-        tsvCols.push(String(cell.computed !== undefined ? cell.computed : cell.raw));
-      }
-      rows.push(rowArr);
-      tsvRows.push(tsvCols.join("\t"));
-    }
-
-    setCopiedData(rows);
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(tsvRows.join("\n"));
-    }
+    copyToClipboard(workbook, selectionRange, setClipboard, false);
   };
 
   const handlePaste = () => {
-    if (!copiedData || !activeSheet) return;
-    const updates: { row: number; col: number; data: any }[] = [];
-    copiedData.forEach((row, rIdx) => {
-      row.forEach((cell, cIdx) => {
-        updates.push({
-          row: activeCell.row + rIdx,
-          col: activeCell.col + cIdx,
-          data: { raw: cell.raw, format: cell.format },
-        });
-      });
-    });
-    updateCells(updates);
+    pasteFromClipboard(workbook, activeCell, clipboard, setClipboard, updateCells, clearCells, false);
   };
 
   const handleCut = () => {
-    handleCopy();
-    clearCells(selectionRange, "contents");
+    copyToClipboard(workbook, selectionRange, setClipboard, true);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

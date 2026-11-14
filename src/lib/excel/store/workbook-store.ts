@@ -216,6 +216,18 @@ export const useWorkbookStore = create<WorkbookState>((set, get) => ({
       const existing = newGrid[key] || { raw: "" };
       const updated = { ...existing, ...data };
 
+      // Automatically convert numeric string to number if not explicitly text or starting with '=' or single quote '\''
+      if (
+        typeof updated.raw === "string" &&
+        updated.raw.trim() !== "" &&
+        !updated.raw.startsWith("=") &&
+        !updated.raw.startsWith("'") &&
+        updated.format !== "text" &&
+        !isNaN(Number(updated.raw.trim()))
+      ) {
+        updated.raw = Number(updated.raw.trim());
+      }
+
       if (updated.raw && String(updated.raw).startsWith("=")) {
         updated.computed = evaluateFormula(
           String(updated.raw),

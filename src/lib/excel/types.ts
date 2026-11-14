@@ -99,6 +99,12 @@ export interface SelectionRange {
   endCol: number;
 }
 
+export interface ClipboardState {
+  range: SelectionRange;
+  isCut: boolean;
+  cells: { relRow: number; relCol: number; data: CellData }[];
+}
+
 export type ChartType = "bar" | "line" | "pie" | "doughnut" | "area" | "scatter";
 
 export interface ChartConfig {
