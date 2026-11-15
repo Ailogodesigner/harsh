@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "node ./node_modules/next/dist/bin/next dev",
-    "build": "node ./node_modules/next/dist/bin/next build",
+    "build": "node ./node_modules/next/dist/bin/next build && node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build --skipBuild",
+    "build:worker": "node ./node_modules/next/dist/bin/next build && node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build --skipBuild",
+    "pages:build": "node ./node_modules/next/dist/bin/next build && node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build --skipBuild",
     "start": "node ./node_modules/next/dist/bin/next start",
-    "deploy": "node ./node_modules/next/dist/bin/next build && node ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build --skipBuild && node --import ./scripts/setup-undici.mjs ./node_modules/wrangler/bin/wrangler.js deploy --autoconfig=false --minify",
+    "deploy": "npm run build && node --import ./scripts/setup-undici.mjs ./node_modules/wrangler/bin/wrangler.js deploy --autoconfig=false --minify",
     "test": "node ./node_modules/vitest/vitest.mjs run",
-    "lint": "eslint"
+    "lint": "node ./node_modules/next/dist/bin/next lint"
   },
   "dependencies": {
     "clsx": "^2.1.1",
