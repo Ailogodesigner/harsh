@@ -1015,6 +1015,32 @@ export default function BotOrderPage() {
                   Our founder will reach out to you directly on Discord (<strong>{discordTag}</strong>) to confirm the 50% milestone advance (₹{advanceDeposit}) and begin development.
                 </p>
 
+                {submittedOrder.payment?.payment_url && (
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-purple-950/30 to-emerald-950/40 border border-emerald-500/40 my-3 text-left">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 font-mono">
+                        <Zap className="w-3.5 h-3.5" /> Instant UPI &amp; Binance USDT Checkout
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">
+                        Zero Hold
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 mb-3">
+                      You can settle your 50% advance milestone immediately via PayZapi with automatic instant confirmation:
+                    </p>
+                    <a
+                      href={submittedOrder.payment.payment_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-4 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-black font-bold font-mono text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      <span>Pay ₹{advanceDeposit.toLocaleString("en-IN")} via UPI / Binance USDT</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                )}
+
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <a
                     href="https://dsc.gg/notixnode"

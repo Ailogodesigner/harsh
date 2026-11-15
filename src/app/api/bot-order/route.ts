@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { createPayZapiOrder, getPayZapiApiKey } from "@/lib/payzapi";
 
 const DEFAULT_ORDERS_WEBHOOK =
   "https://discord.com/api/webhooks/1567450561874497588/ax42SS0-HJJr_xDhMvPlK1emMqevib_Mu-82ijaY2hwHt9XcAFhGCl0vilJTqre1WTqb";
@@ -161,12 +162,34 @@ export async function POST(req: Request) {
       }
     }
 
+    // Generate automated PayZapi payment checkout for the 50% advance milestone
+    let paymentData: any = null;
+    const apiKey = getPayZapiApiKey();
+    if (apiKey) {
+      try {
+        const payRes = await createPayZapiOrder({
+          amount: data.advancePaymentRequired,
+          clientOrderId: orderId,
+          customerName: data.clientName,
+          customerEmail: data.email,
+          description: `50% Advance for Custom Bot: ${data.botName}`,
+          redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://notixnode.online"}/bot-order?paid=${orderId}`,
+        });
+        if (payRes.ok) {
+          paymentData = payRes;
+        }
+      } catch (payErr) {
+        console.warn("[Bot Order] Automated PayZapi order creation skipped:", payErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       orderId,
       message: `Your bot development order #${orderId} has been submitted! Our team will review your specifications and contact your Discord (${data.discordTag}) shortly.`,
       advanceDeposit: data.advancePaymentRequired,
       totalPrice: data.totalEstimatedPrice,
+      payment: paymentData,
     });
   } catch (error: any) {
     console.error("Bot Order API error:", error);
